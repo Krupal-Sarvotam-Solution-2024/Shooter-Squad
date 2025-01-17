@@ -6,9 +6,11 @@ public class Camera_Follower : MonoBehaviour
     [SerializeField] private GameObject PlayerObject;
     private void Update()
     {
-        transform.position = PlayerObject.transform.position - Offset;
-        transform.LookAt(PlayerObject.transform.position);
+        if (PlayerObject != null)
+        {
+
+            transform.position = PlayerObject.transform.position - Offset;
+            transform.LookAt(PlayerObject.transform.position);
+        }
     }
-
-
 }

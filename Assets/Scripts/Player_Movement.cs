@@ -16,10 +16,14 @@ public class Player_Movement : MonoBehaviour
     [Header("Joystick Input Settings")]
     [SerializeField] private Joystick playerJoystick;
 
+    [Header("Animations Controller")]
+    [SerializeField] private Animator playerAnimator;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         rb = GetComponent<Rigidbody>();
+        //playerAnimator = GetComponent<Animator>();
     }
 
     // Update is called once per frame
@@ -53,6 +57,11 @@ public class Player_Movement : MonoBehaviour
             // Smoothly rotate the player to face the movement direction
             Quaternion targetRotation = Quaternion.LookRotation(movementDirection, Vector3.up);
             rb.rotation = Quaternion.Slerp(rb.rotation, targetRotation, rotationSpeed * Time.fixedDeltaTime);
+            AnimationController(AnimState.Running);
+        }
+        else
+        {
+            AnimationController(AnimState.Idle);
         }
     }
 
@@ -79,6 +88,34 @@ public class Player_Movement : MonoBehaviour
             // Smoothly rotate the player to face the movement direction
             Quaternion targetRotation = Quaternion.LookRotation(movementDirection, Vector3.up);
             rb.rotation = Quaternion.Slerp(rb.rotation, targetRotation, rotationSpeed * Time.fixedDeltaTime);
+            AnimationController(AnimState.Running);
+        }
+        else
+        {
+            AnimationController(AnimState.Idle);
         }
     }
+
+    void AnimationController(AnimState newState)
+    {
+        switch (newState)
+        {
+            case AnimState.Idle:
+                playerAnimator.SetBool("Idle", true);
+                playerAnimator.SetBool("Running", false);
+                break;
+            case AnimState.Running:
+                playerAnimator.SetBool("Idle", false);
+                playerAnimator.SetBool("Running", true);
+                break;
+        }
+    }
+
+    enum AnimState
+    {
+        Idle,
+        Running
+    }
+
+
 }
