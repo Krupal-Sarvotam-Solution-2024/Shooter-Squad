@@ -1,8 +1,11 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class Bot_Manager : MonoBehaviour
 {
+
+
     [SerializeField] private float botHealth; // Bot current health
     [SerializeField] private float botMaxHealth = 100f; // Bot max health
     [SerializeField] private float botHealthIncrement = 1f; // Bot health recovery amount
@@ -20,20 +23,44 @@ public class Bot_Manager : MonoBehaviour
     [SerializeField] private float shootStartTime; // Waiting time for next shot
     [SerializeField] private float shootWaitTime; // Waiting time for next shot
 
+    [SerializeField] private Animator botAnimator;
+
+    [SerializeField] private Vector3 startingPos;
+    [SerializeField] private Vector3 startingEular;
+    [SerializeField] private Vector3 startingScale;
+
     public List<GameObject> bulletAll;
     public List<GameObject> bulletUsed;
     public List<GameObject> bulletUnused;
     public int bulletCount = 0;
 
+    private NavMeshAgent navAgent;
+    private bool isFollowing = false;
+
+    public GameManager GameManager;
+    private bool isShouldFollow;
+    public float stopDistance = 2.0f; // Distance to stop away from the player
+    private bool isIdle = false;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        //InvokeRepeating("HealthUpgradation", 0, 1);
-        Player_Manager = GameObject.FindGameObjectWithTag("Player").GetComponent<Player_Manager>();
+        startingPos = transform.position;
+        startingEular = transform.eulerAngles;
+        startingScale = transform.localScale;
+        InvokeRepeating("HealthUpgradation", 0, 1);
+        //Player_Manager = GameObject.FindGameObjectWithTag("Player").GetComponent<Player_Manager>();
+        navAgent = GetComponent<NavMeshAgent>();
     }
+
 
     private void Update()
     {
+        if (GameManager.GamePlay == false)
+        {
+            return;
+        }
+
         if (Player_Manager != null)
         {
             DistanceChecker();
@@ -43,11 +70,67 @@ public class Bot_Manager : MonoBehaviour
                 transform.LookAt(Player_Manager.transform.position);
             }
         }
+
+        if (isFollowing && Player_Manager != null)
+        {
+            if (Vector3.Distance(Player_Manager.gameObject.transform.position, this.gameObject.transform.position) > 2)
+            {
+                Vector3 directionToPlayer = Player_Manager.gameObject.transform.position - navAgent.transform.position;
+                Vector3 targetPosition = Player_Manager.gameObject.transform.position - directionToPlayer.normalized * stopDistance;
+
+                navAgent.SetDestination(targetPosition);
+                AnimationController(AnimState.Running);
+            }
+            else
+            {
+                AnimationController(AnimState.Idle);
+            }
+        }
+    }
+
+    void FollowPlayer()
+    {
+        if (isFollowing && Player_Manager != null)
+            return;
+
+        // Calculate the direction from the bot to the player
+        Vector3 directionToPlayer = (Player_Manager.gameObject.transform.position - transform.position).normalized;
+
+        // Calculate the target position some distance away from the player
+        Vector3 targetPosition = Player_Manager.gameObject.transform.position - directionToPlayer * 2f;
+
+        // Set the NavMeshAgent's destination
+        navAgent.SetDestination(targetPosition);
+
+        // Check the distance between the bot and the player
+        float distanceToPlayer = Vector3.Distance(transform.position, Player_Manager.gameObject.transform.position);
+
+        if (distanceToPlayer <= stopDistance)
+        {
+            if (!isIdle)
+            {
+                AnimationController(AnimState.Idle); // Trigger Idle animation
+                isIdle = true;
+            }
+        }
+        else
+        {
+            if (isIdle)
+            {
+                AnimationController(AnimState.Running); // Trigger Running animation
+                isIdle = false;
+            }
+        }
     }
 
     // Health increase
     void HealthUpgradation()
     {
+        if (GameManager.GamePlay == false)
+        {
+            return;
+        }
+
         if (botHealth < botMaxHealth)
         {
             botHealth += botHealthIncrement;
@@ -78,9 +161,27 @@ public class Bot_Manager : MonoBehaviour
         }
     }
 
-    private void OnCollisionEnter(Collision collision)
+    public void StartFollowing()
     {
-        if (collision.gameObject.transform.TryGetComponent<Bullet>(out Bullet bullet))
+        isFollowing = true;
+        AnimationController(AnimState.Running);
+    }
+
+    public void StopFollowing()
+    {
+        isFollowing = false;
+        navAgent.ResetPath(); // Stops the bot
+        AnimationController(AnimState.Idle);
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (GameManager.GamePlay == false)
+        {
+            return;
+        }
+
+        if (other.gameObject.transform.TryGetComponent<Bullet>(out Bullet bullet))
         {
             if (bullet.bulletPlayer != null)
             {
@@ -92,6 +193,10 @@ public class Bot_Manager : MonoBehaviour
     // Distance check between player and bot
     void DistanceChecker()
     {
+        if (GameManager.GamePlay == false)
+        {
+            return;
+        }
         if (isInRadius)
         {
             if (Vector3.Distance(Player_Manager.gameObject.transform.position, this.gameObject.transform.position) > Player_Manager.enemyDistance)
@@ -106,9 +211,11 @@ public class Bot_Manager : MonoBehaviour
         {
             if (Vector3.Distance(Player_Manager.gameObject.transform.position, this.gameObject.transform.position) <= Player_Manager.enemyDistance)
             {
+                CancelInvoke("Shoot");
                 InvokeRepeating("Shoot", shootStartTime, shootWaitTime);
                 isInRadius = true;
                 isOnceInRadius = true;
+                StartFollowing();
                 Player_Manager.listEnemy.Add(this.gameObject);
                 Player_Manager.enemyInRadius++;
             }
@@ -131,4 +238,47 @@ public class Bot_Manager : MonoBehaviour
         bullet.GetComponent<Bullet>().bulletBot = this.transform.GetComponent<Bot_Manager>();
         bullet.transform.parent = null;
     }
+
+    void AnimationController(AnimState newState)
+    {
+        switch (newState)
+        {
+            case AnimState.Idle:
+                botAnimator.SetBool("Idle", true);
+                botAnimator.SetBool("Running", false);
+                break;
+            case AnimState.Running:
+                botAnimator.SetBool("Idle", false);
+                botAnimator.SetBool("Running", true);
+                break;
+        }
+    }
+
+    enum AnimState
+    {
+        Idle,
+        Running
+    }
+
+    public void ResetingGame()
+    {
+        this.gameObject.SetActive(true);
+        AnimationController(AnimState.Idle);
+        CancelInvoke();
+        StopFollowing();
+        CollectingBullet();
+        botHealth = botMaxHealth;
+        this.transform.position = startingPos;
+        this.transform.eulerAngles = startingEular;
+        this.transform.localScale = startingScale;
+    }
+
+    void CollectingBullet()
+    {
+        for (int i = 0; i < bulletAll.Count; i++)
+        {
+            bulletAll[i].GetComponent<Bullet>().GoToParent();
+        }
+    }
+
 }

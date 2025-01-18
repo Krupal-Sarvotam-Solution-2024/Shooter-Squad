@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class Player_Movement : MonoBehaviour
 {
@@ -19,18 +20,33 @@ public class Player_Movement : MonoBehaviour
     [Header("Animations Controller")]
     [SerializeField] private Animator playerAnimator;
 
+    [Header("Radius Ring")]
+    [SerializeField] private GameObject RadiusRing;
+
+    public GameManager GameManager;
+
+   public AnimState playerState;
+
+    private Player_Manager player;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         rb = GetComponent<Rigidbody>();
+        player = GetComponent<Player_Manager>();
         //playerAnimator = GetComponent<Animator>();
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (GameManager.GamePlay == false)
+        {
+            return;
+        }
+
         KeyboardInput();
         JoystickInput();
+        RadiusRing.transform.eulerAngles = Vector3.zero;
     }
 
     // Player movement through keyboard input
@@ -57,15 +73,18 @@ public class Player_Movement : MonoBehaviour
             // Smoothly rotate the player to face the movement direction
             Quaternion targetRotation = Quaternion.LookRotation(movementDirection, Vector3.up);
             rb.rotation = Quaternion.Slerp(rb.rotation, targetRotation, rotationSpeed * Time.fixedDeltaTime);
-            AnimationController(AnimState.Running);
         }
-        else
+        if (movementDirection.magnitude == 0)
         {
             AnimationController(AnimState.Idle);
         }
+        else
+        {
+            AnimationController(AnimState.Running);
+        }
     }
 
-    void JoystickInput()
+    /*void JoystickInput()
     {
         // Get input from the player
         float horizontalInput = playerJoystick.Horizontal;
@@ -88,15 +107,54 @@ public class Player_Movement : MonoBehaviour
             // Smoothly rotate the player to face the movement direction
             Quaternion targetRotation = Quaternion.LookRotation(movementDirection, Vector3.up);
             rb.rotation = Quaternion.Slerp(rb.rotation, targetRotation, rotationSpeed * Time.fixedDeltaTime);
+        }
+        if (movementDirection.magnitude == 0)
+        {
+            AnimationController(AnimState.Idle);
+        }
+        else
+        {
+            AnimationController(AnimState.Running);
+        }
+    }*/
+    void JoystickInput()
+    {
+        // Get input from the player
+        float horizontalInput = playerJoystick.Horizontal;
+        float verticalInput = playerJoystick.Vertical;
+
+        // Calculate movement direction
+        Vector3 movementDirection = new Vector3(horizontalInput, 0, verticalInput);
+
+        if (movementDirection.magnitude > 0.1f)
+        {
+            // Normalize movement to maintain consistent speed in all directions
+            movementDirection.Normalize();
+
+            // Move the transform smoothly in the direction of input
+            transform.Translate(movementDirection * moveSpeed * Time.deltaTime, Space.World);
+
+            // Smoothly rotate the player to face the movement direction
+            Quaternion targetRotation = Quaternion.LookRotation(movementDirection, Vector3.up);
+
+            if (player.isTargeting == false)
+            {
+                transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
+            }
+
+            // Play running animation
             AnimationController(AnimState.Running);
         }
         else
         {
+            transform.Translate(Vector3.zero, Space.World);
+            // Play idle animation
             AnimationController(AnimState.Idle);
         }
     }
 
-    void AnimationController(AnimState newState)
+
+    public void AnimationController(AnimState newState)
     {
         switch (newState)
         {
@@ -111,7 +169,7 @@ public class Player_Movement : MonoBehaviour
         }
     }
 
-    enum AnimState
+    public enum AnimState
     {
         Idle,
         Running

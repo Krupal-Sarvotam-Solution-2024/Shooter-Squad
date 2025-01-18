@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Runtime.InteropServices;
 using NUnit.Framework.Constraints;
+using TMPro;
 using UnityEditor.ShaderGraph.Internal;
 using UnityEngine;
 
@@ -18,26 +19,35 @@ public class Bullet : MonoBehaviour
         StartCoroutine(OffBullet());
     }
 
-    private void OnCollisionEnter(Collision collision)
-    {
-        //Destroy(gameObject);
-        GoToParent();
-    }
-
     IEnumerator OffBullet()
     {
         yield return new WaitForSeconds(5f);
         GoToParent();
     }
 
-    void GoToParent()
+    private void OnTriggerEnter(Collider other)
     {
+        //Destroy(gameObject);
+        if (bulletPlayer != null && other.transform.name.Contains("Player") == false)
+        {
+            GoToParent();
+        }
+
+        else
+        {
+            GoToParent();
+        }
+
+    }
+
+    public void GoToParent()
+    {
+        this.transform.GetComponent<Rigidbody>().linearVelocity = Vector3.zero;
         this.gameObject.SetActive(false);
         this.transform.parent = Parent.transform;
         this.transform.localPosition = previousPosition;
         this.transform.localScale = previousScale;
 
-        this.transform.GetComponent<Rigidbody>().linearVelocity = Vector3.zero;
 
         if (bulletPlayer != null)
         {

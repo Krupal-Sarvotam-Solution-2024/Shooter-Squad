@@ -19,9 +19,16 @@ public class Player_Shooting : MonoBehaviour
     public List<GameObject> bulletUnused;
     public int bulletCount = 0;
 
+    public GameManager GameManager;
+
     // Update is called once per frame
     private void Update()
     {
+        if (GameManager.GamePlay == false)
+        {
+            return;
+        }
+
         Debug.DrawRay(transform.position, transform.forward * 100, Color.green);
         if(Input.GetKeyDown(KeyCode.K))
         {
@@ -33,6 +40,10 @@ public class Player_Shooting : MonoBehaviour
     // Bullet shoot
     public void Shoot()
     {
+        if(GameManager.GamePlay == false)
+        {
+            return;
+        }
         if (isInInterval == true)
             return;
 
@@ -56,7 +67,7 @@ public class Player_Shooting : MonoBehaviour
         Vector3 forwardDirection = new Vector3(transform.forward.x, 0, transform.forward.z).normalized;
         // Starting point of the trajectory
         Vector3 startPoint = transform.position;
-        startPoint.y = 1;
+        startPoint.y = .75f;
         // Check for collisions using a raycast
         RaycastHit hit;
         Vector3 endPoint;
@@ -74,8 +85,8 @@ public class Player_Shooting : MonoBehaviour
         }
         // Apply points to trajectoryLine
         Laser.positionCount = 2; // Start and end points only
-        Laser.SetPosition(0, new Vector3(startPoint.x, 1f, startPoint.z)); // Start point
-        Laser.SetPosition(1, new Vector3(endPoint.x, 1f, endPoint.z)); // End point
+        Laser.SetPosition(0, new Vector3(startPoint.x, .75f, startPoint.z)); // Start point
+        Laser.SetPosition(1, new Vector3(endPoint.x, .75f, endPoint.z)); // End point
     }
 
     IEnumerator ShootingInterval()
@@ -104,4 +115,14 @@ public class Player_Shooting : MonoBehaviour
         isInInterval = false;
     }
 
+    public void CollectingBullet()
+    {
+        for (int i = 0; i < bulletAll.Count; i++)
+        {
+            bulletAll[i].GetComponent<Bullet>().GoToParent();
+        }
+        // Deactivate the reload image once the reload is complete
+        FireReloadingImage.gameObject.SetActive(false);
+        isInInterval = false;
+    }
 }
