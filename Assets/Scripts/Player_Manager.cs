@@ -3,6 +3,8 @@ using TMPro;
 using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.InputSystem;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public class Player_Manager : MonoBehaviour
 {
@@ -17,6 +19,8 @@ public class Player_Manager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI textHealth, textHealth1; // Player health amount status
     [SerializeField] private TextMeshProUGUI textScore, textScore1; // Player score amount status
 
+    [SerializeField] private Image HealthBarSlider;
+
     public float enemyDistance; // Enemy distance for fight
     public int enemyInRadius; // Enemy count in our radius
     public List<GameObject> listEnemy; // All enemy in that list
@@ -24,8 +28,8 @@ public class Player_Manager : MonoBehaviour
     private bool isTargetSelected;
     public bool isTargeting;
 
-    private Player_Movement player_Movement;
-    private Player_Shooting player_Shooting;
+    public Player_Movement player_Movement;
+    public Player_Shooting player_Shooting;
 
 
     [SerializeField] private Vector3 startingPos;
@@ -61,24 +65,26 @@ public class Player_Manager : MonoBehaviour
 
         if (listEnemy.Count > 0)
         {
-            if (targetEnemy == null)
-            {
-                isTargetSelected = false;
-            }
+            //if (targetEnemy == null)
+            //{
+            //    isTargetSelected = false;
+            //}
 
-            if (isTargetSelected == false)
-            {
-                targetEnemy = listEnemy[Random.Range(0, listEnemy.Count)];
-                isTargetSelected = true;
-            }
+            //if (isTargetSelected == false)
+            //{
+            //    targetEnemy = listEnemy[Random.Range(0, listEnemy.Count)];
+            //    isTargetSelected = true;
+            //}
 
-            transform.LookAt(targetEnemy.transform.position);
-            isTargeting = true;
+            //transform.LookAt(targetEnemy.transform.position);
+            //isTargeting = true;
+            player_Shooting.Laser.gameObject.SetActive(true);
         }
         else
         {
-            targetEnemy = null;
-            isTargeting = false;
+            player_Shooting.Laser.gameObject.SetActive(false);
+            //targetEnemy = null;
+            //isTargeting = false;
         }
     }
 
@@ -94,6 +100,7 @@ public class Player_Manager : MonoBehaviour
     {
         textHealth.text = playerHealth.ToString("00") + " / " + playerMaxHealth.ToString("00");
         textHealth1.text = playerHealth.ToString("00") + " / " + playerMaxHealth.ToString("00");
+        HealthBarSlider.fillAmount = playerHealth/100;
     }
 
     // Health deduct on player hit
@@ -127,9 +134,12 @@ public class Player_Manager : MonoBehaviour
         {
             if (bullet.bulletBot != null)
             {
+                bullet.GetComponent<Rigidbody>().linearVelocity = Vector3.zero;
                 BulletHitted(bullet);
             }
         }
+
+        
 
     }
 
@@ -160,6 +170,10 @@ public class Player_Manager : MonoBehaviour
         CancelInvoke();
         this.gameObject.SetActive(true);
         player_Movement.AnimationController(Player_Movement.AnimState.Idle);
+        player_Movement.movementDirection = new Vector3(0,0,0);
+        player_Movement.temp = true;
+        player_Movement.newTemp = new Vector3(0,0,0);
+        player_Movement.playerRigidbody.isKinematic = true;
         playerHealth = playerMaxHealth;
         playerScore = 0;
         this.transform.position = startingPos;
@@ -168,5 +182,9 @@ public class Player_Manager : MonoBehaviour
         HealthTextUpdate();
         ScoreTextUpdate();
         player_Shooting.CollectingBullet();
+        
     }
+
+   
+
 }

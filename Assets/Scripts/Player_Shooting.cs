@@ -8,7 +8,7 @@ public class Player_Shooting : MonoBehaviour
     [SerializeField] private Transform FirePoint;
     [SerializeField] private GameObject prefebBullet;
     [SerializeField] private float bulletSpeed;
-    [SerializeField] private LineRenderer Laser;
+    [SerializeField] public LineRenderer Laser;
     [SerializeField] private Button FireButton;
     [SerializeField] private Image FireReloadingImage;
     [SerializeField] private float intervalTime;
@@ -92,7 +92,7 @@ public class Player_Shooting : MonoBehaviour
     IEnumerator ShootingInterval()
     {
         isInInterval = true;
-
+        FireButton.interactable = false;
         // Activate the reload image
         FireReloadingImage.gameObject.SetActive(true);
 
@@ -112,6 +112,7 @@ public class Player_Shooting : MonoBehaviour
         // Deactivate the reload image once the reload is complete
         FireReloadingImage.gameObject.SetActive(false);
 
+        FireButton.interactable = true;
         isInInterval = false;
     }
 

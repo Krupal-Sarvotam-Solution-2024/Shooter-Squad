@@ -1759,7 +1759,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &4873315174393300894
 Transform:
   m_ObjectHideFlags: 0
@@ -1799,7 +1799,7 @@ LineRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 20a50e1eb7db56c42b1cc9340475aa35, type: 2}
+  - {fileID: 2100000, guid: f31b6820e841f434eba7f81d0cc2ee2b, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1874,8 +1874,8 @@ LineRenderer:
     numCornerVertices: 0
     numCapVertices: 0
     alignment: 0
-    textureMode: 0
-    textureScale: {x: 1, y: 1}
+    textureMode: 1
+    textureScale: {x: 0.25, y: 1}
     shadowBias: 0.5
     generateLightingData: 0
   m_MaskInteraction: 0
@@ -3059,10 +3059,11 @@ GameObject:
   m_Component:
   - component: {fileID: 4226757625984023902}
   - component: {fileID: 1889769205700292513}
-  - component: {fileID: 8989430636932678850}
+  - component: {fileID: 1873569907669593749}
   - component: {fileID: 1438867464725485165}
   - component: {fileID: 833978787355386413}
   - component: {fileID: 8524986863830340088}
+  - component: {fileID: 4204379831069356291}
   m_Layer: 0
   m_Name: Shooter Player
   m_TagString: Player
@@ -3155,7 +3156,7 @@ CapsuleCollider:
   m_Height: 1.925084
   m_Direction: 1
   m_Center: {x: 0, y: 1, z: 0}
---- !u!54 &8989430636932678850
+--- !u!54 &1873569907669593749
 Rigidbody:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -3180,7 +3181,7 @@ Rigidbody:
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 126
+  m_Constraints: 116
   m_CollisionDetection: 0
 --- !u!114 &1438867464725485165
 MonoBehaviour:
@@ -3194,7 +3195,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 222b06d60215b0c4892e8f9ee4d37c8f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rb: {fileID: 8989430636932678850}
+  playerRigidbody: {fileID: 1873569907669593749}
   moveSpeed: 8
   rotationSpeed: 8
   horizontalAxis: Horizontal
@@ -3204,6 +3205,9 @@ MonoBehaviour:
   RadiusRing: {fileID: 4001868177664083614}
   GameManager: {fileID: 0}
   playerState: 0
+  movementDirection: {x: 0, y: 0, z: 0}
+  newTemp: {x: 0, y: 0, z: 0}
+  temp: 0
 --- !u!114 &833978787355386413
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3222,7 +3226,7 @@ MonoBehaviour:
   Laser: {fileID: 7375681624015183897}
   FireButton: {fileID: 0}
   FireReloadingImage: {fileID: 0}
-  intervalTime: 0.75
+  intervalTime: 0.5
   isInInterval: 0
   bulletAll:
   - {fileID: 7403000092427972095}
@@ -3314,10 +3318,28 @@ MonoBehaviour:
   enemyInRadius: 0
   listEnemy: []
   isTargeting: 0
+  player_Movement: {fileID: 0}
+  player_Shooting: {fileID: 0}
   startingPos: {x: 0, y: 0, z: 0}
   startingEular: {x: 0, y: 0, z: 0}
   startingScale: {x: 0, y: 0, z: 0}
   GameManager: {fileID: 0}
+--- !u!208 &4204379831069356291
+NavMeshObstacle:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4377716618827981131}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Shape: 0
+  m_Extents: {x: 1, y: 0.962542, z: 1}
+  m_MoveThreshold: 0.1
+  m_Carve: 1
+  m_CarveOnlyStationary: 1
+  m_Center: {x: 0, y: 1, z: 0}
+  m_TimeToStationary: 0.5
 --- !u!1 &4446353824650839339
 GameObject:
   m_ObjectHideFlags: 0

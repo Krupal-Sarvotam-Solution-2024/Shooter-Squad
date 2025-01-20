@@ -79,6 +79,7 @@ public class GameManager : MonoBehaviour
         yield return new WaitForSeconds(1);
         Time.timeScale = 1f;
         GameStartAnimText.gameObject.SetActive(false);
+        player.player_Movement.playerRigidbody.isKinematic = false;
         GamePlay = true;
     }
 
@@ -96,11 +97,6 @@ public class GameManager : MonoBehaviour
         if(tempBotCounter == 0)
         {
             RestartGame();
-            Debug.Log(tempBotCounter + " IF");
-        }
-        else
-        {
-            Debug.Log(tempBotCounter);
         }
     }
 }

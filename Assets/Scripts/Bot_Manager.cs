@@ -38,7 +38,6 @@ public class Bot_Manager : MonoBehaviour
     private bool isFollowing = false;
 
     public GameManager GameManager;
-    private bool isShouldFollow;
     public float stopDistance = 2.0f; // Distance to stop away from the player
     private bool isIdle = false;
 
@@ -73,7 +72,7 @@ public class Bot_Manager : MonoBehaviour
 
         if (isFollowing && Player_Manager != null)
         {
-            if (Vector3.Distance(Player_Manager.gameObject.transform.position, this.gameObject.transform.position) > 2)
+            if (Vector3.Distance(Player_Manager.gameObject.transform.position, this.gameObject.transform.position) > stopDistance)
             {
                 Vector3 directionToPlayer = Player_Manager.gameObject.transform.position - navAgent.transform.position;
                 Vector3 targetPosition = Player_Manager.gameObject.transform.position - directionToPlayer.normalized * stopDistance;

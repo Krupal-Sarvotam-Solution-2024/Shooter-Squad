@@ -1,10 +1,11 @@
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 
 public class Player_Movement : MonoBehaviour
 {
 
-    [SerializeField] private Rigidbody rb;
+    [SerializeField] public Rigidbody playerRigidbody;
 
     [Header("Movement Settings")]
     [SerializeField] private float moveSpeed;
@@ -25,13 +26,17 @@ public class Player_Movement : MonoBehaviour
 
     public GameManager GameManager;
 
-   public AnimState playerState;
+    public AnimState playerState;
 
     private Player_Manager player;
+
+    public Vector3 movementDirection;
+    public Vector3 newTemp;
+    public bool temp;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        rb = GetComponent<Rigidbody>();
+        playerRigidbody = GetComponent<Rigidbody>();
         player = GetComponent<Player_Manager>();
         //playerAnimator = GetComponent<Animator>();
     }
@@ -43,80 +48,35 @@ public class Player_Movement : MonoBehaviour
         {
             return;
         }
-
-        KeyboardInput();
-        JoystickInput();
-        RadiusRing.transform.eulerAngles = Vector3.zero;
-    }
-
-    // Player movement through keyboard input
-    void KeyboardInput()
-    {
-        // Get input from the player
-        float horizontalInput = Input.GetAxis(horizontalAxis);
-        float verticalInput = Input.GetAxis(verticalAxis);
-
-        // Calculate movement direction
-        Vector3 movementDirection = new Vector3(horizontalInput, 0, verticalInput);
-
-        if (movementDirection.magnitude > 0.1f)
-        {
-            // Normalize movement to maintain consistent speed in all directions
-            movementDirection.Normalize();
-
-            // Calculate target position based on movement direction
-            Vector3 targetPosition = rb.position + movementDirection * moveSpeed * Time.fixedDeltaTime;
-
-            // Move the Rigidbody to the target position
-            rb.MovePosition(targetPosition);
-
-            // Smoothly rotate the player to face the movement direction
-            Quaternion targetRotation = Quaternion.LookRotation(movementDirection, Vector3.up);
-            rb.rotation = Quaternion.Slerp(rb.rotation, targetRotation, rotationSpeed * Time.fixedDeltaTime);
-        }
-        if (movementDirection.magnitude == 0)
-        {
-            AnimationController(AnimState.Idle);
-        }
-        else
-        {
-            AnimationController(AnimState.Running);
-        }
-    }
-
-    /*void JoystickInput()
-    {
         // Get input from the player
         float horizontalInput = playerJoystick.Horizontal;
         float verticalInput = playerJoystick.Vertical;
 
         // Calculate movement direction
-        Vector3 movementDirection = new Vector3(horizontalInput, 0, verticalInput);
+        movementDirection = new Vector3(horizontalInput, 0, verticalInput);
 
         if (movementDirection.magnitude > 0.1f)
         {
-            // Normalize movement to maintain consistent speed in all directions
-            movementDirection.Normalize();
+            temp = false;
+            Debug.Log("Moving");
 
-            // Calculate target position based on movement direction
-            Vector3 targetPosition = rb.position + movementDirection * moveSpeed * Time.fixedDeltaTime;
-
-            // Move the Rigidbody to the target position
-            rb.MovePosition(targetPosition);
-
-            // Smoothly rotate the player to face the movement direction
-            Quaternion targetRotation = Quaternion.LookRotation(movementDirection, Vector3.up);
-            rb.rotation = Quaternion.Slerp(rb.rotation, targetRotation, rotationSpeed * Time.fixedDeltaTime);
-        }
-        if (movementDirection.magnitude == 0)
-        {
-            AnimationController(AnimState.Idle);
         }
         else
         {
-            AnimationController(AnimState.Running);
+            if (temp == false)  
+            {
+                newTemp = transform.position;
+                temp = true;
+            }
+            transform.position = newTemp;
+            Debug.Log("Not Moving");
         }
-    }*/
+
+        JoystickInput();
+        RadiusRing.transform.eulerAngles = Vector3.zero;
+    }
+
+
     void JoystickInput()
     {
         // Get input from the player
@@ -124,7 +84,7 @@ public class Player_Movement : MonoBehaviour
         float verticalInput = playerJoystick.Vertical;
 
         // Calculate movement direction
-        Vector3 movementDirection = new Vector3(horizontalInput, 0, verticalInput);
+        movementDirection = new Vector3(horizontalInput, 0, verticalInput);
 
         if (movementDirection.magnitude > 0.1f)
         {
@@ -174,6 +134,5 @@ public class Player_Movement : MonoBehaviour
         Idle,
         Running
     }
-
 
 }
