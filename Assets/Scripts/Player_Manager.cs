@@ -5,38 +5,52 @@ using System.Collections.Generic;
 using UnityEngine.InputSystem;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using System.Collections;
 
 public class Player_Manager : MonoBehaviour
 {
-
+    // All Health managing variable
     [SerializeField] private float playerHealth; // Player current health
     [SerializeField] private float playerMaxHealth = 100f; // Player max health
     [SerializeField] private float playerHealthIncrement = 1f; // Player health recovery amount
     [SerializeField] private float playerHealthDeductionAmount = 3f; // Player health deduct amount
-
-    [SerializeField] private int playerScore; // Player current score
-
     [SerializeField] private TextMeshProUGUI textHealth, textHealth1; // Player health amount status
-    [SerializeField] private TextMeshProUGUI textScore, textScore1; // Player score amount status
-
     [SerializeField] private Image HealthBarSlider;
 
+    // Player Score Managing variable
+    [SerializeField] private int playerScore; // Player current score
+    [SerializeField] private TextMeshProUGUI textScore, textScore1; // Player score amount status
+
+    // Auto aim & enemy managing variables
     public float enemyDistance; // Enemy distance for fight
     public int enemyInRadius; // Enemy count in our radius
     public List<GameObject> listEnemy; // All enemy in that list
-    private GameObject targetEnemy;
-    private bool isTargetSelected;
-    public bool isTargeting;
+    private GameObject targetEnemy; // Target enemy for auto aim
+    private bool isTargetSelected; // Check that tarhet is selected or not
+    public bool isTargeting; // Check that is finding target or not
 
-    public Player_Movement player_Movement;
-    public Player_Shooting player_Shooting;
+    // Other player scripts
+    public Player_Movement player_Movement; // Player movement script access
+    public Player_Shooting player_Shooting; // Player shooting script access
 
+    // Player default transform
+    [SerializeField] private Vector3 startingPos; // Player start position
+    [SerializeField] private Vector3 startingEular; // Player start eular (rotation)
+    [SerializeField] private Vector3 startingScale; // Player start scale
 
-    [SerializeField] private Vector3 startingPos;
-    [SerializeField] private Vector3 startingEular;
-    [SerializeField] private Vector3 startingScale;
+    // Animations and Death 
+    [SerializeField] private AnimationClip deathClip; // Death animation clip for length
+    public bool isDeath = false; // finding that player is dead or not
 
-    public GameManager GameManager;
+    // Audio managing system
+    public AudioSource playerAudio; // Audio source which handle player audios
+    public AudioClip runSurface, runRamp, playerDeath; // All audio clips
+    public Weapon myWeapon;
+    public bool isSoundPlaying;
+
+    // Game manager access
+    public GameManager GameManager; // Game manager access
+
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -47,6 +61,7 @@ public class Player_Manager : MonoBehaviour
         InvokeRepeating("HealthUpgradation", 0, 2);
         player_Movement = GetComponent<Player_Movement>();
         player_Shooting = GetComponent<Player_Shooting>();
+        AssignMyWeapone();
     }
 
     // Update is called once per frame
@@ -65,26 +80,31 @@ public class Player_Manager : MonoBehaviour
 
         if (listEnemy.Count > 0)
         {
-            //if (targetEnemy == null)
-            //{
-            //    isTargetSelected = false;
-            //}
+            if (targetEnemy == null)
+            {
+                isTargetSelected = false;
+            }
 
-            //if (isTargetSelected == false)
-            //{
-            //    targetEnemy = listEnemy[Random.Range(0, listEnemy.Count)];
-            //    isTargetSelected = true;
-            //}
+            if (isTargetSelected == false)
+            {
+                targetEnemy = listEnemy[Random.Range(0, listEnemy.Count)];
+                isTargetSelected = true;
+            }
+            if(Vector3.Distance(this.gameObject.transform.position,targetEnemy.transform.position) > enemyDistance)
+            {
+                targetEnemy = listEnemy[Random.Range(0, listEnemy.Count)];
+                isTargetSelected = true;
+            }
 
-            //transform.LookAt(targetEnemy.transform.position);
-            //isTargeting = true;
+            transform.LookAt(targetEnemy.transform.position);
+            isTargeting = true;
             player_Shooting.Laser.gameObject.SetActive(true);
         }
         else
         {
             player_Shooting.Laser.gameObject.SetActive(false);
-            //targetEnemy = null;
-            //isTargeting = false;
+            targetEnemy = null;
+            isTargeting = false;
         }
     }
 
@@ -100,7 +120,7 @@ public class Player_Manager : MonoBehaviour
     {
         textHealth.text = playerHealth.ToString("00") + " / " + playerMaxHealth.ToString("00");
         textHealth1.text = playerHealth.ToString("00") + " / " + playerMaxHealth.ToString("00");
-        HealthBarSlider.fillAmount = playerHealth/100;
+        HealthBarSlider.fillAmount = playerHealth / 100;
     }
 
     // Health deduct on player hit
@@ -117,9 +137,27 @@ public class Player_Manager : MonoBehaviour
         if (playerHealth <= 0)
         {
             //Destroy(this.gameObject); 
-            this.gameObject.SetActive(false);
-            GameManager.RestartGame();
+            //this.gameObject.SetActive(false);
+            StartCoroutine(PlayerDeath());
         }
+    }
+
+    IEnumerator PlayerDeath()
+    {
+        isDeath = true;
+        player_Movement.playerRigidbody.isKinematic = true;
+        player_Movement.AnimationController(Player_Movement.AnimState.Death);
+        for(int i = 0;i < GameManager.botAll.Count;i++)
+        {
+            GameManager.botAll[i].Player_Manager = null;
+            GameManager.botAll[i].StopFollowing();
+        }
+        playerAudio.clip = playerDeath;
+        playerAudio.PlayOneShot(playerDeath);
+        isSoundPlaying = true;
+        yield return new WaitForSeconds(deathClip.length + 0.75f);
+        GameManager.RestartGame();
+        isDeath = false;
     }
 
 
@@ -139,7 +177,7 @@ public class Player_Manager : MonoBehaviour
             }
         }
 
-        
+
 
     }
 
@@ -170,9 +208,9 @@ public class Player_Manager : MonoBehaviour
         CancelInvoke();
         this.gameObject.SetActive(true);
         player_Movement.AnimationController(Player_Movement.AnimState.Idle);
-        player_Movement.movementDirection = new Vector3(0,0,0);
+        player_Movement.movementDirection = new Vector3(0, 0, 0);
         player_Movement.temp = true;
-        player_Movement.newTemp = new Vector3(0,0,0);
+        player_Movement.newTemp = new Vector3(0, 0, 0);
         player_Movement.playerRigidbody.isKinematic = true;
         playerHealth = playerMaxHealth;
         playerScore = 0;
@@ -182,9 +220,20 @@ public class Player_Manager : MonoBehaviour
         HealthTextUpdate();
         ScoreTextUpdate();
         player_Shooting.CollectingBullet();
-        
+        isSoundPlaying = false;
+
     }
 
-   
+    public void AssignMyWeapone()
+    {
+        for(int i = 0;i < gameObject.transform.childCount;i++)
+        {
+            if (gameObject.transform.GetChild(i).TryGetComponent<Weapon>(out Weapon myweapon))
+            {
+                myWeapon = myweapon;
+            }
+
+        }
+    }
 
 }

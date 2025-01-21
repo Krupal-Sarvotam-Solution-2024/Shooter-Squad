@@ -21,6 +21,13 @@ public class Player_Shooting : MonoBehaviour
 
     public GameManager GameManager;
 
+    public Player_Manager PlayerManager;
+
+    private void Start()
+    {
+        PlayerManager = GetComponent<Player_Manager>();
+    }
+
     // Update is called once per frame
     private void Update()
     {
@@ -30,7 +37,7 @@ public class Player_Shooting : MonoBehaviour
         }
 
         Debug.DrawRay(transform.position, transform.forward * 100, Color.green);
-        if(Input.GetKeyDown(KeyCode.K))
+        if (Input.GetKeyDown(KeyCode.K))
         {
             Shoot();
         }
@@ -40,7 +47,7 @@ public class Player_Shooting : MonoBehaviour
     // Bullet shoot
     public void Shoot()
     {
-        if(GameManager.GamePlay == false)
+        if (GameManager.GamePlay == false)
         {
             return;
         }
@@ -56,6 +63,11 @@ public class Player_Shooting : MonoBehaviour
         rb_bullet.linearVelocity = direction * bulletSpeed;
         bullet.GetComponent<Bullet>().bulletPlayer = this.transform.GetComponent<Player_Manager>();
         bullet.transform.parent = null;
+
+        PlayerManager.myWeapon.enabled = true;
+        PlayerManager.myWeapon.WeaponAudio.clip = PlayerManager.myWeapon.BlastSound;
+        PlayerManager.myWeapon.WeaponAudio.Play();
+
         StartCoroutine(ShootingInterval());
     }
 

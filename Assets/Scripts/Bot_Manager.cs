@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
@@ -12,7 +13,7 @@ public class Bot_Manager : MonoBehaviour
     [SerializeField] private float botHealthDeductionAmount = 3f; // Bot health deduction amount
     [SerializeField] private int botDeathScore = 10; // Score for increment to the player
 
-    [SerializeField] private Player_Manager Player_Manager; // Player
+    public Player_Manager Player_Manager; // Player
 
     [SerializeField] private bool isInRadius; // Check that it is in radius or not for shooting
     [SerializeField] private bool isOnceInRadius; // Check that it is in radius or not for shooting
@@ -41,6 +42,18 @@ public class Bot_Manager : MonoBehaviour
     public float stopDistance = 2.0f; // Distance to stop away from the player
     private bool isIdle = false;
 
+    public AnimationClip deathClip;
+    public GameObject AnimatorObject;
+
+    // Audio managing system
+    public AudioSource botAudio; // Audio source which handle player audios
+    public AudioClip playerDeath; // All audio clips
+    public Weapon myWeapon;
+
+    [SerializeField] private List<GameObject> botBodyParts;
+    [SerializeField] GameObject DeathPartcleSystem;
+    bool isDeath;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -50,12 +63,13 @@ public class Bot_Manager : MonoBehaviour
         InvokeRepeating("HealthUpgradation", 0, 1);
         //Player_Manager = GameObject.FindGameObjectWithTag("Player").GetComponent<Player_Manager>();
         navAgent = GetComponent<NavMeshAgent>();
+        AssignMyWeapone();
     }
 
 
     private void Update()
     {
-        if (GameManager.GamePlay == false)
+        if (GameManager.GamePlay == false || isDeath == true)
         {
             return;
         }
@@ -83,6 +97,7 @@ public class Bot_Manager : MonoBehaviour
             else
             {
                 AnimationController(AnimState.Idle);
+                botAudio.Stop();
             }
         }
     }
@@ -91,6 +106,10 @@ public class Bot_Manager : MonoBehaviour
     {
         if (isFollowing && Player_Manager != null)
             return;
+        if (GameManager.GamePlay == false || isDeath == true)
+        {
+            return;
+        }
 
         // Calculate the direction from the bot to the player
         Vector3 directionToPlayer = (Player_Manager.gameObject.transform.position - transform.position).normalized;
@@ -109,6 +128,7 @@ public class Bot_Manager : MonoBehaviour
             if (!isIdle)
             {
                 AnimationController(AnimState.Idle); // Trigger Idle animation
+                botAudio.Stop();
                 isIdle = true;
             }
         }
@@ -125,7 +145,7 @@ public class Bot_Manager : MonoBehaviour
     // Health increase
     void HealthUpgradation()
     {
-        if (GameManager.GamePlay == false)
+        if (GameManager.GamePlay == false || isDeath == true)
         {
             return;
         }
@@ -149,15 +169,51 @@ public class Bot_Manager : MonoBehaviour
         if (botHealth <= 0)
         {
             bullet.bulletPlayer.KillPlayer(botDeathScore);
-            if (Player_Manager.listEnemy.Contains(this.gameObject))
+            /*if (Player_Manager.listEnemy.Contains(this.gameObject))
             {
                 Player_Manager.listEnemy.Remove(this.gameObject);
                 Player_Manager.enemyInRadius--;
             }
             //Destroy(this.gameObject);
             this.gameObject.SetActive(false);
-            CancelInvoke("Shoot");
+            CancelInvoke("Shoot");*/
+            StartCoroutine(BotDeath());
         }
+    }
+
+    IEnumerator BotDeath()
+    {
+        isDeath = true;
+        GetComponent<Rigidbody>().isKinematic = true;
+        GetComponent<Collider>().enabled = false;
+        BodyVisibility(false);
+        DeathPartcleSystem.SetActive(true);
+        DeathPartcleSystem.GetComponent<ParticleSystem>().Play();
+        if (Player_Manager.listEnemy.Contains(this.gameObject))
+        {
+            Player_Manager.listEnemy.Remove(this.gameObject);
+            Player_Manager.enemyInRadius--;
+        }
+        CancelInvoke("Shoot");
+
+        Player_Manager = null;
+        StopFollowing();
+
+        /*AnimationController(AnimState.Death);*/
+
+        if (GameManager.botDeath.Contains(this) == false)
+        {
+            GameManager.botDeath.Add(this);
+        }
+
+        botAudio.clip = playerDeath;
+        botAudio.PlayOneShot(playerDeath);
+        yield return new WaitForSeconds(DeathPartcleSystem.GetComponent<ParticleSystem>().totalTime + 1);
+        DeathPartcleSystem.SetActive(true);
+        GetComponent<Rigidbody>().isKinematic = false;
+        GetComponent<Collider>().enabled = true;
+        this.gameObject.SetActive(false);
+        BodyVisibility(true);
     }
 
     public void StartFollowing()
@@ -171,11 +227,12 @@ public class Bot_Manager : MonoBehaviour
         isFollowing = false;
         navAgent.ResetPath(); // Stops the bot
         AnimationController(AnimState.Idle);
+        botAudio.Stop();
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        if (GameManager.GamePlay == false)
+        if (GameManager.GamePlay == false || isDeath == true)
         {
             return;
         }
@@ -236,6 +293,10 @@ public class Bot_Manager : MonoBehaviour
         rb_bullet.linearVelocity = direction * bulletSpeed;
         bullet.GetComponent<Bullet>().bulletBot = this.transform.GetComponent<Bot_Manager>();
         bullet.transform.parent = null;
+
+        myWeapon.enabled = true;
+        myWeapon.WeaponAudio.clip = myWeapon.BlastSound;
+        myWeapon.WeaponAudio.Play();
     }
 
     void AnimationController(AnimState newState)
@@ -245,31 +306,44 @@ public class Bot_Manager : MonoBehaviour
             case AnimState.Idle:
                 botAnimator.SetBool("Idle", true);
                 botAnimator.SetBool("Running", false);
+                /*botAnimator.SetBool("Death", false);*/
                 break;
             case AnimState.Running:
                 botAnimator.SetBool("Idle", false);
                 botAnimator.SetBool("Running", true);
+                /*botAnimator.SetBool("Death", false);*/
                 break;
+            /*case AnimState.Death:
+                botAnimator.SetBool("Idle", false);
+                botAnimator.SetBool("Running", false);
+                botAnimator.SetBool("Death", true);
+                break;*/
         }
     }
 
     enum AnimState
     {
         Idle,
-        Running
+        Running/*,
+        Death*/
     }
 
     public void ResetingGame()
     {
+        isDeath = false;
+        CancelInvoke();
         this.gameObject.SetActive(true);
         AnimationController(AnimState.Idle);
-        CancelInvoke();
         StopFollowing();
-        CollectingBullet();
+        GetComponent<Rigidbody>().isKinematic = false;
         botHealth = botMaxHealth;
         this.transform.position = startingPos;
         this.transform.eulerAngles = startingEular;
         this.transform.localScale = startingScale;
+        AnimatorObject.gameObject.transform.localRotation = Quaternion.identity;
+        Debug.Log(botAnimator.gameObject.name);
+        Player_Manager = GameManager.player;
+        CollectingBullet();
     }
 
     void CollectingBullet()
@@ -277,6 +351,26 @@ public class Bot_Manager : MonoBehaviour
         for (int i = 0; i < bulletAll.Count; i++)
         {
             bulletAll[i].GetComponent<Bullet>().GoToParent();
+        }
+    }
+
+    public void AssignMyWeapone()
+    {
+        for (int i = 0; i < gameObject.transform.childCount; i++)
+        {
+            if (gameObject.transform.GetChild(i).TryGetComponent<Weapon>(out Weapon myweapon))
+            {
+                myWeapon = myweapon;
+            }
+
+        }
+    }
+
+    void BodyVisibility(bool visibility)
+    {
+        for(int i = 0;i < botBodyParts.Count;i++)
+        {
+            botBodyParts[i].gameObject.SetActive(visibility);
         }
     }
 

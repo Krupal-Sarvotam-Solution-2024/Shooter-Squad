@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
@@ -33,21 +34,27 @@ public class Player_Movement : MonoBehaviour
     public Vector3 movementDirection;
     public Vector3 newTemp;
     public bool temp;
+
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         playerRigidbody = GetComponent<Rigidbody>();
         player = GetComponent<Player_Manager>();
+        StartCoroutine(kinematicSetting());
         //playerAnimator = GetComponent<Animator>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (GameManager.GamePlay == false)
+        if ((GameManager.GamePlay == false) || (player.isDeath == true))
         {
             return;
         }
+
+
+
         // Get input from the player
         float horizontalInput = playerJoystick.Horizontal;
         float verticalInput = playerJoystick.Vertical;
@@ -58,18 +65,16 @@ public class Player_Movement : MonoBehaviour
         if (movementDirection.magnitude > 0.1f)
         {
             temp = false;
-            Debug.Log("Moving");
 
         }
         else
         {
-            if (temp == false)  
+            if (temp == false)
             {
                 newTemp = transform.position;
                 temp = true;
             }
             transform.position = newTemp;
-            Debug.Log("Not Moving");
         }
 
         JoystickInput();
@@ -79,6 +84,13 @@ public class Player_Movement : MonoBehaviour
 
     void JoystickInput()
     {
+        if (player.isDeath == true)
+        {
+            player.playerAudio.Stop();
+            player.isSoundPlaying = false;
+            return;
+        }
+
         // Get input from the player
         float horizontalInput = playerJoystick.Horizontal;
         float verticalInput = playerJoystick.Vertical;
@@ -104,12 +116,22 @@ public class Player_Movement : MonoBehaviour
 
             // Play running animation
             AnimationController(AnimState.Running);
+            if (player.isSoundPlaying == false)
+            {
+                player.playerAudio.clip = player.runSurface;
+                player.playerAudio.Play();
+                player.isSoundPlaying = true;
+            }
         }
         else
         {
             transform.Translate(Vector3.zero, Space.World);
             // Play idle animation
+
             AnimationController(AnimState.Idle);
+            player.playerAudio.Stop();
+            player.isSoundPlaying = false;
+
         }
     }
 
@@ -121,10 +143,17 @@ public class Player_Movement : MonoBehaviour
             case AnimState.Idle:
                 playerAnimator.SetBool("Idle", true);
                 playerAnimator.SetBool("Running", false);
+                playerAnimator.SetBool("Death", false);
                 break;
             case AnimState.Running:
                 playerAnimator.SetBool("Idle", false);
                 playerAnimator.SetBool("Running", true);
+                playerAnimator.SetBool("Death", false);
+                break;
+            case AnimState.Death:
+                playerAnimator.SetBool("Idle", false);
+                playerAnimator.SetBool("Running", false);
+                playerAnimator.SetBool("Death", true);
                 break;
         }
     }
@@ -132,7 +161,19 @@ public class Player_Movement : MonoBehaviour
     public enum AnimState
     {
         Idle,
-        Running
+        Running,
+        Death
+    }
+
+    IEnumerator kinematicSetting()
+    {
+        yield return new WaitForSeconds(3);
+        if (player.isDeath == false && GameManager.GamePlay == true)
+        {
+            playerRigidbody.isKinematic = true;
+            playerRigidbody.isKinematic = false;
+        }
+        StartCoroutine(kinematicSetting());
     }
 
 }

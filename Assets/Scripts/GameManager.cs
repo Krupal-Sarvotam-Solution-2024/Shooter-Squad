@@ -10,6 +10,7 @@ public class GameManager : MonoBehaviour
     public GameObject panelStart, panelPause;
 
     public List<Bot_Manager> botAll;
+    public List<Bot_Manager> botDeath;
     public Player_Manager player;
 
     public Text GameStartAnimText;
