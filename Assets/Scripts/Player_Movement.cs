@@ -143,26 +143,26 @@ public class Player_Movement : MonoBehaviour
             case AnimState.Idle:
                 playerAnimator.SetBool("Idle", true);
                 playerAnimator.SetBool("Running", false);
-                playerAnimator.SetBool("Death", false);
+                //playerAnimator.SetBool("Death", false);
                 break;
             case AnimState.Running:
                 playerAnimator.SetBool("Idle", false);
                 playerAnimator.SetBool("Running", true);
-                playerAnimator.SetBool("Death", false);
+                //playerAnimator.SetBool("Death", false);
                 break;
-            case AnimState.Death:
+            /*case AnimState.Death:
                 playerAnimator.SetBool("Idle", false);
                 playerAnimator.SetBool("Running", false);
                 playerAnimator.SetBool("Death", true);
-                break;
+                break;*/
         }
     }
 
     public enum AnimState
     {
         Idle,
-        Running,
-        Death
+        Running/*,
+        Death*/
     }
 
     IEnumerator kinematicSetting()

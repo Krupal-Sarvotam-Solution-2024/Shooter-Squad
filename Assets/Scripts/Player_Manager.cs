@@ -16,6 +16,8 @@ public class Player_Manager : MonoBehaviour
     [SerializeField] private float playerHealthDeductionAmount = 3f; // Player health deduct amount
     [SerializeField] private TextMeshProUGUI textHealth, textHealth1; // Player health amount status
     [SerializeField] private Image HealthBarSlider;
+    [SerializeField] private GameObject HealthBar, HealthBarFG;
+    [SerializeField] private TextMeshPro HealthPerText;
 
     // Player Score Managing variable
     [SerializeField] private int playerScore; // Player current score
@@ -39,7 +41,9 @@ public class Player_Manager : MonoBehaviour
     [SerializeField] private Vector3 startingScale; // Player start scale
 
     // Animations and Death 
-    [SerializeField] private AnimationClip deathClip; // Death animation clip for length
+    //[SerializeField] private AnimationClip deathClip; // Death animation clip for length
+    [SerializeField] private List<GameObject> botBodyParts;
+    [SerializeField] GameObject DeathPartcleSystem;
     public bool isDeath = false; // finding that player is dead or not
 
     // Audio managing system
@@ -73,6 +77,7 @@ public class Player_Manager : MonoBehaviour
         }
 
         AutoTarget();
+        HealthBar.transform.LookAt(Camera.main.transform.position);
     }
 
     void AutoTarget()
@@ -90,7 +95,7 @@ public class Player_Manager : MonoBehaviour
                 targetEnemy = listEnemy[Random.Range(0, listEnemy.Count)];
                 isTargetSelected = true;
             }
-            if(Vector3.Distance(this.gameObject.transform.position,targetEnemy.transform.position) > enemyDistance)
+            if (Vector3.Distance(this.gameObject.transform.position, targetEnemy.transform.position) > enemyDistance)
             {
                 targetEnemy = listEnemy[Random.Range(0, listEnemy.Count)];
                 isTargetSelected = true;
@@ -118,9 +123,23 @@ public class Player_Manager : MonoBehaviour
     // Player health update in text
     void HealthTextUpdate()
     {
-        textHealth.text = playerHealth.ToString("00") + " / " + playerMaxHealth.ToString("00");
-        textHealth1.text = playerHealth.ToString("00") + " / " + playerMaxHealth.ToString("00");
-        HealthBarSlider.fillAmount = playerHealth / 100;
+        if (playerHealth >= 0)
+        {
+            textHealth.text = playerHealth.ToString("00") + " / " + playerMaxHealth.ToString("00");
+            textHealth1.text = playerHealth.ToString("00") + " / " + playerMaxHealth.ToString("00");
+            HealthBarSlider.fillAmount = playerHealth / 100;
+            float healthPercentage = (playerHealth / playerMaxHealth) * 100f;
+            HealthBarFG.transform.localScale = new Vector3(healthPercentage / 100, HealthBarFG.transform.localScale.y, HealthBarFG.transform.localScale.z);
+            HealthPerText.text = healthPercentage + "%";
+        }
+        else
+        {
+            textHealth.text = "00" + " / " + playerMaxHealth.ToString("00");
+            textHealth1.text = "00" + " / " + playerMaxHealth.ToString("00");
+            float healthPercentage = 0;
+            HealthBarFG.transform.localScale = new Vector3(healthPercentage / 100, HealthBarFG.transform.localScale.y, HealthBarFG.transform.localScale.z);
+            HealthPerText.text = healthPercentage + "%";
+        }
     }
 
     // Health deduct on player hit
@@ -146,8 +165,11 @@ public class Player_Manager : MonoBehaviour
     {
         isDeath = true;
         player_Movement.playerRigidbody.isKinematic = true;
-        player_Movement.AnimationController(Player_Movement.AnimState.Death);
-        for(int i = 0;i < GameManager.botAll.Count;i++)
+        //player_Movement.AnimationController(Player_Movement.AnimState.Death);
+        BodyVisibility(false);
+        DeathPartcleSystem.SetActive(true);
+        DeathPartcleSystem.GetComponent<ParticleSystem>().Play();
+        for (int i = 0; i < GameManager.botAll.Count; i++)
         {
             GameManager.botAll[i].Player_Manager = null;
             GameManager.botAll[i].StopFollowing();
@@ -155,11 +177,12 @@ public class Player_Manager : MonoBehaviour
         playerAudio.clip = playerDeath;
         playerAudio.PlayOneShot(playerDeath);
         isSoundPlaying = true;
-        yield return new WaitForSeconds(deathClip.length + 0.75f);
-        GameManager.RestartGame();
+        yield return new WaitForSeconds(4);
+        DeathPartcleSystem.SetActive(false);
+        GameManager.RestartGame(false);
+
         isDeath = false;
     }
-
 
     private void OnTriggerEnter(Collider other)
     {
@@ -184,7 +207,7 @@ public class Player_Manager : MonoBehaviour
     // Player health increaser
     void HealthUpgradation()
     {
-        if (GameManager.GamePlay == false)
+        if (GameManager.GamePlay == false || isDeath == true)
         {
             return;
         }
@@ -206,33 +229,49 @@ public class Player_Manager : MonoBehaviour
     public void ResettingGame()
     {
         CancelInvoke();
+
         this.gameObject.SetActive(true);
+        BodyVisibility(true);
+
         player_Movement.AnimationController(Player_Movement.AnimState.Idle);
         player_Movement.movementDirection = new Vector3(0, 0, 0);
         player_Movement.temp = true;
-        player_Movement.newTemp = new Vector3(0, 0, 0);
+        player_Movement.newTemp = startingPos;
         player_Movement.playerRigidbody.isKinematic = true;
+
         playerHealth = playerMaxHealth;
         playerScore = 0;
+
+        HealthTextUpdate();
+        ScoreTextUpdate();
+
+        player_Shooting.CollectingBullet();
+        isSoundPlaying = false;
+        enemyInRadius = 0;
+        listEnemy.Clear();
+
         this.transform.position = startingPos;
         this.transform.eulerAngles = startingEular;
         this.transform.localScale = startingScale;
-        HealthTextUpdate();
-        ScoreTextUpdate();
-        player_Shooting.CollectingBullet();
-        isSoundPlaying = false;
-
     }
 
     public void AssignMyWeapone()
     {
-        for(int i = 0;i < gameObject.transform.childCount;i++)
+        for (int i = 0; i < gameObject.transform.childCount; i++)
         {
             if (gameObject.transform.GetChild(i).TryGetComponent<Weapon>(out Weapon myweapon))
             {
                 myWeapon = myweapon;
             }
 
+        }
+    }
+
+    void BodyVisibility(bool visibility)
+    {
+        for (int i = 0; i < botBodyParts.Count; i++)
+        {
+            botBodyParts[i].gameObject.SetActive(visibility);
         }
     }
 

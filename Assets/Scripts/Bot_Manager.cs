@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -12,6 +13,8 @@ public class Bot_Manager : MonoBehaviour
     [SerializeField] private float botHealthIncrement = 1f; // Bot health recovery amount
     [SerializeField] private float botHealthDeductionAmount = 3f; // Bot health deduction amount
     [SerializeField] private int botDeathScore = 10; // Score for increment to the player
+    [SerializeField] private GameObject HealthBar, HealthBarFG;
+    [SerializeField] private TextMeshPro HealthPerText;
 
     public Player_Manager Player_Manager; // Player
 
@@ -57,10 +60,8 @@ public class Bot_Manager : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        startingPos = transform.position;
-        startingEular = transform.eulerAngles;
-        startingScale = transform.localScale;
-        InvokeRepeating("HealthUpgradation", 0, 1);
+        ReassignValue();
+        //InvokeRepeating("HealthUpgradation", 0, 1);
         //Player_Manager = GameObject.FindGameObjectWithTag("Player").GetComponent<Player_Manager>();
         navAgent = GetComponent<NavMeshAgent>();
         AssignMyWeapone();
@@ -100,6 +101,7 @@ public class Bot_Manager : MonoBehaviour
                 botAudio.Stop();
             }
         }
+        HealthBar.transform.LookAt(Camera.main.transform.position);
     }
 
     void FollowPlayer()
@@ -160,6 +162,15 @@ public class Bot_Manager : MonoBehaviour
     void HealthDeduction()
     {
         botHealth -= botHealthDeductionAmount;
+        HealthShow();
+    }
+
+    // Health Show
+    void HealthShow()
+    {
+        float healthPercentage = (botHealth / botMaxHealth) * 100f;
+        HealthBarFG.transform.localScale = new Vector3(healthPercentage / 100, HealthBarFG.transform.localScale.y, HealthBarFG.transform.localScale.z);
+        HealthPerText.text = healthPercentage + "%";
     }
 
     // Player bullet hit
@@ -208,8 +219,8 @@ public class Bot_Manager : MonoBehaviour
 
         botAudio.clip = playerDeath;
         botAudio.PlayOneShot(playerDeath);
-        yield return new WaitForSeconds(DeathPartcleSystem.GetComponent<ParticleSystem>().totalTime + 1);
-        DeathPartcleSystem.SetActive(true);
+        yield return new WaitForSeconds(3);
+        DeathPartcleSystem.SetActive(false);
         GetComponent<Rigidbody>().isKinematic = false;
         GetComponent<Collider>().enabled = true;
         this.gameObject.SetActive(false);
@@ -224,8 +235,11 @@ public class Bot_Manager : MonoBehaviour
 
     public void StopFollowing()
     {
-        isFollowing = false;
-        navAgent.ResetPath(); // Stops the bot
+        isFollowing = false; 
+        if (this.gameObject.activeInHierarchy)
+        {
+            navAgent.ResetPath(); // Stops the bot 
+        }
         AnimationController(AnimState.Idle);
         botAudio.Stop();
     }
@@ -331,18 +345,27 @@ public class Bot_Manager : MonoBehaviour
     public void ResetingGame()
     {
         isDeath = false;
+        
         CancelInvoke();
+       
         this.gameObject.SetActive(true);
+      
         AnimationController(AnimState.Idle);
         StopFollowing();
+      
         GetComponent<Rigidbody>().isKinematic = false;
+      
         botHealth = botMaxHealth;
-        this.transform.position = startingPos;
+        isOnceInRadius = false;
+       
+        //this.transform.position = startingPos;
         this.transform.eulerAngles = startingEular;
         this.transform.localScale = startingScale;
+       
         AnimatorObject.gameObject.transform.localRotation = Quaternion.identity;
-        Debug.Log(botAnimator.gameObject.name);
+       
         Player_Manager = GameManager.player;
+       
         CollectingBullet();
     }
 
@@ -372,6 +395,13 @@ public class Bot_Manager : MonoBehaviour
         {
             botBodyParts[i].gameObject.SetActive(visibility);
         }
+    }
+
+    public void ReassignValue()
+    {
+        startingPos = transform.position;
+        startingEular = transform.eulerAngles;
+        startingScale = transform.localScale;
     }
 
 }

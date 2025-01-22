@@ -51,7 +51,7 @@ public class Player_Shooting : MonoBehaviour
         {
             return;
         }
-        if (isInInterval == true)
+        if (isInInterval == true || PlayerManager.isDeath == true)
             return;
 
         GameObject bullet = bulletUnused[bulletCount];

@@ -15,9 +15,12 @@ public class GameManager : MonoBehaviour
 
     public Text GameStartAnimText;
 
+    public List<Transform> botSpawnPoint;
+
     private void Start()
     {
         Time.timeScale = 1f;
+        RestartGame(true);
     }
 
     private void Update()
@@ -54,16 +57,26 @@ public class GameManager : MonoBehaviour
         Application.Quit();
     }
 
-    public void RestartGame()
+    public void RestartGame(bool first)
     {
         Time.timeScale = 1f;
-        for (int i = 0;i < botAll.Count;i++)
+        //for (int i = 0;i < botAll.Count;i++)
+        //{
+        //    botAll[i].gameObject.SetActive(true);
+        //    botAll[i].GetComponent<Bot_Manager>().ResetingGame();
+        //}
+        for(int i = 0;i < botSpawnPoint.Count;i++)
         {
+            botAll[i].gameObject.transform.position = botSpawnPoint[i].transform.position;
+            botAll[i].gameObject.SetActive(true);
             botAll[i].GetComponent<Bot_Manager>().ResetingGame();
+            botAll[i].GetComponent<Bot_Manager>().ReassignValue();
         }
         player.ResettingGame();
-        StartGame();
-        StartCoroutine(StartGameAnim());
+        if (first != true)
+        {
+            StartGame(); 
+        }
     }
 
     IEnumerator StartGameAnim()
@@ -97,7 +110,7 @@ public class GameManager : MonoBehaviour
 
         if(tempBotCounter == 0)
         {
-            RestartGame();
+            RestartGame(false);
         }
     }
 }
