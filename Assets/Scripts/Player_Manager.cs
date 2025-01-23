@@ -55,14 +55,16 @@ public class Player_Manager : MonoBehaviour
     // Game manager access
     public GameManager GameManager; // Game manager access
 
+    public List<GameObject> healthIndicatorAll;
+    public List<GameObject> healthIndicatorUsed;
+    public List<GameObject> healthIndicatorUnused;
+    public int healthIndicatorCount = 0;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        startingPos = transform.position;
-        startingEular = transform.eulerAngles;
-        startingScale = transform.localScale;
-        InvokeRepeating("HealthUpgradation", 0, 2);
+        ReassignValue();
+        InvokeRepeating("HealthUpgradation", 0, 1);
         player_Movement = GetComponent<Player_Movement>();
         player_Shooting = GetComponent<Player_Shooting>();
         AssignMyWeapone();
@@ -71,13 +73,13 @@ public class Player_Manager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        HealthBar.transform.LookAt(Camera.main.transform.position);
         if (GameManager.GamePlay == false)
         {
             return;
         }
 
         AutoTarget();
-        HealthBar.transform.LookAt(Camera.main.transform.position);
     }
 
     void AutoTarget()
@@ -95,7 +97,7 @@ public class Player_Manager : MonoBehaviour
                 targetEnemy = listEnemy[Random.Range(0, listEnemy.Count)];
                 isTargetSelected = true;
             }
-            if (Vector3.Distance(this.gameObject.transform.position, targetEnemy.transform.position) > enemyDistance)
+            if (Vector3.Distance(this.gameObject.transform.position, targetEnemy.transform.position) > enemyDistance || targetEnemy.gameObject.activeInHierarchy == false)
             {
                 targetEnemy = listEnemy[Random.Range(0, listEnemy.Count)];
                 isTargetSelected = true;
@@ -146,6 +148,7 @@ public class Player_Manager : MonoBehaviour
     void HealthDeduction()
     {
         playerHealth -= playerHealthDeductionAmount;
+        DamgeIndicator(10);
         HealthTextUpdate();
     }
 
@@ -179,7 +182,7 @@ public class Player_Manager : MonoBehaviour
         isSoundPlaying = true;
         yield return new WaitForSeconds(4);
         DeathPartcleSystem.SetActive(false);
-        GameManager.RestartGame(false);
+        GameManager.RestartGame();
 
         isDeath = false;
     }
@@ -253,6 +256,8 @@ public class Player_Manager : MonoBehaviour
         this.transform.position = startingPos;
         this.transform.eulerAngles = startingEular;
         this.transform.localScale = startingScale;
+
+        InvokeRepeating("HealthUpgradation", 0, 2);
     }
 
     public void AssignMyWeapone()
@@ -275,4 +280,40 @@ public class Player_Manager : MonoBehaviour
         }
     }
 
+    public void ReassignValue()
+    {
+        startingPos = transform.position;
+        startingEular = transform.eulerAngles;
+        startingScale = transform.localScale;
+        player_Movement.newTemp = startingPos;
+    }
+
+    void DamgeIndicator(int damage)
+    {
+
+        if(healthIndicatorUnused.Count == 0)
+        {
+            healthIndicatorUsed[0].gameObject.SetActive(false);
+            healthIndicatorUnused.Add(healthIndicatorUsed[0]);
+            healthIndicatorUsed.Remove(healthIndicatorUsed[0]);
+        }
+
+        GameObject indicator = healthIndicatorUnused[healthIndicatorCount];
+        indicator.SetActive(true);
+        healthIndicatorUsed.Add(indicator);
+        healthIndicatorUnused.Remove(indicator);
+
+        indicator.GetComponent<TextMeshPro>().text = "-" +damage.ToString();
+        StartCoroutine(healthIndocatorInterval(indicator));
+    }
+
+    IEnumerator healthIndocatorInterval(GameObject indicator)
+    {
+        yield return new WaitForSeconds(1.5f);
+
+        indicator.SetActive(false);
+
+        healthIndicatorUsed.Remove(indicator);
+        healthIndicatorUnused.Add(indicator);
+    }
 }

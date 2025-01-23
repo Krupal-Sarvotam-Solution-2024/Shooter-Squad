@@ -12,10 +12,6 @@ public class Player_Movement : MonoBehaviour
     [SerializeField] private float moveSpeed;
     [SerializeField] private float rotationSpeed = 10f;
 
-    [Header("Keyboard Input Settings")]
-    [SerializeField] private string horizontalAxis = "Horizontal"; // Default to "Horizontal" input axis
-    [SerializeField] private string verticalAxis = "Vertical";     // Default to "Vertical" input axis
-
     [Header("Joystick Input Settings")]
     [SerializeField] private Joystick playerJoystick;
 
@@ -76,6 +72,11 @@ public class Player_Movement : MonoBehaviour
             }
             transform.position = newTemp;
         }
+        if (transform.position.y < 0)
+        {
+            transform.position = new Vector3(transform.position.x, 0, transform.position.z);
+        }
+
 
         JoystickInput();
         RadiusRing.transform.eulerAngles = Vector3.zero;

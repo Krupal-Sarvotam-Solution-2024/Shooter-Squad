@@ -57,6 +57,11 @@ public class Bot_Manager : MonoBehaviour
     [SerializeField] GameObject DeathPartcleSystem;
     bool isDeath;
 
+    public List<GameObject> healthIndicatorAll;
+    public List<GameObject> healthIndicatorUsed;
+    public List<GameObject> healthIndicatorUnused;
+    public int healthIndicatorCount = 0;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -70,6 +75,7 @@ public class Bot_Manager : MonoBehaviour
 
     private void Update()
     {
+        HealthBar.transform.LookAt(Camera.main.transform.position);
         if (GameManager.GamePlay == false || isDeath == true)
         {
             return;
@@ -101,7 +107,6 @@ public class Bot_Manager : MonoBehaviour
                 botAudio.Stop();
             }
         }
-        HealthBar.transform.LookAt(Camera.main.transform.position);
     }
 
     void FollowPlayer()
@@ -162,6 +167,7 @@ public class Bot_Manager : MonoBehaviour
     void HealthDeduction()
     {
         botHealth -= botHealthDeductionAmount;
+        DamgeIndicator((int)botHealthDeductionAmount);
         HealthShow();
     }
 
@@ -236,7 +242,7 @@ public class Bot_Manager : MonoBehaviour
     public void StopFollowing()
     {
         isFollowing = false; 
-        if (this.gameObject.activeInHierarchy)
+        if (this.gameObject.activeInHierarchy == true && navAgent != null)
         {
             navAgent.ResetPath(); // Stops the bot 
         }
@@ -402,6 +408,35 @@ public class Bot_Manager : MonoBehaviour
         startingPos = transform.position;
         startingEular = transform.eulerAngles;
         startingScale = transform.localScale;
+    }
+
+    void DamgeIndicator(int damage)
+    {
+
+        if (healthIndicatorUnused.Count == 0)
+        {
+            healthIndicatorUsed[0].gameObject.SetActive(false);
+            healthIndicatorUnused.Add(healthIndicatorUsed[0]);
+            healthIndicatorUsed.Remove(healthIndicatorUsed[0]);
+        }
+
+        GameObject indicator = healthIndicatorUnused[healthIndicatorCount];
+        indicator.SetActive(true);
+        healthIndicatorUsed.Add(indicator);
+        healthIndicatorUnused.Remove(indicator);
+
+        indicator.GetComponent<TextMeshPro>().text = "-" + damage.ToString();
+        StartCoroutine(healthIndocatorInterval(indicator));
+    }
+
+    IEnumerator healthIndocatorInterval(GameObject indicator)
+    {
+        yield return new WaitForSeconds(1.5f);
+
+        indicator.SetActive(false);
+
+        healthIndicatorUsed.Remove(indicator);
+        healthIndicatorUnused.Add(indicator);
     }
 
 }

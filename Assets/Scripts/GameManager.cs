@@ -15,12 +15,29 @@ public class GameManager : MonoBehaviour
 
     public Text GameStartAnimText;
 
+    public List<GameObject> grounds;
+    public GameObject currentGround;
+    [Range(1f, 5f)]
+    public int activeGround;
+
     public List<Transform> botSpawnPoint;
+    public Transform playerSpawnPoint;
+
+    public bool Sound = true;
+    public Image SoundButtonImage;
+    public Sprite SoundOn, SoundOff;
 
     private void Start()
     {
         Time.timeScale = 1f;
-        RestartGame(true);
+        if(Sound == true)
+        {
+            SoundButtonImage.sprite = SoundOn;
+        }
+        else
+        {
+            SoundButtonImage.sprite = SoundOff;
+        }
     }
 
     private void Update()
@@ -37,7 +54,7 @@ public class GameManager : MonoBehaviour
         Time.timeScale = 0f;
         panelPause.SetActive(true);
     }
-    
+
     public void ContinueGame()
     {
         Time.timeScale = 1f;
@@ -49,6 +66,7 @@ public class GameManager : MonoBehaviour
     {
         panelPause.SetActive(false);
         panelStart.SetActive(false);
+        SetGround();
         StartCoroutine(StartGameAnim());
     }
 
@@ -57,30 +75,40 @@ public class GameManager : MonoBehaviour
         Application.Quit();
     }
 
-    public void RestartGame(bool first)
+    public void RestartGame()
     {
         Time.timeScale = 1f;
-        //for (int i = 0;i < botAll.Count;i++)
-        //{
-        //    botAll[i].gameObject.SetActive(true);
-        //    botAll[i].GetComponent<Bot_Manager>().ResetingGame();
-        //}
-        for(int i = 0;i < botSpawnPoint.Count;i++)
+
+        /*for (int i = 0; i < botSpawnPoint.Count; i++)
         {
             botAll[i].gameObject.transform.position = botSpawnPoint[i].transform.position;
             botAll[i].gameObject.SetActive(true);
             botAll[i].GetComponent<Bot_Manager>().ResetingGame();
             botAll[i].GetComponent<Bot_Manager>().ReassignValue();
         }
-        player.ResettingGame();
-        if (first != true)
+        player.ResettingGame();*/
+        StartGame();
+    }
+
+    public void SoundOnOffClick()
+    {
+        if (Sound == true)
         {
-            StartGame(); 
+            SoundButtonImage.sprite = SoundOff;
+            Sound = false;
+        }
+        else
+        {
+            SoundButtonImage.sprite = SoundOn;
+            Sound = true;
         }
     }
 
     IEnumerator StartGameAnim()
     {
+        Camera.main.gameObject.GetComponent<Camera_Follower>().shouldFollow = false;
+        Camera.main.transform.position = new Vector3(0,20,-45);
+        Camera.main.transform.eulerAngles = new Vector3(30,0,0);
         GamePlay = false;
         GameStartAnimText.gameObject.SetActive(true);
         GameStartAnimText.text = "3";
@@ -94,23 +122,72 @@ public class GameManager : MonoBehaviour
         Time.timeScale = 1f;
         GameStartAnimText.gameObject.SetActive(false);
         player.player_Movement.playerRigidbody.isKinematic = false;
+        Camera.main.gameObject.GetComponent<Camera_Follower>().shouldFollow = true;
         GamePlay = true;
     }
 
     void BotCount()
     {
         int tempBotCounter = 0;
-        for(int i = 0;i < botAll.Count;i++)
+        for (int i = 0; i < botAll.Count; i++)
         {
             if (botAll[i].gameObject.activeInHierarchy == true)
             {
-                tempBotCounter++; 
+                tempBotCounter++;
             }
         }
 
-        if(tempBotCounter == 0)
+        if (tempBotCounter == 0)
         {
-            RestartGame(false);
+            RestartGame();
         }
     }
+
+    void SetGround()
+    {
+        // Select ground
+        currentGround = null;
+
+        for (int i = 0; i < grounds.Count; i++)
+        {
+            grounds[i].gameObject.SetActive(false);
+        }
+
+        currentGround = grounds[activeGround - 1];
+        currentGround.SetActive(true);
+
+
+        // Declare ground variable
+        Ground groundSctipt = currentGround.GetComponent<Ground>();
+
+        // Assign player spawn position
+        playerSpawnPoint = groundSctipt.playerSpawnPos;
+
+        // Assign all the bot spawn position
+        botSpawnPoint.Clear();
+        for (int i = 0; i < groundSctipt.botCount; i++)
+        {
+            botSpawnPoint.Add(groundSctipt.allSpawnPoint[i]);
+        }
+
+        // Set the player 
+        player.ResettingGame();
+        player.gameObject.transform.position = playerSpawnPoint.transform.position;
+        player.ReassignValue();
+
+        // Set the bot
+        for (int i = 0; i < groundSctipt.botCount; i++)
+        {
+            botAll[i].gameObject.SetActive(false);
+
+            botAll[i].transform.position = botSpawnPoint[i].transform.position;
+
+            botAll[i].GetComponent<Bot_Manager>().ResetingGame();
+
+            botAll[i].GetComponent<Bot_Manager>().ReassignValue();
+
+            botAll[i].gameObject.SetActive(true);
+        }
+    }
+
 }
