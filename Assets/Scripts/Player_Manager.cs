@@ -104,6 +104,7 @@ public class Player_Manager : MonoBehaviour
             }
 
             transform.LookAt(targetEnemy.transform.position);
+            transform.eulerAngles = new Vector3(0,transform.eulerAngles.y,0);
             isTargeting = true;
             player_Shooting.Laser.gameObject.SetActive(true);
         }
@@ -187,7 +188,7 @@ public class Player_Manager : MonoBehaviour
         isDeath = false;
     }
 
-    private void OnTriggerEnter(Collider other)
+   /* private void OnTriggerEnter(Collider other)
     {
         if (GameManager.GamePlay == false)
         {
@@ -205,6 +206,23 @@ public class Player_Manager : MonoBehaviour
 
 
 
+    }*/
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (GameManager.GamePlay == false)
+        {
+            return;
+        }
+
+        if (collision.gameObject.transform.TryGetComponent<Bullet>(out Bullet bullet))
+        {
+            if (bullet.bulletBot != null)
+            {
+                bullet.GetComponent<Rigidbody>().linearVelocity = Vector3.zero;
+                BulletHitted(bullet);
+            }
+        }
     }
 
     // Player health increaser

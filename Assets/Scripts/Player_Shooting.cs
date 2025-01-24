@@ -5,31 +5,30 @@ using UnityEngine.UI;
 
 public class Player_Shooting : MonoBehaviour
 {
-    [SerializeField] private Transform FirePoint;
-    [SerializeField] private GameObject prefebBullet;
-    [SerializeField] private float bulletSpeed;
-    [SerializeField] public LineRenderer Laser;
-    [SerializeField] private Button FireButton;
-    [SerializeField] private Image FireReloadingImage;
-    [SerializeField] private float intervalTime;
-    [SerializeField] private bool isInInterval;
+    [SerializeField] private Transform FirePoint; // Starting point for bullet
+    [SerializeField] private float bulletSpeed; // Bullet speed
+    [SerializeField] public LineRenderer Laser; // Aim laser
+    [SerializeField] private Button FireButton; // Fire button
+    [SerializeField] private Image FireReloadingImage; // Fire realoding image
+    [SerializeField] private float intervalTime; // Interval timing for next shoot
+    [SerializeField] private bool isInInterval; // Find that gun is in interval or not
 
-    public List<GameObject> bulletAll;
-    public List<GameObject> bulletUsed;
-    public List<GameObject> bulletUnused;
-    public int bulletCount = 0;
+    public List<GameObject> bulletAll; // All player bullet
+    public List<GameObject> bulletUsed; // All used bullet
+    public List<GameObject> bulletUnused; // All unused bullet
 
-    public GameManager GameManager;
+    public GameManager GameManager; // Access of game manager
 
-    public Player_Manager PlayerManager;
+    public Player_Manager PlayerManager; // Accedd of player manager
 
-    private void Start()
+    // Start
+    void Start()
     {
         PlayerManager = GetComponent<Player_Manager>();
     }
 
-    // Update is called once per frame
-    private void Update()
+    // Update
+    void Update()
     {
         if (GameManager.GamePlay == false)
         {
@@ -47,18 +46,19 @@ public class Player_Shooting : MonoBehaviour
     // Bullet shoot
     public void Shoot()
     {
-        if (GameManager.GamePlay == false)
+        if (GameManager.GamePlay == false || isInInterval == true || PlayerManager.isDeath == true)
         {
             return;
         }
-        if (isInInterval == true || PlayerManager.isDeath == true)
-            return;
 
-        GameObject bullet = bulletUnused[bulletCount];
-        bulletUnused[bulletCount].SetActive(true);
-        bulletUsed.Add(bulletUnused[bulletCount]);
-        bulletUnused.Remove(bulletUnused[bulletCount]);
+        GameObject bullet = bulletUnused[0];
+
+        bulletUnused[0].SetActive(true);
+        bulletUsed.Add(bulletUnused[0]);
+        bulletUnused.Remove(bulletUnused[0]);
+
         Vector3 direction = transform.forward;
+
         Rigidbody rb_bullet = bullet.GetComponent<Rigidbody>();
         rb_bullet.linearVelocity = direction * bulletSpeed;
         bullet.GetComponent<Bullet>().bulletPlayer = this.transform.GetComponent<Player_Manager>();
@@ -101,6 +101,19 @@ public class Player_Shooting : MonoBehaviour
         Laser.SetPosition(1, new Vector3(endPoint.x, .75f, endPoint.z)); // End point
     }
 
+    // Collecting bullet for reseting the player
+    public void CollectingBullet()
+    {
+        for (int i = 0; i < bulletAll.Count; i++)
+        {
+            bulletAll[i].GetComponent<Bullet>().GoToParent();
+        }
+        // Deactivate the reload image once the reload is complete
+        FireReloadingImage.gameObject.SetActive(false);
+        isInInterval = false;
+    }
+
+    // Shooting interval
     IEnumerator ShootingInterval()
     {
         isInInterval = true;
@@ -125,17 +138,6 @@ public class Player_Shooting : MonoBehaviour
         FireReloadingImage.gameObject.SetActive(false);
 
         FireButton.interactable = true;
-        isInInterval = false;
-    }
-
-    public void CollectingBullet()
-    {
-        for (int i = 0; i < bulletAll.Count; i++)
-        {
-            bulletAll[i].GetComponent<Bullet>().GoToParent();
-        }
-        // Deactivate the reload image once the reload is complete
-        FireReloadingImage.gameObject.SetActive(false);
         isInInterval = false;
     }
 }

@@ -37,7 +37,7 @@ public class Player_Movement : MonoBehaviour
     {
         playerRigidbody = GetComponent<Rigidbody>();
         player = GetComponent<Player_Manager>();
-        StartCoroutine(kinematicSetting());
+        //StartCoroutine(kinematicSetting());
         //playerAnimator = GetComponent<Animator>();
     }
 

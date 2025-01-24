@@ -1,45 +1,55 @@
 using System.Collections;
-using System.Runtime.InteropServices;
-using NUnit.Framework.Constraints;
-using TMPro;
-using UnityEditor.ShaderGraph.Internal;
 using UnityEngine;
 
 public class Bullet : MonoBehaviour
 {
-    public Player_Manager bulletPlayer;
-    public Bot_Manager bulletBot;
-    public GameObject Parent;
-    [SerializeField] private Vector3 previousScale;
-    [SerializeField] private Vector3 previousPosition;
+    public Player_Manager bulletPlayer; // Shooter player
 
-    private void OnEnable()
+    public Bot_Manager bulletBot; // Shooter bot
+
+    public GameObject Parent; // Bullet parent
+
+    public Vector3 previousScale; // Starting scale
+    public Vector3 previousPosition; // Starting position
+
+    [SerializeField] private ParticleSystem wallHitParticle; // Particle for playing when hit wall
+    [SerializeField] private ParticleSystem playerHitParicle; // Particle for playing when hit player/bot
+
+    // Called on activation of object
+    void OnEnable()
     {
-        //Destroy(gameObject,5f);
         StartCoroutine(OffBullet());
     }
 
+    // Turning off bullet if no object collide
     IEnumerator OffBullet()
     {
         yield return new WaitForSeconds(5f);
         GoToParent();
     }
 
-    private void OnTriggerEnter(Collider other)
+    // On Collide with any object
+    void OnCollisionEnter(Collision collision)
     {
-        //Destroy(gameObject);
-        if (bulletPlayer != null && other.transform.name.Contains("Player") == false)
+        this.transform.GetComponent<Rigidbody>().linearVelocity = Vector3.zero;
+        if (bulletPlayer != null && collision.transform.name.Contains("Player") == true)
         {
-            GoToParent();
+            // Player Shoot
+            StartCoroutine(GoParentAfterParticle(playerHitParicle));
         }
-
+        else if (bulletBot != null && collision.transform.name.Contains("Player") == false)
+        {
+            // Bot Shoot
+            StartCoroutine(GoParentAfterParticle(playerHitParicle));
+        }
         else
         {
-            GoToParent();
+            // else
+            StartCoroutine(GoParentAfterParticle(wallHitParticle));
         }
-
     }
 
+    // Go to parent timing over of bullet
     public void GoToParent()
     {
         this.transform.GetComponent<Rigidbody>().linearVelocity = Vector3.zero;
@@ -47,7 +57,8 @@ public class Bullet : MonoBehaviour
         this.transform.parent = Parent.transform;
         this.transform.localPosition = previousPosition;
         this.transform.localScale = previousScale;
-
+        GetComponent<MeshRenderer>().enabled = true;
+        GetComponent<Collider>().enabled = true;
 
         if (bulletPlayer != null)
         {
@@ -78,5 +89,16 @@ public class Bullet : MonoBehaviour
                 bulletBot.bulletUnused.Add(this.gameObject);
             }
         }
+    }
+
+    // Playing particle when hit anything
+    IEnumerator GoParentAfterParticle(ParticleSystem particleType)
+    {
+        GetComponent<MeshRenderer>().enabled = false;
+        GetComponent<Collider>().enabled = false;
+        this.transform.GetComponent<Rigidbody>().linearVelocity = Vector3.zero;
+        particleType.Play();
+        yield return new WaitForSeconds(2f);
+        GoToParent();
     }
 }

@@ -1285,7 +1285,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 76a0d2e417bbe154ab2730f8beefca59, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  WeaponAudio: {fileID: 6722363127079165376, guid: 880ac9f9feab3694f8f77f4b343b8f4f, type: 3}
+  WeaponAudio: {fileID: -5808407524402466396}
   BlastSound: {fileID: 8300000, guid: c0c8239160e5def41be1af0c91c6e078, type: 3}
 --- !u!82 &-5808407524402466396
 AudioSource:

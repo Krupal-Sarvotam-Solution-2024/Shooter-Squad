@@ -1,0 +1,55 @@
+using UnityEngine;
+
+public class Obstacle : MonoBehaviour
+{
+    [SerializeField] private Type ThisObsType; // Find that which type of the object is
+
+    [SerializeField] private int TotalHit; // How many bullet need to destroy the object
+    private int HittedCount; // How many hits happend
+
+    public GameManager GameManager; // Gamemanager access
+
+    // Called on activation of object
+    private void OnEnable()
+    {
+        HittedCount = 0; // Making count 0
+    }
+
+    // Called on object collide
+    private void OnCollisionEnter(Collision collision)
+    {
+        // Things happend when it's exit gate
+        if(ThisObsType == Type.ExitGate)
+        {
+            GameManager.RestartGame();
+        }
+
+        // Thingd happend when it's breakble object
+        if (ThisObsType == Type.Breakable)
+        {
+            if (collision.gameObject.TryGetComponent<Bullet>(out Bullet bullet))
+            {
+                Hitted();
+            }
+        }
+    }
+
+    // Called when bullet hitted
+    void Hitted()
+    {
+        HittedCount++;
+        if (HittedCount == TotalHit)
+        {
+            this.gameObject.SetActive(false);
+        }
+    }
+
+    // Types of obstacle
+    enum Type
+    {
+        Breakable,
+        Unbreakable,
+        ExitGate
+    }
+
+}

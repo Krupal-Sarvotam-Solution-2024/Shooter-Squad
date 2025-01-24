@@ -66,7 +66,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 5bb6f480966364444a5610ddc2d32e65, type: 2}
+  - {fileID: 2100000, guid: f1d9192aa13a5634b9401edb7f9dce03, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -226,7 +226,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 5bb6f480966364444a5610ddc2d32e65, type: 2}
+  - {fileID: 2100000, guid: f1d9192aa13a5634b9401edb7f9dce03, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -355,7 +355,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 5bb6f480966364444a5610ddc2d32e65, type: 2}
+  - {fileID: 2100000, guid: 2bbbb4850d795e34e85ef1590a144f91, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -673,7 +673,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 5bb6f480966364444a5610ddc2d32e65, type: 2}
+  - {fileID: 2100000, guid: f1d9192aa13a5634b9401edb7f9dce03, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -864,7 +864,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 5bb6f480966364444a5610ddc2d32e65, type: 2}
+  - {fileID: 2100000, guid: f1d9192aa13a5634b9401edb7f9dce03, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -992,8 +992,13 @@ MonoBehaviour:
   - {fileID: 9166586389161359253}
   - {fileID: 3633886627984275813}
   - {fileID: 4991586566222717973}
-  playerSpawnPos: {fileID: 1856021435678988040}
   botCount: 8
+  playerSpawnPos: {fileID: 1856021435678988040}
+  ActiveObject: []
+  ExitGate: {fileID: 4766638096845651051}
+  ExitGateOpenPosition: {x: 0, y: -2, z: -1}
+  ExitGateClosedPosition: {x: 0, y: 0, z: -1}
+  isOpenDoor: 0
 --- !u!1 &7656859634415786982
 GameObject:
   m_ObjectHideFlags: 0
@@ -1060,7 +1065,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 5bb6f480966364444a5610ddc2d32e65, type: 2}
+  - {fileID: 2100000, guid: 2bbbb4850d795e34e85ef1590a144f91, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1441,7 +1446,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 5bb6f480966364444a5610ddc2d32e65, type: 2}
+  - {fileID: 2100000, guid: f1d9192aa13a5634b9401edb7f9dce03, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1601,7 +1606,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 5bb6f480966364444a5610ddc2d32e65, type: 2}
+  - {fileID: 2100000, guid: f1d9192aa13a5634b9401edb7f9dce03, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -2128,6 +2133,11 @@ PrefabInstance:
 --- !u!4 &1357283566104487549 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4202347143431247145, guid: 6f4814b186ada6f409f269cd93b9efc7, type: 3}
+  m_PrefabInstance: {fileID: 2920503269673071444}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &4766638096845651051 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7683482191752253247, guid: 6f4814b186ada6f409f269cd93b9efc7, type: 3}
   m_PrefabInstance: {fileID: 2920503269673071444}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &3027919844843258965
@@ -4152,7 +4162,13 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    - target: {fileID: 7683482191752253247, guid: 6f4814b186ada6f409f269cd93b9efc7, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents:
+    - {fileID: -8277447828672512213, guid: 6f4814b186ada6f409f269cd93b9efc7, type: 3}
+    - {fileID: 4058126512154063362, guid: 6f4814b186ada6f409f269cd93b9efc7, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []

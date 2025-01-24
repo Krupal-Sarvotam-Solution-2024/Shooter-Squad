@@ -5,41 +5,53 @@ using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
-    public bool GamePlay;
+    public bool GamePlay; // Check that game is running or not
 
-    public GameObject panelStart, panelPause;
+    public GameObject panelStart, panelPause; // All panels
 
-    public List<Bot_Manager> botAll;
-    public List<Bot_Manager> botDeath;
-    public Player_Manager player;
+    public List<Bot_Manager> botAll; // All bot gameobject
+    public List<Bot_Manager> botDeath; // All bot gameobject which is death
+    public Player_Manager player; // The main player gameobject
 
-    public Text GameStartAnimText;
+    public Text GameStartAnimText; // Game start count down text
 
-    public List<GameObject> grounds;
-    public GameObject currentGround;
+    public List<GameObject> grounds; // All ground
+    public GameObject currentGround; // Ground on using
     [Range(1f, 5f)]
-    public int activeGround;
+    public int activeGround; // Number of ground on using
 
-    public List<Transform> botSpawnPoint;
-    public Transform playerSpawnPoint;
+    public List<Transform> botSpawnPoint; // All bot position
+    public Transform playerSpawnPoint; // Player start point
 
-    public bool Sound = true;
-    public Image SoundButtonImage;
-    public Sprite SoundOn, SoundOff;
+    public bool Sound = true; // bool which find sound should play or not
+    public Image SoundButtonImage; // Sound button image
+    public Sprite SoundOn, SoundOff; // Sound on and off sprite
+    public SoundManage SoundManage; // Sound manager
 
+    // Start
     private void Start()
     {
-        Time.timeScale = 1f;
-        if(Sound == true)
+        Time.timeScale = 1f; // Make game continue
+
+        // If statements for checking sound setting
+        if (PlayerPrefs.GetString("Sound", "true") == "true")
         {
+            SoundManage.SoundOnOff(1);
             SoundButtonImage.sprite = SoundOn;
+            Sound = true;
+            PlayerPrefs.SetString("Sound", "true");
         }
         else
         {
+            SoundManage.SoundOnOff(0);
             SoundButtonImage.sprite = SoundOff;
+            Sound = false;
+            PlayerPrefs.SetString("Sound", "false");
+
         }
     }
 
+    // Update
     private void Update()
     {
         if (GamePlay == false)
@@ -48,6 +60,7 @@ public class GameManager : MonoBehaviour
         BotCount();
     }
 
+    // Game will paused through it
     public void PauseGame()
     {
         GamePlay = false;
@@ -55,6 +68,7 @@ public class GameManager : MonoBehaviour
         panelPause.SetActive(true);
     }
 
+    // Game will continue run
     public void ContinueGame()
     {
         Time.timeScale = 1f;
@@ -62,6 +76,7 @@ public class GameManager : MonoBehaviour
         GamePlay = true;
     }
 
+    // Start the game
     public void StartGame()
     {
         panelPause.SetActive(false);
@@ -70,11 +85,13 @@ public class GameManager : MonoBehaviour
         StartCoroutine(StartGameAnim());
     }
 
+    // Quit the game
     public void EndGame()
     {
         Application.Quit();
     }
 
+    // Restart current game
     public void RestartGame()
     {
         Time.timeScale = 1f;
@@ -90,27 +107,34 @@ public class GameManager : MonoBehaviour
         StartGame();
     }
 
+    // Sound on and off
     public void SoundOnOffClick()
     {
         if (Sound == true)
         {
+            SoundManage.SoundOnOff(0);
             SoundButtonImage.sprite = SoundOff;
             Sound = false;
+            PlayerPrefs.SetString("Sound", "false");
         }
         else
         {
+            SoundManage.SoundOnOff(1);
             SoundButtonImage.sprite = SoundOn;
             Sound = true;
+            PlayerPrefs.SetString("Sound", "true");
         }
     }
 
+    // Count down animation for starting the game
     IEnumerator StartGameAnim()
     {
         Camera.main.gameObject.GetComponent<Camera_Follower>().shouldFollow = false;
-        Camera.main.transform.position = new Vector3(0,20,-45);
-        Camera.main.transform.eulerAngles = new Vector3(30,0,0);
+        Camera.main.transform.position = new Vector3(0, 20, -45);
+        Camera.main.transform.eulerAngles = new Vector3(30, 0, 0);
         GamePlay = false;
         GameStartAnimText.gameObject.SetActive(true);
+        SoundManage.SoundPlayStop(0);
         GameStartAnimText.text = "3";
         yield return new WaitForSeconds(1);
         GameStartAnimText.text = "2";
@@ -123,9 +147,11 @@ public class GameManager : MonoBehaviour
         GameStartAnimText.gameObject.SetActive(false);
         player.player_Movement.playerRigidbody.isKinematic = false;
         Camera.main.gameObject.GetComponent<Camera_Follower>().shouldFollow = true;
+        Camera.main.gameObject.GetComponent<Camera_Follower>().isArriveOrignalPos = false;
         GamePlay = true;
     }
 
+    // Counting bot for game end
     void BotCount()
     {
         int tempBotCounter = 0;
@@ -139,10 +165,11 @@ public class GameManager : MonoBehaviour
 
         if (tempBotCounter == 0)
         {
-            RestartGame();
+            currentGround.GetComponent<Ground>().isOpenDoor = true;
         }
     }
 
+    // Set ground, bots and player
     void SetGround()
     {
         // Select ground
@@ -188,6 +215,8 @@ public class GameManager : MonoBehaviour
 
             botAll[i].gameObject.SetActive(true);
         }
+
+        player.gameObject.SetActive(true);
     }
 
 }
