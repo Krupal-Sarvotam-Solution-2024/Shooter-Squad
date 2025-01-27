@@ -5,28 +5,41 @@ using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
+    [Space(10)]
+    [Header("Base need boolean")]
     public bool GamePlay; // Check that game is running or not
 
+    [Space(10)]
+    [Header("All panels")]
     public GameObject panelStart, panelPause; // All panels
 
+    [Space(10)]
+    [Header("All bot managing variables")]
     public List<Bot_Manager> botAll; // All bot gameobject
     public List<Bot_Manager> botDeath; // All bot gameobject which is death
+    [Space(10)]
+    [Header("Player managing variables")]
     public Player_Manager player; // The main player gameobject
+    public float playerDistance; // Distance bewtween player and exit gate
 
+    [Space(10)]
+    [Header("Game start anim")]
     public Text GameStartAnimText; // Game start count down text
 
+    [Space(10)]
+    [Header("Ground manager")]
     public List<GameObject> grounds; // All ground
     public GameObject currentGround; // Ground on using
     [Range(1f, 5f)]
     public int activeGround; // Number of ground on using
 
-    public List<Transform> botSpawnPoint; // All bot position
-    public Transform playerSpawnPoint; // Player start point
-
+    [Space(10)]
+    [Header("Sound manager")]
     public bool Sound = true; // bool which find sound should play or not
     public Image SoundButtonImage; // Sound button image
     public Sprite SoundOn, SoundOff; // Sound on and off sprite
     public SoundManage SoundManage; // Sound manager
+
 
     // Start
     private void Start()
@@ -49,6 +62,8 @@ public class GameManager : MonoBehaviour
             PlayerPrefs.SetString("Sound", "false");
 
         }
+
+
     }
 
     // Update
@@ -58,6 +73,7 @@ public class GameManager : MonoBehaviour
             return;
 
         BotCount();
+        playerDistance = Vector3.Distance(player.transform.position, currentGround.GetComponent<Ground>().ExitGate.transform.position);
     }
 
     // Game will paused through it
@@ -147,7 +163,7 @@ public class GameManager : MonoBehaviour
         GameStartAnimText.gameObject.SetActive(false);
         player.player_Movement.playerRigidbody.isKinematic = false;
         Camera.main.gameObject.GetComponent<Camera_Follower>().shouldFollow = true;
-        Camera.main.gameObject.GetComponent<Camera_Follower>().isArriveOrignalPos = false;
+        //Camera.main.gameObject.GetComponent<Camera_Follower>().isArriveOrignalPos = false;
         GamePlay = true;
     }
 
@@ -180,26 +196,18 @@ public class GameManager : MonoBehaviour
             grounds[i].gameObject.SetActive(false);
         }
 
-        currentGround = grounds[activeGround - 1];
-        currentGround.SetActive(true);
+        activeGround = Random.Range(0, grounds.Count);
 
+        currentGround = grounds[activeGround];
+        currentGround.SetActive(true);
 
         // Declare ground variable
         Ground groundSctipt = currentGround.GetComponent<Ground>();
 
-        // Assign player spawn position
-        playerSpawnPoint = groundSctipt.playerSpawnPos;
-
-        // Assign all the bot spawn position
-        botSpawnPoint.Clear();
-        for (int i = 0; i < groundSctipt.botCount; i++)
-        {
-            botSpawnPoint.Add(groundSctipt.allSpawnPoint[i]);
-        }
 
         // Set the player 
         player.ResettingGame();
-        player.gameObject.transform.position = playerSpawnPoint.transform.position;
+        player.gameObject.transform.position = groundSctipt.playerSpawnPos.transform.position;
         player.ReassignValue();
 
         // Set the bot
@@ -207,11 +215,13 @@ public class GameManager : MonoBehaviour
         {
             botAll[i].gameObject.SetActive(false);
 
-            botAll[i].transform.position = botSpawnPoint[i].transform.position;
+            botAll[i].transform.position = groundSctipt.allSpawnPoint[i].position;
 
-            botAll[i].GetComponent<Bot_Manager>().ResetingGame();
+            botAll[i].ResetingGame();
 
-            botAll[i].GetComponent<Bot_Manager>().ReassignValue();
+            botAll[i].ReassignValue();
+
+            botAll[i].RandomMovePos = groundSctipt.botRandomMove[i];
 
             botAll[i].gameObject.SetActive(true);
         }

@@ -9,21 +9,23 @@ using System.Collections;
 
 public class Player_Manager : MonoBehaviour
 {
-    // All Health managing variable
+    [Space(10)]
+    [Header("All Health managing variable")]
     [SerializeField] private float playerHealth; // Player current health
     [SerializeField] private float playerMaxHealth = 100f; // Player max health
     [SerializeField] private float playerHealthIncrement = 1f; // Player health recovery amount
-    [SerializeField] private float playerHealthDeductionAmount = 3f; // Player health deduct amount
     [SerializeField] private TextMeshProUGUI textHealth, textHealth1; // Player health amount status
     [SerializeField] private Image HealthBarSlider;
     [SerializeField] private GameObject HealthBar, HealthBarFG;
     [SerializeField] private TextMeshPro HealthPerText;
 
-    // Player Score Managing variable
+    [Space(10)]
+    [Header("Player Score Managing variable")]
     [SerializeField] private int playerScore; // Player current score
     [SerializeField] private TextMeshProUGUI textScore, textScore1; // Player score amount status
 
-    // Auto aim & enemy managing variables
+    [Space(10)]
+    [Header("Auto aim & enemy managing variables")]
     public float enemyDistance; // Enemy distance for fight
     public int enemyInRadius; // Enemy count in our radius
     public List<GameObject> listEnemy; // All enemy in that list
@@ -31,30 +33,36 @@ public class Player_Manager : MonoBehaviour
     private bool isTargetSelected; // Check that tarhet is selected or not
     public bool isTargeting; // Check that is finding target or not
 
-    // Other player scripts
+    [Space(10)]
+    [Header("Other player scripts")]
     public Player_Movement player_Movement; // Player movement script access
     public Player_Shooting player_Shooting; // Player shooting script access
 
-    // Player default transform
+    [Space(10)]
+    [Header("Player default transform")]
     [SerializeField] private Vector3 startingPos; // Player start position
     [SerializeField] private Vector3 startingEular; // Player start eular (rotation)
     [SerializeField] private Vector3 startingScale; // Player start scale
 
-    // Animations and Death 
-    //[SerializeField] private AnimationClip deathClip; // Death animation clip for length
+    [Space(10)]
+    [Header("Animations and Death ")]
     [SerializeField] private List<GameObject> botBodyParts;
     [SerializeField] GameObject DeathPartcleSystem;
     public bool isDeath = false; // finding that player is dead or not
 
-    // Audio managing system
+    [Space(10)]
+    [Header("Audio managing system")]
     public AudioSource playerAudio; // Audio source which handle player audios
     public AudioClip runSurface, runRamp, playerDeath; // All audio clips
     public Weapon myWeapon;
     public bool isSoundPlaying;
 
-    // Game manager access
+    [Space(10)]
+    [Header("Game manager access")]
     public GameManager GameManager; // Game manager access
 
+    [Space(10)]
+    [Header("All damage indicator variables")]
     public List<GameObject> healthIndicatorAll;
     public List<GameObject> healthIndicatorUsed;
     public List<GameObject> healthIndicatorUnused;
@@ -104,7 +112,7 @@ public class Player_Manager : MonoBehaviour
             }
 
             transform.LookAt(targetEnemy.transform.position);
-            transform.eulerAngles = new Vector3(0,transform.eulerAngles.y,0);
+            transform.eulerAngles = new Vector3(0, transform.eulerAngles.y, 0);
             isTargeting = true;
             player_Shooting.Laser.gameObject.SetActive(true);
         }
@@ -146,17 +154,17 @@ public class Player_Manager : MonoBehaviour
     }
 
     // Health deduct on player hit
-    void HealthDeduction()
+    void HealthDeduction(int DamageAmount)
     {
-        playerHealth -= playerHealthDeductionAmount;
-        DamgeIndicator(10);
+        playerHealth -= DamageAmount;
+        DamgeIndicator((int)DamageAmount);
         HealthTextUpdate();
     }
 
     // Player bullet hit
     void BulletHitted(Bullet bullet)
     {
-        HealthDeduction();
+        HealthDeduction(bullet.damageAmount);
         if (playerHealth <= 0)
         {
             //Destroy(this.gameObject); 
@@ -188,25 +196,25 @@ public class Player_Manager : MonoBehaviour
         isDeath = false;
     }
 
-   /* private void OnTriggerEnter(Collider other)
-    {
-        if (GameManager.GamePlay == false)
-        {
-            return;
-        }
+    /* private void OnTriggerEnter(Collider other)
+     {
+         if (GameManager.GamePlay == false)
+         {
+             return;
+         }
 
-        if (other.gameObject.transform.TryGetComponent<Bullet>(out Bullet bullet))
-        {
-            if (bullet.bulletBot != null)
-            {
-                bullet.GetComponent<Rigidbody>().linearVelocity = Vector3.zero;
-                BulletHitted(bullet);
-            }
-        }
+         if (other.gameObject.transform.TryGetComponent<Bullet>(out Bullet bullet))
+         {
+             if (bullet.bulletBot != null)
+             {
+                 bullet.GetComponent<Rigidbody>().linearVelocity = Vector3.zero;
+                 BulletHitted(bullet);
+             }
+         }
 
 
 
-    }*/
+     }*/
 
     private void OnCollisionEnter(Collision collision)
     {
@@ -309,7 +317,7 @@ public class Player_Manager : MonoBehaviour
     void DamgeIndicator(int damage)
     {
 
-        if(healthIndicatorUnused.Count == 0)
+        if (healthIndicatorUnused.Count == 0)
         {
             healthIndicatorUsed[0].gameObject.SetActive(false);
             healthIndicatorUnused.Add(healthIndicatorUsed[0]);
@@ -321,7 +329,7 @@ public class Player_Manager : MonoBehaviour
         healthIndicatorUsed.Add(indicator);
         healthIndicatorUnused.Remove(indicator);
 
-        indicator.GetComponent<TextMeshPro>().text = "-" +damage.ToString();
+        indicator.GetComponent<TextMeshPro>().text = "-" + damage.ToString();
         StartCoroutine(healthIndocatorInterval(indicator));
     }
 

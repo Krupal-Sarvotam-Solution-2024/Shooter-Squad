@@ -1,37 +1,48 @@
 using TMPro;
 using UnityEngine;
+using static UnityEngine.Rendering.DebugUI;
 
 public class Camera_Follower : MonoBehaviour
 {
-    [SerializeField] private Vector3 Offset; // Offset distance which camera maintain from the player
-    [SerializeField] private GameObject PlayerObject; // Player object which camera will follow
+    [Space(10)]
+    [Header("Game Manager")]
+    [SerializeField] private GameManager gameManager;
 
-    public bool shouldFollow; // Find that camera should follow that or not
+    [Space(10)]
+    [Header("Follow speed")]
+    public float movespeed;
 
-    public bool isArriveOrignalPos = false; // Find that camera has reached it's target position or noted
+    [Space(10)]
+    [Header("Follow manager variable")]
+    [SerializeField] private Vector3 minOffset; // Minimum offset value for the camera
+    [SerializeField] private Vector3 maxOffset; // Maximum offset value for the camera
+    [SerializeField] private GameObject playerObject; // Player object which the camera will follow
+    [SerializeField] private float maxDistance = 20f; // Maximum distance to normalize the offset calculation 
+    public bool shouldFollow = true; // Whether the camera should follow the player
+    private Vector3 currentOffset; // Current offset dynamically calculated
 
-    // Update
     private void Update()
     {
-        // Can continue if player is not null and camera should follow
-        if (PlayerObject != null && shouldFollow == true)
+        // Ensure the player and exit gate are not null and the camera should follow
+        if (playerObject != null && shouldFollow)
         {
-            // If statement for checking it's arrive orignal position or not
-            if (isArriveOrignalPos == true)
-            {
-                transform.position = PlayerObject.transform.position - Offset; // Changing position to follow the player
-                transform.LookAt(PlayerObject.transform.position); // Camera should saw the player
-            }
-            else
-            {
-                Vector3 playerPos = PlayerObject.transform.position - Offset; // Target position which camera has to arrive
-                transform.position = Vector3.MoveTowards(transform.position, playerPos, 5 * Time.deltaTime); // Move the camera towards the target position
-                transform.LookAt(PlayerObject.transform.position); // Camera shold saw the player
-                if (transform.position == (PlayerObject.transform.position - Offset))
-                {
-                    isArriveOrignalPos = true;
-                }
-            }
+            // Calculate the distance between the player and the exit gate
+            float distanceToGate = gameManager.playerDistance;
+
+            // Normalize the distance (invert it so closer means smaller offset)
+            float t = Mathf.Clamp01(1 - (distanceToGate / maxDistance));
+
+            // Interpolate between maxOffset and minOffset based on the normalized distance
+            currentOffset = Vector3.Lerp(maxOffset, minOffset, t);
+
+            // Calculate the target position for the camera
+            Vector3 targetPosition = playerObject.transform.position - currentOffset;
+
+            // Move the camera towards the target position
+            transform.position = Vector3.MoveTowards(transform.position, targetPosition, movespeed);
+
+            // Ensure the camera is looking at the player
+            transform.LookAt(playerObject.transform.position);
         }
     }
 }

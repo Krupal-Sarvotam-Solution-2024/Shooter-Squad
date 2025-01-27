@@ -2,31 +2,45 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
+using static UnityEditor.Searcher.SearcherWindow.Alignment;
 
 public class Player_Movement : MonoBehaviour
 {
-
+    [Space(10)]
+    [Header("Player Rigidbody")]
     [SerializeField] public Rigidbody playerRigidbody;
 
+    [Space(10)]
     [Header("Movement Settings")]
     [SerializeField] private float moveSpeed;
     [SerializeField] private float rotationSpeed = 10f;
 
+    [Space(10)]
     [Header("Joystick Input Settings")]
     [SerializeField] private Joystick playerJoystick;
 
+    [Space(10)]
     [Header("Animations Controller")]
     [SerializeField] private Animator playerAnimator;
 
+    [Space(10)]
     [Header("Radius Ring")]
     [SerializeField] private GameObject RadiusRing;
 
+    [Space(10)]
+    [Header("Game Manager")]
     public GameManager GameManager;
 
+    [Space(10)]
+    [Header("Current player state")]
     public AnimState playerState;
 
+    [Space(10)]
+    [Header("Player manager")]
     private Player_Manager player;
 
+    [Space(10)]
+    [Header("Movement manager")]
     public Vector3 movementDirection;
     public Vector3 newTemp;
     public bool temp;
@@ -61,7 +75,6 @@ public class Player_Movement : MonoBehaviour
         if (movementDirection.magnitude > 0.1f)
         {
             temp = false;
-
         }
         else
         {
@@ -72,13 +85,44 @@ public class Player_Movement : MonoBehaviour
             }
             transform.position = newTemp;
         }
-        if (transform.position.y < 0)
+
+        //if (transform.position.y < 0)
+        //{
+        //    transform.position = new Vector3(transform.position.x, 0, transform.position.z);
+        //    // Move the transform smoothly in the direction of input
+        //    transform.Translate(movementDirection * moveSpeed * Time.deltaTime, Space.World);
+        //}
+        JoystickInput();
+
+        if (player.enemyInRadius > 0)
         {
-            transform.position = new Vector3(transform.position.x, 0, transform.position.z);
+            if (verticalInput > 0 && Mathf.Abs(horizontalInput) < 0.5f)
+            {
+                Debug.Log("Moving Forward");
+                AnimationController(AnimState.RunningForward);
+            }
+            else if (verticalInput < 0 && Mathf.Abs(horizontalInput) < 0.5f)
+            {
+                Debug.Log("Moving Backward");
+                AnimationController(AnimState.RunningBackward);
+            }
+            else if (horizontalInput > 0 && Mathf.Abs(verticalInput) < 0.5f)
+            {
+                Debug.Log("Moving Right");
+                AnimationController(AnimState.RunningRight);
+            }
+            else if (horizontalInput < 0 && Mathf.Abs(verticalInput) < 0.5f)
+            {
+                Debug.Log("Moving Left");
+                AnimationController(AnimState.RunningLeft);
+            }
+            else if (horizontalInput == 0 && Mathf.Abs(verticalInput) == 0)
+            {
+                Debug.Log("Moving Left");
+                AnimationController(AnimState.Idle);
+            }
         }
 
-
-        JoystickInput();
         RadiusRing.transform.eulerAngles = Vector3.zero;
     }
 
@@ -105,8 +149,9 @@ public class Player_Movement : MonoBehaviour
             movementDirection.Normalize();
 
             // Move the transform smoothly in the direction of input
-            transform.Translate(movementDirection * moveSpeed * Time.deltaTime, Space.World);
-
+            //transform.Translate(movementDirection * moveSpeed * Time.deltaTime, Space.World);
+            // Apply movement
+            playerRigidbody.linearVelocity = movementDirection * moveSpeed;
             // Smoothly rotate the player to face the movement direction
             Quaternion targetRotation = Quaternion.LookRotation(movementDirection, Vector3.up);
 
@@ -116,7 +161,7 @@ public class Player_Movement : MonoBehaviour
             }
 
             // Play running animation
-            AnimationController(AnimState.Running);
+            AnimationController(AnimState.RunningForward);
             if (player.isSoundPlaying == false)
             {
                 player.playerAudio.clip = player.runSurface;
@@ -144,26 +189,48 @@ public class Player_Movement : MonoBehaviour
             case AnimState.Idle:
                 playerAnimator.SetBool("Idle", true);
                 playerAnimator.SetBool("Running", false);
-                //playerAnimator.SetBool("Death", false);
+                playerAnimator.SetBool("Right", false);
+                playerAnimator.SetBool("Left", false);
+                playerAnimator.SetBool("Backward", false);
                 break;
-            case AnimState.Running:
+            case AnimState.RunningForward:
                 playerAnimator.SetBool("Idle", false);
                 playerAnimator.SetBool("Running", true);
-                //playerAnimator.SetBool("Death", false);
+                playerAnimator.SetBool("Right", false);
+                playerAnimator.SetBool("Left", false);
+                playerAnimator.SetBool("Backward", false);
                 break;
-            /*case AnimState.Death:
+            case AnimState.RunningBackward:
                 playerAnimator.SetBool("Idle", false);
-                playerAnimator.SetBool("Running", false);
-                playerAnimator.SetBool("Death", true);
-                break;*/
+                playerAnimator.SetBool("Running", true);
+                playerAnimator.SetBool("Right", false);
+                playerAnimator.SetBool("Left", false);
+                playerAnimator.SetBool("Backward", true);
+                break;
+            case AnimState.RunningLeft:
+                playerAnimator.SetBool("Idle", false);
+                playerAnimator.SetBool("Running", true);
+                playerAnimator.SetBool("Right", false);
+                playerAnimator.SetBool("Left", true);
+                playerAnimator.SetBool("Backward", false);
+                break;
+            case AnimState.RunningRight:
+                playerAnimator.SetBool("Idle", false);
+                playerAnimator.SetBool("Running", true);
+                playerAnimator.SetBool("Right", true);
+                playerAnimator.SetBool("Left", false);
+                playerAnimator.SetBool("Backward", false);
+                break;
         }
     }
 
     public enum AnimState
     {
         Idle,
-        Running/*,
-        Death*/
+        RunningForward,
+        RunningRight,
+        RunningLeft,
+        RunningBackward
     }
 
     IEnumerator kinematicSetting()

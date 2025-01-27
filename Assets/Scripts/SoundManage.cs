@@ -5,6 +5,8 @@ using UnityEngine.Rendering;
 
 public class SoundManage : MonoBehaviour
 {
+    [Space(10)]
+    [Header("All Sound manager")]
     [SerializeField] private List<AudioSource> WholePlayer; // Player all audiosource
     [SerializeField] private List<BotSounds> AllBots; // All bots all audio source
 

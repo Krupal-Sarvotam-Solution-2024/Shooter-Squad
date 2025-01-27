@@ -5,6 +5,16 @@ using UnityEngine.UI;
 
 public class Player_Shooting : MonoBehaviour
 {
+    [Space(10)]
+    [Header("Game Manager")]
+    public GameManager GameManager; // Access of game manager
+
+    [Space(10)]
+    [Header("Player Manager")]
+    public Player_Manager PlayerManager; // Accedd of player manager
+
+    [Space(10)]
+    [Header("All shooting and reloading variables")]
     [SerializeField] private Transform FirePoint; // Starting point for bullet
     [SerializeField] private float bulletSpeed; // Bullet speed
     [SerializeField] public LineRenderer Laser; // Aim laser
@@ -13,13 +23,16 @@ public class Player_Shooting : MonoBehaviour
     [SerializeField] private float intervalTime; // Interval timing for next shoot
     [SerializeField] private bool isInInterval; // Find that gun is in interval or not
 
+    [Space(10)]
+    [Header("All bullet manage variables")]
     public List<GameObject> bulletAll; // All player bullet
     public List<GameObject> bulletUsed; // All used bullet
     public List<GameObject> bulletUnused; // All unused bullet
 
-    public GameManager GameManager; // Access of game manager
 
-    public Player_Manager PlayerManager; // Accedd of player manager
+    [Space(10)]
+    [Header("Damage variables")]
+    public int hitDamage = 5; // Bot damage amount
 
     // Start
     void Start()
@@ -62,6 +75,7 @@ public class Player_Shooting : MonoBehaviour
         Rigidbody rb_bullet = bullet.GetComponent<Rigidbody>();
         rb_bullet.linearVelocity = direction * bulletSpeed;
         bullet.GetComponent<Bullet>().bulletPlayer = this.transform.GetComponent<Player_Manager>();
+        bullet.GetComponent<Bullet>().damageAmount = hitDamage;
         bullet.transform.parent = null;
 
         PlayerManager.myWeapon.enabled = true;

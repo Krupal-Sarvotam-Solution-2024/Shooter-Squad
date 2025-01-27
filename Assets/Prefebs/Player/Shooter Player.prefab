@@ -2605,7 +2605,7 @@ CapsuleCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4377716618827981131}
-  m_Material: {fileID: 13400000, guid: 488b558ef085ab14cbd0f885c5c2d243, type: 2}
+  m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -2647,7 +2647,7 @@ Rigidbody:
   m_IsKinematic: 0
   m_Interpolate: 0
   m_Constraints: 112
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
 --- !u!114 &1438867464725485165
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2684,7 +2684,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   FirePoint: {fileID: 2458792282008404110}
-  prefebBullet: {fileID: 6157365037795229849, guid: 4d3816a55853d5d4b9b076d0ba0df498, type: 3}
   bulletSpeed: 50
   Laser: {fileID: 7375681624015183897}
   FireButton: {fileID: 0}
@@ -2754,9 +2753,9 @@ MonoBehaviour:
   - {fileID: 7085284889759354232}
   - {fileID: 4988421004733085086}
   - {fileID: 5213421077779174561}
-  bulletCount: 0
   GameManager: {fileID: 0}
   PlayerManager: {fileID: 0}
+  hitDamage: 5
 --- !u!114 &8524986863830340088
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2772,7 +2771,6 @@ MonoBehaviour:
   playerHealth: 100
   playerMaxHealth: 100
   playerHealthIncrement: 1
-  playerHealthDeductionAmount: 3
   textHealth: {fileID: 0}
   textHealth1: {fileID: 0}
   HealthBarSlider: {fileID: 0}

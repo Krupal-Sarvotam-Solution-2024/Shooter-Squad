@@ -2,11 +2,17 @@ using UnityEngine;
 
 public class Obstacle : MonoBehaviour
 {
+    [Space(10)]
+    [Header("Obstacle type")]
     [SerializeField] private Type ThisObsType; // Find that which type of the object is
 
+    [Space(10)]
+    [Header("Hit managing")]
     [SerializeField] private int TotalHit; // How many bullet need to destroy the object
     private int HittedCount; // How many hits happend
 
+    [Space(10)]
+    [Header("Game Manager")]
     public GameManager GameManager; // Gamemanager access
 
     // Called on activation of object
@@ -19,7 +25,7 @@ public class Obstacle : MonoBehaviour
     private void OnCollisionEnter(Collision collision)
     {
         // Things happend when it's exit gate
-        if(ThisObsType == Type.ExitGate)
+        if (ThisObsType == Type.ExitGate)
         {
             GameManager.RestartGame();
         }

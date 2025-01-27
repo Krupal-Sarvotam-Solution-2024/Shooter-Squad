@@ -2,6 +2,8 @@ using UnityEngine;
 
 public class DeathParticle : MonoBehaviour
 {
+    [Space(10)]
+    [Header("Main camera")]
     Camera cameraMain; // Main camera object for look there
 
     private void Start()

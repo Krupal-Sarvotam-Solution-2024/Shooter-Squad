@@ -1,63 +1,91 @@
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
 
 public class Bot_Manager : MonoBehaviour
 {
 
-
+    [Space(10)]
+    [Header("Bot health system managing variables")]
     [SerializeField] private float botHealth; // Bot current health
     [SerializeField] private float botMaxHealth = 100f; // Bot max health
     [SerializeField] private float botHealthIncrement = 1f; // Bot health recovery amount
-    [SerializeField] private float botHealthDeductionAmount = 3f; // Bot health deduction amount
-    [SerializeField] private int botDeathScore = 10; // Score for increment to the player
     [SerializeField] private GameObject HealthBar, HealthBarFG; // Health bar on the head image
     [SerializeField] private TextMeshPro HealthPerText; // Health percantage text
 
+    [Space(10)]
+    [Header("Bot death score and damage manager")]
+    [SerializeField] private int botDeathScore = 10; // Score for increment to the player
+    [SerializeField] private int botHitDamage = 3; // Health decrement amount from the player
+
+    [Space(10)]
+    [Header("Player Manager")]
     public Player_Manager Player_Manager; // Player
 
+    [Space(10)]
+    [Header("Player following variables")]
     [SerializeField] private bool isInRadius; // Check that it is in radius or not for shooting
     [SerializeField] private bool isOnceInRadius; // Check that it is in radius or not for shooting
+    public float stopDistance = 2.0f; // Distance to stop away from the player
 
+    [Space(10)]
+    [Header("All Shooting varables")]
     [SerializeField] private Transform FirePoint; // Bullet shooting point
     [SerializeField] private GameObject prefebBullet; // Bullet prefeb
     [SerializeField] private float bulletSpeed; // Bullet speed after shoot
     [SerializeField] private float shootStartTime; // Waiting time for next shot
     [SerializeField] private float shootWaitTime; // Waiting time for next shot
 
+    [Space(10)]
+    [Header("Animation manager variables")]
     [SerializeField] private Animator botAnimator; // Animator controller
+    private bool isIdle = false; // Find that bot is idle or not
+    public GameObject AnimatorObject; // Animator occupied game object
 
+    [Space(10)]
+    [Header("Bot default value variables")]
     [SerializeField] private Vector3 startingPos; // Bot starting pos
     [SerializeField] private Vector3 startingEular; // Bot starting rotation
     [SerializeField] private Vector3 startingScale; // Bot starting scale
 
+    [Space(10)]
+    [Header("All bullet managing variables")]
     public List<GameObject> bulletAll; // All bullet of bot
     public List<GameObject> bulletUsed; // All used bullet
     public List<GameObject> bulletUnused; // All unused bullet
 
+    [Space(10)]
+    [Header("Nav mesh manager")]
     private NavMeshAgent navAgent; // Navmesh agent for following the player
     private bool isFollowing = false; // Find that bot is following the player or not
-    private bool isRandomMove = false; // Find that it should move random or not
-    public Transform randomMovePos;
+    private bool movingToTarget = true; // Track if moving to target or back to start
+    public Transform RandomMovePos;
 
+
+    [Space(10)]
+    [Header("Game manager")]
     public GameManager GameManager;
-    public float stopDistance = 2.0f; // Distance to stop away from the player
 
-    private bool isIdle = false; // Find that bot is idle or not
-    public GameObject AnimatorObject; // Animator occupied game object
-
-    // Audio managing system
+    [Space(10)]
+    [Header("Audio manager")]
     public AudioSource botAudio; // Audio source which handle player audios
     public AudioClip playerDeath; // All audio clips
 
+    [Space(10)]
+    [Header("Weapon manager")]
     public Weapon myWeapon; // Bot weapon
 
+    [Space(10)]
+    [Header("Whole body object manager")]
     [SerializeField] private List<GameObject> botBodyParts; // All body parts for activation and deactivation
     [SerializeField] private GameObject DeathPartcleSystem; // Death particle system
-    bool isDeath; // Find that bot is Death or not
 
+    [Space(10)]
+    [Header("Player death manager")]
+    bool isDeath; // Find that bot is Death or not
     public List<GameObject> DeathIndicatorAll; // All Damage indicator gameobject
     public List<GameObject> DeathIndicatorUsed; // Used damage indicator
     public List<GameObject> DeathIndicatorUnused; // Unused damage indicator
@@ -81,14 +109,6 @@ public class Bot_Manager : MonoBehaviour
             return;
         }
 
-        if (isOnceInRadius == false)
-        {
-            isRandomMove = true;
-        }
-        else
-        {
-            isRandomMove = false;
-        }
 
         // Look at the player contusoly
         if (Player_Manager != null) // Find that player is not null
@@ -98,6 +118,29 @@ public class Bot_Manager : MonoBehaviour
             if (isOnceInRadius == true && Player_Manager != null)
             {
                 transform.LookAt(Player_Manager.transform.position); // After find player it start look the player always
+            }
+        }
+
+        if (isOnceInRadius == false)
+        {
+            // Check if the bot has reached its current destination
+            if (!navAgent.pathPending && navAgent.remainingDistance <= navAgent.stoppingDistance)
+            {
+                if (!navAgent.hasPath || navAgent.velocity.sqrMagnitude == 0f)
+                {
+                    // Switch between the target and start position
+                    if (movingToTarget)
+                    {
+                        navAgent.SetDestination(startingPos); // Go back to start
+                    }
+                    else
+                    {
+                        navAgent.SetDestination(RandomMovePos.position); // Go to the target
+                    }
+
+                    movingToTarget = !movingToTarget; // Toggle the direction
+                    AnimationController(AnimState.Running);
+                }
             }
         }
 
@@ -193,10 +236,10 @@ public class Bot_Manager : MonoBehaviour
     }
 
     // Health deduct on player hit
-    void HealthDeduction()
+    void HealthDeduction(int DamageAmount)
     {
-        botHealth -= botHealthDeductionAmount;
-        DamgeIndicator((int)botHealthDeductionAmount);
+        botHealth -= DamageAmount;
+        DamgeIndicator((int)DamageAmount);
         HealthShow();
     }
 
@@ -211,18 +254,10 @@ public class Bot_Manager : MonoBehaviour
     // Player bullet hit
     void BulletHitted(Bullet bullet)
     {
-        HealthDeduction();
+        HealthDeduction(bullet.damageAmount);
         if (botHealth <= 0)
         {
             bullet.bulletPlayer.KillPlayer(botDeathScore);
-            /*if (Player_Manager.listEnemy.Contains(this.gameObject))
-            {
-                Player_Manager.listEnemy.Remove(this.gameObject);
-                Player_Manager.enemyInRadius--;
-            }
-            //Destroy(this.gameObject);
-            this.gameObject.SetActive(false);
-            CancelInvoke("Shoot");*/
             StartCoroutine(BotDeath());
         }
     }
@@ -320,11 +355,6 @@ public class Bot_Manager : MonoBehaviour
         }
     }
 
-    // Random movement until catch the player
-    void MoveRandom()
-    {
-        // Random movement code should be here
-    }
 
     // Start follow to player
     public void StartFollowing()
@@ -359,6 +389,7 @@ public class Bot_Manager : MonoBehaviour
         Rigidbody rb_bullet = bullet.GetComponent<Rigidbody>();
         rb_bullet.linearVelocity = direction * bulletSpeed;
         bullet.GetComponent<Bullet>().bulletBot = this.transform.GetComponent<Bot_Manager>();
+        bullet.GetComponent<Bullet>().damageAmount = botHitDamage;
         bullet.transform.parent = null;
 
         myWeapon.enabled = true;

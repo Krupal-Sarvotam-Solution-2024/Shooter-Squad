@@ -3,17 +3,31 @@ using UnityEngine;
 
 public class Bullet : MonoBehaviour
 {
+    [Space(10)]
+    [Header("Player manager")]
     public Player_Manager bulletPlayer; // Shooter player
 
+    [Space(10)]
+    [Header("Bot manager")]
     public Bot_Manager bulletBot; // Shooter bot
 
+    [Space(10)]
+    [Header("Bullet parent")]
     public GameObject Parent; // Bullet parent
 
+    [Space(10)]
+    [Header("Deafult value")]
     public Vector3 previousScale; // Starting scale
     public Vector3 previousPosition; // Starting position
 
+    [Space(10)]
+    [Header("Paricle systems")]
     [SerializeField] private ParticleSystem wallHitParticle; // Particle for playing when hit wall
     [SerializeField] private ParticleSystem playerHitParicle; // Particle for playing when hit player/bot
+
+    [Space(10)]
+    [Header("Damage for player/bot")]
+    public int damageAmount; // Damage to player or bot
 
     // Called on activation of object
     void OnEnable()
