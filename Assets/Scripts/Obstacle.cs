@@ -15,6 +15,11 @@ public class Obstacle : MonoBehaviour
     [Header("Game Manager")]
     public GameManager GameManager; // Gamemanager access
 
+    [Space(10)]
+    [Header("Catcus Obstacle")]
+    public bool isCatcus;
+    public int DamageAmount = 1;
+
     // Called on activation of object
     private void OnEnable()
     {
@@ -36,6 +41,18 @@ public class Obstacle : MonoBehaviour
             if (collision.gameObject.TryGetComponent<Bullet>(out Bullet bullet))
             {
                 Hitted();
+            }
+        }
+
+        if(ThisObsType == Type.Unbreakable)
+        {
+            if(isCatcus)
+            {
+                if(collision.gameObject.TryGetComponent<Player_Manager>(out Player_Manager player))
+                {
+
+                    player.HealthDeduction(DamageAmount);
+                }
             }
         }
     }

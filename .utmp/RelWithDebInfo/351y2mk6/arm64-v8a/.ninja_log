@@ -1,0 +1,10 @@
+# ninja log v5
+15	2678	7597698143281076	GameActivity/CMakeFiles/game.dir/UGAInputKeyEvent.cpp.o	7d1387a67f99e308
+1	2786	7597698144478815	GameActivity/CMakeFiles/game.dir/UGAConfiguration.cpp.o	79338f9babe3108f
+41	2841	7597698145436231	GameActivity/CMakeFiles/game.dir/UGAInputMotionEvent.cpp.o	10adcee0bdc2de1f
+34	3096	7597698147647805	GameActivity/CMakeFiles/game.dir/UGASoftKeyboard.cpp.o	8212f2c59c3b0b94
+6	3305	7597698149243537	GameActivity/CMakeFiles/game.dir/UGADebug.cpp.o	82538cc7813a3b5b
+21	3446	7597698151718518	GameActivity/CMakeFiles/game.dir/UGAEntry.cpp.o	8fdbe0248e54c4ea
+29	3549	7597698151947917	GameActivity/CMakeFiles/game.dir/UGAInput.cpp.o	c297f412681174ae
+10	3843	7597698155654023	GameActivity/CMakeFiles/game.dir/UGAApplication.cpp.o	eef250f8478709ac
+3843	4086	7597698158178996	C:/All Projects/Shooter-Squad/Library/Bee/Android/Prj/IL2CPP/Gradle/unityLibrary/build/intermediates/cxx/RelWithDebInfo/351y2mk6/obj/arm64-v8a/libgame.so	2a52dc0afcb67653

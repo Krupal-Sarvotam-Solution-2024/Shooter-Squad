@@ -2303,6 +2303,7 @@ Transform:
   - {fileID: 2860530306995843136}
   - {fileID: 8824353334022430543}
   - {fileID: 3468008657595233549}
+  - {fileID: 3093394522371014558}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
 --- !u!136 &1383351574110203002
@@ -2370,20 +2371,23 @@ MonoBehaviour:
   botHealth: 20
   botMaxHealth: 20
   botHealthIncrement: 1
-  botHealthDeductionAmount: 5
-  botDeathScore: 10
   HealthBar: {fileID: 4442968237922259084}
   HealthBarFG: {fileID: 1057649129843462111}
   HealthPerText: {fileID: 1023878825827764051}
+  botDeathScore: 10
+  botHitDamage: 3
   Player_Manager: {fileID: 0}
+  SelectedBot: {fileID: 9002932620955106199}
   isInRadius: 0
   isOnceInRadius: 0
+  stopDistance: 4
   FirePoint: {fileID: 729745020937491123}
   prefebBullet: {fileID: 6157365037795229849, guid: 4d3816a55853d5d4b9b076d0ba0df498, type: 3}
   bulletSpeed: 50
   shootStartTime: 0.25
   shootWaitTime: 0.75
   botAnimator: {fileID: 5213739728206006076}
+  AnimatorObject: {fileID: 4102915581773148287}
   startingPos: {x: 0, y: 0, z: 0}
   startingEular: {x: 0, y: 0, z: 0}
   startingScale: {x: 1, y: 1, z: 1}
@@ -2450,9 +2454,8 @@ MonoBehaviour:
   - {fileID: 3640681391403436504}
   - {fileID: 8017128469071865559}
   - {fileID: 2671828892711554197}
+  RandomMovePos: {fileID: 0}
   GameManager: {fileID: 0}
-  stopDistance: 4
-  AnimatorObject: {fileID: 4102915581773148287}
   botAudio: {fileID: 7695859527184114718}
   playerDeath: {fileID: 8300000, guid: a32b9b822828423498622669b54e32d0, type: 3}
   myWeapon: {fileID: 473256374501652771}
@@ -2475,6 +2478,7 @@ MonoBehaviour:
   - {fileID: 3736537049994456719}
   - {fileID: 4442968237922259084}
   DeathPartcleSystem: {fileID: 1937171390200046024}
+  isDeath: 0
   DeathIndicatorAll:
   - {fileID: 8737420200309071440}
   - {fileID: 9184705398649952151}
@@ -5243,6 +5247,93 @@ Transform:
   - {fileID: 5029504867430341917}
   m_Father: {fileID: 1591345045073245815}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &9002932620955106199
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3093394522371014558}
+  - component: {fileID: 4802688711020841647}
+  m_Layer: 0
+  m_Name: Selected Bot Image
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!4 &3093394522371014558
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9002932620955106199}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1.5, y: 1.5, z: 1.5}
+  m_ConstrainProportionsScale: 1
+  m_Children: []
+  m_Father: {fileID: 6321121881648168603}
+  m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
+--- !u!212 &4802688711020841647
+SpriteRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9002932620955106199}
+  m_Enabled: 1
+  m_CastShadows: 0
+  m_ReceiveShadows: 0
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
+  m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: 9dfc825aed78fcd4ba02077103263b40, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 0
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_Sprite: {fileID: 21300000, guid: 50cb2a82c80f3cc4793b28d88742f0b0, type: 3}
+  m_Color: {r: 1, g: 0, b: 0.089820385, a: 1}
+  m_FlipX: 0
+  m_FlipY: 0
+  m_DrawMode: 0
+  m_Size: {x: 1, y: 1}
+  m_AdaptiveModeThreshold: 0.5
+  m_SpriteTileMode: 0
+  m_WasSpriteAssigned: 1
+  m_MaskInteraction: 0
+  m_SpriteSortPoint: 0
 --- !u!1 &9060731468685867087
 GameObject:
   m_ObjectHideFlags: 0

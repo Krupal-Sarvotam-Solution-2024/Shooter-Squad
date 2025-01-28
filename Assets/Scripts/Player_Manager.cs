@@ -105,12 +105,17 @@ public class Player_Manager : MonoBehaviour
                 targetEnemy = listEnemy[Random.Range(0, listEnemy.Count)];
                 isTargetSelected = true;
             }
-            if (Vector3.Distance(this.gameObject.transform.position, targetEnemy.transform.position) > enemyDistance || targetEnemy.gameObject.activeInHierarchy == false)
+            if (Vector3.Distance(this.gameObject.transform.position, targetEnemy.transform.position) > enemyDistance || targetEnemy.gameObject.activeInHierarchy == false || targetEnemy.GetComponent<Bot_Manager>().isDeath == true)
             {
                 targetEnemy = listEnemy[Random.Range(0, listEnemy.Count)];
                 isTargetSelected = true;
             }
 
+            for(int i = 0; i < GameManager.botAll.Count;i++)
+            {
+                GameManager.botAll[i].SelectedBot.gameObject.SetActive(false);
+            }
+            targetEnemy.GetComponent<Bot_Manager>().SelectedBot.SetActive(true);
             transform.LookAt(targetEnemy.transform.position);
             transform.eulerAngles = new Vector3(0, transform.eulerAngles.y, 0);
             isTargeting = true;
@@ -154,17 +159,12 @@ public class Player_Manager : MonoBehaviour
     }
 
     // Health deduct on player hit
-    void HealthDeduction(int DamageAmount)
+    public void HealthDeduction(int DamageAmount)
     {
         playerHealth -= DamageAmount;
         DamgeIndicator((int)DamageAmount);
         HealthTextUpdate();
-    }
-
-    // Player bullet hit
-    void BulletHitted(Bullet bullet)
-    {
-        HealthDeduction(bullet.damageAmount);
+        Handheld.Vibrate();
         if (playerHealth <= 0)
         {
             //Destroy(this.gameObject); 
@@ -172,6 +172,18 @@ public class Player_Manager : MonoBehaviour
             StartCoroutine(PlayerDeath());
         }
     }
+
+    // Player bullet hit
+    void BulletHitted(Bullet bullet)
+    {
+        HealthDeduction(bullet.damageAmount);
+/*        if (playerHealth <= 0)
+        {
+            //Destroy(this.gameObject); 
+            //this.gameObject.SetActive(false);
+            StartCoroutine(PlayerDeath());
+        }
+*/    }
 
     IEnumerator PlayerDeath()
     {

@@ -24,6 +24,7 @@ public class Bot_Manager : MonoBehaviour
     [Space(10)]
     [Header("Player Manager")]
     public Player_Manager Player_Manager; // Player
+    public GameObject SelectedBot; // Red Target image
 
     [Space(10)]
     [Header("Player following variables")]
@@ -85,7 +86,7 @@ public class Bot_Manager : MonoBehaviour
 
     [Space(10)]
     [Header("Player death manager")]
-    bool isDeath; // Find that bot is Death or not
+    public bool isDeath; // Find that bot is Death or not
     public List<GameObject> DeathIndicatorAll; // All Damage indicator gameobject
     public List<GameObject> DeathIndicatorUsed; // Used damage indicator
     public List<GameObject> DeathIndicatorUnused; // Unused damage indicator
@@ -160,6 +161,12 @@ public class Bot_Manager : MonoBehaviour
                 AnimationController(AnimState.Idle);
                 botAudio.Stop();
             }
+        }
+
+        // Rotating the object
+        if(SelectedBot.activeInHierarchy == true)
+        {
+            SelectedBot.transform.Rotate(new Vector3(0,0,1));
         }
     }
 
@@ -277,6 +284,7 @@ public class Bot_Manager : MonoBehaviour
                 isInRadius = false;
                 Player_Manager.listEnemy.Remove(this.gameObject);
                 Player_Manager.enemyInRadius--;
+                SelectedBot.SetActive(false);
             }
         }
         else
@@ -454,7 +462,7 @@ public class Bot_Manager : MonoBehaviour
         Player_Manager = null;
         StopFollowing();
 
-        /*AnimationController(AnimState.Death);*/
+        SelectedBot.SetActive(false);
 
         if (GameManager.botDeath.Contains(this) == false)
         {
