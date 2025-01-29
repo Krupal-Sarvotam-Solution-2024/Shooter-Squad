@@ -97,27 +97,22 @@ public class Player_Movement : MonoBehaviour
         {
             if (verticalInput > 0 && Mathf.Abs(horizontalInput) < 0.5f)
             {
-                Debug.Log("Moving Forward");
                 AnimationController(AnimState.RunningForward);
             }
             else if (verticalInput < 0 && Mathf.Abs(horizontalInput) < 0.5f)
             {
-                Debug.Log("Moving Backward");
                 AnimationController(AnimState.RunningBackward);
             }
             else if (horizontalInput > 0 && Mathf.Abs(verticalInput) < 0.5f)
             {
-                Debug.Log("Moving Right");
                 AnimationController(AnimState.RunningRight);
             }
             else if (horizontalInput < 0 && Mathf.Abs(verticalInput) < 0.5f)
             {
-                Debug.Log("Moving Left");
                 AnimationController(AnimState.RunningLeft);
             }
             else if (horizontalInput == 0 && Mathf.Abs(verticalInput) == 0)
             {
-                Debug.Log("Moving Left");
                 AnimationController(AnimState.Idle);
             }
         }
@@ -183,6 +178,7 @@ public class Player_Movement : MonoBehaviour
 
     public void AnimationController(AnimState newState)
     {
+        playerState = newState;
         switch (newState)
         {
             case AnimState.Idle:
@@ -191,12 +187,14 @@ public class Player_Movement : MonoBehaviour
                 playerAnimator.SetBool("Right", false);
                 playerAnimator.SetBool("Left", false);
                 playerAnimator.SetBool("Backward", false);
+                playerAnimator.SetBool("Shoot_Idle", false);
                 break;
             case AnimState.RunningForward:
                 playerAnimator.SetBool("Idle", false);
                 playerAnimator.SetBool("Running", true);
                 playerAnimator.SetBool("Right", false);
                 playerAnimator.SetBool("Left", false);
+                playerAnimator.SetBool("Shoot_Idle", false);
                 playerAnimator.SetBool("Backward", false);
                 break;
             case AnimState.RunningBackward:
@@ -204,6 +202,7 @@ public class Player_Movement : MonoBehaviour
                 playerAnimator.SetBool("Running", true);
                 playerAnimator.SetBool("Right", false);
                 playerAnimator.SetBool("Left", false);
+                playerAnimator.SetBool("Shoot_Idle", false);
                 playerAnimator.SetBool("Backward", true);
                 break;
             case AnimState.RunningLeft:
@@ -212,11 +211,21 @@ public class Player_Movement : MonoBehaviour
                 playerAnimator.SetBool("Right", false);
                 playerAnimator.SetBool("Left", true);
                 playerAnimator.SetBool("Backward", false);
+                playerAnimator.SetBool("Shoot_Idle", false);
                 break;
             case AnimState.RunningRight:
                 playerAnimator.SetBool("Idle", false);
                 playerAnimator.SetBool("Running", true);
                 playerAnimator.SetBool("Right", true);
+                playerAnimator.SetBool("Left", false);
+                playerAnimator.SetBool("Backward", false);
+                playerAnimator.SetBool("Shoot_Idle", false);
+                break;
+            case AnimState.IdleShoot:
+                playerAnimator.SetBool("Idle", true);
+                playerAnimator.SetBool("Shoot_Idle", true);
+                playerAnimator.SetBool("Running", false);
+                playerAnimator.SetBool("Right", false);
                 playerAnimator.SetBool("Left", false);
                 playerAnimator.SetBool("Backward", false);
                 break;
@@ -229,7 +238,8 @@ public class Player_Movement : MonoBehaviour
         RunningForward,
         RunningRight,
         RunningLeft,
-        RunningBackward
+        RunningBackward,
+        IdleShoot
     }
 
     IEnumerator kinematicSetting()
@@ -240,7 +250,6 @@ public class Player_Movement : MonoBehaviour
             playerRigidbody.isKinematic = true;
             playerRigidbody.isKinematic = false;
         }
-        StartCoroutine(kinematicSetting());
     }
 
 }

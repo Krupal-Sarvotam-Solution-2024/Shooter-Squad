@@ -1196,10 +1196,13 @@ MonoBehaviour:
   - {fileID: 8739534930700940666}
   playerSpawnPos: {fileID: 1856021435678988040}
   ActiveObject: []
-  ExitGate: {fileID: 7216262729509557905}
-  ExitGateOpenPosition: {x: 0, y: -3.9, z: -1}
-  ExitGateClosedPosition: {x: 0, y: -0.9, z: -1}
-  isOpenDoor: 0
+  ExitGate: {fileID: 7233363962205083789}
+  EntryDoorLeft: {fileID: 9213079821316330254}
+  EntryDoorRight: {fileID: 877362546103433936}
+  isOpenEntryDoor: 0
+  ExitDoorLeft: {fileID: 3370957919750690622}
+  ExitDoorRight: {fileID: 6718921496369872608}
+  isOpenExitDoor: 0
 --- !u!1 &6343102650666199439
 GameObject:
   m_ObjectHideFlags: 0
@@ -1588,7 +1591,6 @@ GameObject:
   - component: {fileID: 7343821861479848069}
   - component: {fileID: 4666085187460613529}
   - component: {fileID: 4389225326203837189}
-  - component: {fileID: 2094901151480900297}
   - component: {fileID: 883273527328925993}
   m_Layer: 0
   m_Name: Ground
@@ -1698,38 +1700,6 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
---- !u!114 &2094901151480900297
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8317466547569964796}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7a5ac11cc976e418e8d13136b07e1f52, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_SerializedVersion: 0
-  m_AgentTypeID: 0
-  m_CollectObjects: 0
-  m_Size: {x: 10, y: 10, z: 10}
-  m_Center: {x: 0, y: 2, z: 0}
-  m_LayerMask:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_UseGeometry: 0
-  m_DefaultArea: 0
-  m_GenerateLinks: 0
-  m_IgnoreNavMeshAgent: 1
-  m_IgnoreNavMeshObstacle: 1
-  m_OverrideTileSize: 0
-  m_TileSize: 256
-  m_OverrideVoxelSize: 0
-  m_VoxelSize: 0.16666667
-  m_MinRegionArea: 2
-  m_NavMeshData: {fileID: 23800000, guid: 68db7c43818ce1242a694e3ce9d2184f, type: 2}
-  m_BuildHeightMesh: 0
 --- !u!114 &883273527328925993
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2652,9 +2622,19 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4202347143431247145, guid: 6f4814b186ada6f409f269cd93b9efc7, type: 3}
   m_PrefabInstance: {fileID: 2920503269673071444}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &7216262729509557905 stripped
+--- !u!1 &3370957919750690622 stripped
 GameObject:
-  m_CorrespondingSourceObject: {fileID: 5522230046010648005, guid: 6f4814b186ada6f409f269cd93b9efc7, type: 3}
+  m_CorrespondingSourceObject: {fileID: 454786726435316842, guid: 6f4814b186ada6f409f269cd93b9efc7, type: 3}
+  m_PrefabInstance: {fileID: 2920503269673071444}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &6718921496369872608 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8483041998828621236, guid: 6f4814b186ada6f409f269cd93b9efc7, type: 3}
+  m_PrefabInstance: {fileID: 2920503269673071444}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &7233363962205083789 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5541015730518125529, guid: 6f4814b186ada6f409f269cd93b9efc7, type: 3}
   m_PrefabInstance: {fileID: 2920503269673071444}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &3027919844843258965
@@ -5258,9 +5238,19 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6f4814b186ada6f409f269cd93b9efc7, type: 3}
+--- !u!1 &877362546103433936 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8483041998828621236, guid: 6f4814b186ada6f409f269cd93b9efc7, type: 3}
+  m_PrefabInstance: {fileID: 8760861744401512292}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &4883424959969665613 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4202347143431247145, guid: 6f4814b186ada6f409f269cd93b9efc7, type: 3}
+  m_PrefabInstance: {fileID: 8760861744401512292}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &9213079821316330254 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 454786726435316842, guid: 6f4814b186ada6f409f269cd93b9efc7, type: 3}
   m_PrefabInstance: {fileID: 8760861744401512292}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &8860916231381417421

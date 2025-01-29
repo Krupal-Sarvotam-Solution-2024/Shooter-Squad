@@ -17,12 +17,21 @@ public class Ground : MonoBehaviour
     [Header("Geound active object")]
     public List<GameObject> ActiveObject; // Object list which should be active in the start of the match
 
-    [Space(10)]
-    [Header("Exit gate variables")]
     public GameObject ExitGate; // Exit gate for completing the round
-    public Vector3 ExitGateOpenPosition; // Exit gate open position
-    public Vector3 ExitGateClosedPosition; // Exit gate closed position
-    public bool isOpenDoor; // Find that door is opened or not
+
+    [Space(10)]
+    [Header("Entry gate")]
+    public GameObject EntryDoorLeft;
+    public GameObject EntryDoorRight;
+    public bool isOpenEntryDoor;
+
+    public GameObject ExitDoorLeft;
+    public GameObject ExitDoorRight;
+    public bool isOpenExitDoor;
+
+    private float rotationSpeed = 90f; // Degrees per second
+    private float targetLeftRotation = -90f;
+    private float targetRightRotation = 90f;
 
 
     // Start
@@ -35,26 +44,62 @@ public class Ground : MonoBehaviour
         }
     }
 
-    // Called on active object
-    private void OnEnable()
-    {
-        // Exit gate poition as a closed door
-        ExitGate.transform.localPosition = ExitGateClosedPosition;
-    }
-
     private void Update()
     {
-        // Find that bool for changing position of the gate
-        if (isOpenDoor == true)
+        
+        // Smoothly rotate the left door if it's not yet at target
+        if (isOpenEntryDoor && EntryDoorLeft.transform.eulerAngles.y != targetLeftRotation)
         {
-            // Changing the position
-            ExitGate.transform.localPosition = Vector3.MoveTowards(ExitGate.transform.localPosition, ExitGateOpenPosition, 5 * Time.deltaTime);
-            // Turn off the bool when position is setted
-            if (ExitGate.transform.localPosition == ExitGateOpenPosition)
-            {
-                isOpenDoor = false;
-            }
+            // Calculate the step for each frame
+            float step = rotationSpeed * Time.deltaTime;
+            float currentRotation = Mathf.MoveTowardsAngle(EntryDoorLeft.transform.eulerAngles.y, targetLeftRotation, step);
+            EntryDoorLeft.transform.eulerAngles = new Vector3(0, currentRotation, 0);
         }
+
+        // Smoothly rotate the right door if it's not yet at target
+        if (isOpenEntryDoor && EntryDoorRight.transform.eulerAngles.y != targetRightRotation)
+        {
+            // Calculate the step for each frame
+            float step = rotationSpeed * Time.deltaTime;
+            float currentRotation = Mathf.MoveTowardsAngle(EntryDoorRight.transform.eulerAngles.y, targetRightRotation, step);
+            EntryDoorRight.transform.eulerAngles = new Vector3(0, currentRotation, 0);
+        }
+
+        // Check if both doors have reached their target rotation
+        if (EntryDoorLeft.transform.eulerAngles.y == targetLeftRotation && EntryDoorRight.transform.eulerAngles.y == targetRightRotation)
+        {
+            isOpenEntryDoor = false; // Set the bool to false once the doors are fully open
+        }
+
+       
+
+        if (isOpenExitDoor && ExitDoorLeft.transform.eulerAngles.y != targetRightRotation)
+        {
+            // Calculate the step for each frame
+            float step = rotationSpeed * Time.deltaTime;
+            float currentRotation = Mathf.MoveTowardsAngle(ExitDoorLeft.transform.eulerAngles.y, targetRightRotation, step);
+            ExitDoorLeft.transform.eulerAngles = new Vector3(0, currentRotation, 0);
+        }
+
+        // Smoothly rotate the right door if it's not yet at target
+        if (isOpenExitDoor && ExitDoorRight.transform.eulerAngles.y != targetLeftRotation)
+        {
+            // Calculate the step for each frame
+            float step = rotationSpeed * Time.deltaTime;
+            float currentRotation = Mathf.MoveTowardsAngle(ExitDoorRight.transform.eulerAngles.y, targetLeftRotation, step);
+            ExitDoorRight.transform.eulerAngles = new Vector3(0, currentRotation, 0);
+        }
+
+        // Check if both doors have reached their target rotation
+        if (ExitDoorLeft.transform.eulerAngles.y == targetRightRotation && ExitDoorRight.transform.eulerAngles.y == targetLeftRotation)
+        {
+            isOpenExitDoor = false; // Set the bool to false once the doors are fully open
+        }
+    }
+
+    public void OpenEntryDoor()
+    {
+        EntryDoorLeft.transform.eulerAngles = new Vector3(0, 0, 0);
     }
 
 }

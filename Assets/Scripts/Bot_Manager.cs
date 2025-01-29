@@ -449,6 +449,7 @@ public class Bot_Manager : MonoBehaviour
         isDeath = true;
         GetComponent<Rigidbody>().isKinematic = true;
         GetComponent<Collider>().enabled = false;
+        GetComponent<NavMeshAgent>().enabled = false;
         BodyVisibility(false);
         DeathPartcleSystem.SetActive(true);
         DeathPartcleSystem.GetComponent<ParticleSystem>().Play();
@@ -474,7 +475,7 @@ public class Bot_Manager : MonoBehaviour
         yield return new WaitForSeconds(3);
         DeathPartcleSystem.SetActive(false);
         GetComponent<Rigidbody>().isKinematic = false;
-        GetComponent<Collider>().enabled = true;
+        GetComponent<Collider>().enabled = false;
         this.gameObject.SetActive(false);
         BodyVisibility(true);
     }

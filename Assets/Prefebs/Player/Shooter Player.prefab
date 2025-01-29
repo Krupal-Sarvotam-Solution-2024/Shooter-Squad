@@ -2683,6 +2683,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7304bd6c1049f4149af869b49deee4d4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  GameManager: {fileID: 0}
+  PlayerManager: {fileID: 0}
   FirePoint: {fileID: 2458792282008404110}
   bulletSpeed: 50
   Laser: {fileID: 7375681624015183897}
@@ -2753,8 +2755,6 @@ MonoBehaviour:
   - {fileID: 7085284889759354232}
   - {fileID: 4988421004733085086}
   - {fileID: 5213421077779174561}
-  GameManager: {fileID: 0}
-  PlayerManager: {fileID: 0}
   hitDamage: 5
 --- !u!114 &8524986863830340088
 MonoBehaviour:
@@ -6503,11 +6503,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 240834685926503030, guid: 4b321245d115176409c73b095b78e5b8, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.5216
+      value: 0.333
       objectReference: {fileID: 0}
     - target: {fileID: 240834685926503030, guid: 4b321245d115176409c73b095b78e5b8, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0.598
+      value: 0.92
       objectReference: {fileID: 0}
     - target: {fileID: 240834685926503030, guid: 4b321245d115176409c73b095b78e5b8, type: 3}
       propertyPath: m_LocalRotation.w

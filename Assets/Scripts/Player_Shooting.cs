@@ -82,6 +82,11 @@ public class Player_Shooting : MonoBehaviour
         PlayerManager.myWeapon.WeaponAudio.clip = PlayerManager.myWeapon.BlastSound;
         PlayerManager.myWeapon.WeaponAudio.Play();
 
+        if(PlayerManager.player_Movement.playerState == Player_Movement.AnimState.Idle)
+        {
+            PlayerManager.player_Movement.AnimationController(Player_Movement.AnimState.IdleShoot);
+        }
+
         StartCoroutine(ShootingInterval());
     }
 

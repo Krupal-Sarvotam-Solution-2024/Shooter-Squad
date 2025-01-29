@@ -1165,7 +1165,6 @@ GameObject:
   - component: {fileID: 8904281529011372344}
   - component: {fileID: 7102286621229190867}
   - component: {fileID: 503791024339894498}
-  - component: {fileID: 1702064044290564236}
   - component: {fileID: 1218482254560125320}
   m_Layer: 0
   m_Name: Ground
@@ -1275,38 +1274,6 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
---- !u!114 &1702064044290564236
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6660941529225893065}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7a5ac11cc976e418e8d13136b07e1f52, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_SerializedVersion: 0
-  m_AgentTypeID: 0
-  m_CollectObjects: 0
-  m_Size: {x: 10, y: 10, z: 10}
-  m_Center: {x: 0, y: 2, z: 0}
-  m_LayerMask:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_UseGeometry: 0
-  m_DefaultArea: 0
-  m_GenerateLinks: 0
-  m_IgnoreNavMeshAgent: 1
-  m_IgnoreNavMeshObstacle: 1
-  m_OverrideTileSize: 0
-  m_TileSize: 256
-  m_OverrideVoxelSize: 0
-  m_VoxelSize: 0.16666667
-  m_MinRegionArea: 2
-  m_NavMeshData: {fileID: 23800000, guid: 9c0ddc377812b55449314840e7c3730f, type: 2}
-  m_BuildHeightMesh: 0
 --- !u!114 &1218482254560125320
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1728,10 +1695,13 @@ MonoBehaviour:
   - {fileID: 4166230999947718184}
   playerSpawnPos: {fileID: 2805827799451345785}
   ActiveObject: []
-  ExitGate: {fileID: 2180890815587296385}
-  ExitGateOpenPosition: {x: 0, y: -3.9, z: -1}
-  ExitGateClosedPosition: {x: 0, y: -0.9, z: -1}
-  isOpenDoor: 0
+  ExitGate: {fileID: 2162667007423048349}
+  EntryDoorLeft: {fileID: 3274861787534048071}
+  EntryDoorRight: {fileID: 6810795789001724569}
+  isOpenEntryDoor: 0
+  ExitDoorLeft: {fileID: 6100486620387435822}
+  ExitDoorRight: {fileID: 2837025447121538288}
+  isOpenExitDoor: 0
 --- !u!1 &8819145729758084196
 GameObject:
   m_ObjectHideFlags: 0
@@ -6039,6 +6009,16 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4202347143431247145, guid: 6f4814b186ada6f409f269cd93b9efc7, type: 3}
   m_PrefabInstance: {fileID: 3115681082633805613}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &3274861787534048071 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 454786726435316842, guid: 6f4814b186ada6f409f269cd93b9efc7, type: 3}
+  m_PrefabInstance: {fileID: 3115681082633805613}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &6810795789001724569 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8483041998828621236, guid: 6f4814b186ada6f409f269cd93b9efc7, type: 3}
+  m_PrefabInstance: {fileID: 3115681082633805613}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &3284683729132011596
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -8840,9 +8820,19 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6f4814b186ada6f409f269cd93b9efc7, type: 3}
---- !u!1 &2180890815587296385 stripped
+--- !u!1 &2162667007423048349 stripped
 GameObject:
-  m_CorrespondingSourceObject: {fileID: 5522230046010648005, guid: 6f4814b186ada6f409f269cd93b9efc7, type: 3}
+  m_CorrespondingSourceObject: {fileID: 5541015730518125529, guid: 6f4814b186ada6f409f269cd93b9efc7, type: 3}
+  m_PrefabInstance: {fileID: 5973728434055676228}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &2837025447121538288 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8483041998828621236, guid: 6f4814b186ada6f409f269cd93b9efc7, type: 3}
+  m_PrefabInstance: {fileID: 5973728434055676228}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &6100486620387435822 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 454786726435316842, guid: 6f4814b186ada6f409f269cd93b9efc7, type: 3}
   m_PrefabInstance: {fileID: 5973728434055676228}
   m_PrefabAsset: {fileID: 0}
 --- !u!4 &7545585643306538093 stripped

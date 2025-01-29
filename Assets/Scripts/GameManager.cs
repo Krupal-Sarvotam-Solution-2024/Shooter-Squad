@@ -158,6 +158,7 @@ public class GameManager : MonoBehaviour
         GameStartAnimText.text = "1";
         yield return new WaitForSeconds(1);
         GameStartAnimText.text = "Go!";
+        currentGround.GetComponent<Ground>().isOpenEntryDoor = true;
         yield return new WaitForSeconds(1);
         Time.timeScale = 1f;
         GameStartAnimText.gameObject.SetActive(false);
@@ -181,7 +182,7 @@ public class GameManager : MonoBehaviour
 
         if (tempBotCounter == 0)
         {
-            currentGround.GetComponent<Ground>().isOpenDoor = true;
+            currentGround.GetComponent<Ground>().isOpenExitDoor = true;
         }
     }
 
@@ -203,6 +204,12 @@ public class GameManager : MonoBehaviour
 
         // Declare ground variable
         Ground groundSctipt = currentGround.GetComponent<Ground>();
+        //groundSctipt.ExitDoorLeft.transform.eulerAngles = new Vector3(0, 0, 0);
+        //groundSctipt.ExitDoorRight.transform.eulerAngles = new Vector3(0, 0, 0);
+        //groundSctipt.isOpenExitDoor = false;
+        //groundSctipt.EntryDoorLeft.transform.eulerAngles = new Vector3(0, 0, 0);
+        //groundSctipt.EntryDoorRight.transform.eulerAngles = new Vector3(0, 0, 0);
+        //groundSctipt.isOpenEntryDoor = false;
 
 
         // Set the player 
