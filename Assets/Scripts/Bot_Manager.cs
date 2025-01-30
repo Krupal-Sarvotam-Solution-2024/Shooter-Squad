@@ -39,6 +39,7 @@ public class Bot_Manager : MonoBehaviour
     [SerializeField] private float bulletSpeed; // Bullet speed after shoot
     [SerializeField] private float shootStartTime; // Waiting time for next shot
     [SerializeField] private float shootWaitTime; // Waiting time for next shot
+    [SerializeField] private ParticleSystem ShootParicle;
 
     [Space(10)]
     [Header("Animation manager variables")]
@@ -90,6 +91,7 @@ public class Bot_Manager : MonoBehaviour
     public List<GameObject> DeathIndicatorAll; // All Damage indicator gameobject
     public List<GameObject> DeathIndicatorUsed; // Used damage indicator
     public List<GameObject> DeathIndicatorUnused; // Unused damage indicator
+
 
 
     // Start
@@ -348,18 +350,18 @@ public class Bot_Manager : MonoBehaviour
             case AnimState.Idle:
                 botAnimator.SetBool("Idle", true);
                 botAnimator.SetBool("Running", false);
-                /*botAnimator.SetBool("Death", false);*/
+                botAnimator.SetBool("Turn", false);
                 break;
             case AnimState.Running:
                 botAnimator.SetBool("Idle", false);
                 botAnimator.SetBool("Running", true);
-                /*botAnimator.SetBool("Death", false);*/
+                botAnimator.SetBool("Turn", false);
                 break;
-                /*case AnimState.Death:
-                    botAnimator.SetBool("Idle", false);
-                    botAnimator.SetBool("Running", false);
-                    botAnimator.SetBool("Death", true);
-                    break;*/
+            case AnimState.Turn:
+                botAnimator.SetBool("Idle", false);
+                botAnimator.SetBool("Running", false);
+                botAnimator.SetBool("Turn", true);
+                break;
         }
     }
 
@@ -400,10 +402,21 @@ public class Bot_Manager : MonoBehaviour
         bullet.GetComponent<Bullet>().damageAmount = botHitDamage;
         bullet.transform.parent = null;
 
+        ShootParicle.Play();
+
+        botAnimator.SetBool("Shoot", true);
+        Invoke("ResetShooting", 0.2f); // Adjust timing based on animation length
+
         myWeapon.enabled = true;
         myWeapon.WeaponAudio.clip = myWeapon.BlastSound;
         myWeapon.WeaponAudio.Play();
     }
+
+    void ResetShooting()
+    {
+        botAnimator.SetBool("Shoot", false);
+    }
+
 
     // Making bot value defualt
     public void ResetingGame()
@@ -429,6 +442,9 @@ public class Bot_Manager : MonoBehaviour
         AnimatorObject.gameObject.transform.localRotation = Quaternion.identity;
 
         Player_Manager = GameManager.player;
+
+        GetComponent<CapsuleCollider>().enabled = true;
+        GetComponent<NavMeshAgent>().enabled = true;
 
         HealthShow();
 
@@ -495,8 +511,8 @@ public class Bot_Manager : MonoBehaviour
     enum AnimState
     {
         Idle,
-        Running/*,
-        Death*/
+        Running,
+        Turn
     }
 
 }

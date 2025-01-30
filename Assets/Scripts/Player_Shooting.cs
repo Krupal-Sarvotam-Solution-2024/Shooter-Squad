@@ -22,6 +22,7 @@ public class Player_Shooting : MonoBehaviour
     [SerializeField] private Image FireReloadingImage; // Fire realoding image
     [SerializeField] private float intervalTime; // Interval timing for next shoot
     [SerializeField] private bool isInInterval; // Find that gun is in interval or not
+    [SerializeField] private ParticleSystem ShootParticle;
 
     [Space(10)]
     [Header("All bullet manage variables")]
@@ -70,6 +71,8 @@ public class Player_Shooting : MonoBehaviour
         bulletUsed.Add(bulletUnused[0]);
         bulletUnused.Remove(bulletUnused[0]);
 
+        ShootParticle.Play();
+
         Vector3 direction = transform.forward;
 
         Rigidbody rb_bullet = bullet.GetComponent<Rigidbody>();
@@ -82,12 +85,15 @@ public class Player_Shooting : MonoBehaviour
         PlayerManager.myWeapon.WeaponAudio.clip = PlayerManager.myWeapon.BlastSound;
         PlayerManager.myWeapon.WeaponAudio.Play();
 
-        if(PlayerManager.player_Movement.playerState == Player_Movement.AnimState.Idle)
-        {
-            PlayerManager.player_Movement.AnimationController(Player_Movement.AnimState.IdleShoot);
-        }
+        PlayerManager.player_Movement.playerAnimator.SetBool("Shoot_Idle", true);
+        Invoke("ResetShooting", 0.2f); // Adjust timing based on animation length
 
         StartCoroutine(ShootingInterval());
+    }
+
+    void ResetShooting()
+    {
+        PlayerManager.player_Movement.playerAnimator.SetBool("Shoot_Idle", false);
     }
 
     // Draw laser aim

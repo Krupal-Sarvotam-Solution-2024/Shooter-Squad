@@ -46,6 +46,13 @@ public class Bullet : MonoBehaviour
     void OnCollisionEnter(Collision collision)
     {
         this.transform.GetComponent<Rigidbody>().linearVelocity = Vector3.zero;
+        ContactPoint points = collision.contacts[0];
+        Vector3 pos = points.point;
+        Debug.Log(pos);
+        playerHitParicle.transform.parent = null;
+        playerHitParicle.transform.position = pos;
+        wallHitParticle.transform.parent = null;
+        wallHitParticle.transform.position = pos;
         if (bulletPlayer != null && collision.transform.name.Contains("Player") == true)
         {
             // Player Shoot
@@ -71,6 +78,10 @@ public class Bullet : MonoBehaviour
         this.transform.parent = Parent.transform;
         this.transform.localPosition = previousPosition;
         this.transform.localScale = previousScale;
+
+        wallHitParticle.transform.parent = this.transform;
+        playerHitParicle.transform.parent = this.transform;
+
         GetComponent<MeshRenderer>().enabled = true;
         GetComponent<Collider>().enabled = true;
 
@@ -108,9 +119,9 @@ public class Bullet : MonoBehaviour
     // Playing particle when hit anything
     IEnumerator GoParentAfterParticle(ParticleSystem particleType)
     {
+        GetComponent<Rigidbody>().linearVelocity = Vector3.zero;
         GetComponent<MeshRenderer>().enabled = false;
         GetComponent<Collider>().enabled = false;
-        this.transform.GetComponent<Rigidbody>().linearVelocity = Vector3.zero;
         particleType.Play();
         yield return new WaitForSeconds(2f);
         GoToParent();

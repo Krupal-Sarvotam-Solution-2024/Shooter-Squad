@@ -20,7 +20,7 @@ public class Player_Movement : MonoBehaviour
 
     [Space(10)]
     [Header("Animations Controller")]
-    [SerializeField] private Animator playerAnimator;
+    public Animator playerAnimator;
 
     [Space(10)]
     [Header("Radius Ring")]
@@ -187,14 +187,12 @@ public class Player_Movement : MonoBehaviour
                 playerAnimator.SetBool("Right", false);
                 playerAnimator.SetBool("Left", false);
                 playerAnimator.SetBool("Backward", false);
-                playerAnimator.SetBool("Shoot_Idle", false);
                 break;
             case AnimState.RunningForward:
                 playerAnimator.SetBool("Idle", false);
                 playerAnimator.SetBool("Running", true);
                 playerAnimator.SetBool("Right", false);
                 playerAnimator.SetBool("Left", false);
-                playerAnimator.SetBool("Shoot_Idle", false);
                 playerAnimator.SetBool("Backward", false);
                 break;
             case AnimState.RunningBackward:
@@ -202,7 +200,6 @@ public class Player_Movement : MonoBehaviour
                 playerAnimator.SetBool("Running", true);
                 playerAnimator.SetBool("Right", false);
                 playerAnimator.SetBool("Left", false);
-                playerAnimator.SetBool("Shoot_Idle", false);
                 playerAnimator.SetBool("Backward", true);
                 break;
             case AnimState.RunningLeft:
@@ -211,7 +208,6 @@ public class Player_Movement : MonoBehaviour
                 playerAnimator.SetBool("Right", false);
                 playerAnimator.SetBool("Left", true);
                 playerAnimator.SetBool("Backward", false);
-                playerAnimator.SetBool("Shoot_Idle", false);
                 break;
             case AnimState.RunningRight:
                 playerAnimator.SetBool("Idle", false);
@@ -219,11 +215,9 @@ public class Player_Movement : MonoBehaviour
                 playerAnimator.SetBool("Right", true);
                 playerAnimator.SetBool("Left", false);
                 playerAnimator.SetBool("Backward", false);
-                playerAnimator.SetBool("Shoot_Idle", false);
                 break;
             case AnimState.IdleShoot:
                 playerAnimator.SetBool("Idle", true);
-                playerAnimator.SetBool("Shoot_Idle", true);
                 playerAnimator.SetBool("Running", false);
                 playerAnimator.SetBool("Right", false);
                 playerAnimator.SetBool("Left", false);
