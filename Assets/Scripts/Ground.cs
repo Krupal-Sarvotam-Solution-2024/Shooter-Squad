@@ -66,10 +66,10 @@ public class Ground : MonoBehaviour
         }
 
         // Check if both doors have reached their target rotation
-        if (EntryDoorLeft.transform.eulerAngles.y == targetLeftRotation && EntryDoorRight.transform.eulerAngles.y == targetRightRotation)
-        {
-            isOpenEntryDoor = false; // Set the bool to false once the doors are fully open
-        }
+        //if (EntryDoorLeft.transform.eulerAngles.y == targetLeftRotation && EntryDoorRight.transform.eulerAngles.y == targetRightRotation)
+        //{
+        //    isOpenEntryDoor = false; // Set the bool to false once the doors are fully open
+        //}
 
        
 

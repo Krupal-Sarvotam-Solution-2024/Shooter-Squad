@@ -145,9 +145,9 @@ public class GameManager : MonoBehaviour
     // Count down animation for starting the game
     IEnumerator StartGameAnim()
     {
-        Camera.main.gameObject.GetComponent<Camera_Follower>().shouldFollow = false;
-        Camera.main.transform.position = new Vector3(0, 20, -45);
-        Camera.main.transform.eulerAngles = new Vector3(30, 0, 0);
+       // Camera.main.gameObject.GetComponent<Camera_Follower>().shouldFollow = false;
+     //   Camera.main.transform.position = new Vector3(0, 20, -45);
+   //     Camera.main.transform.eulerAngles = new Vector3(30, 0, 0);
         GamePlay = false;
         GameStartAnimText.gameObject.SetActive(true);
         SoundManage.SoundPlayStop(0);
@@ -163,7 +163,7 @@ public class GameManager : MonoBehaviour
         Time.timeScale = 1f;
         GameStartAnimText.gameObject.SetActive(false);
         player.player_Movement.playerRigidbody.isKinematic = false;
-        Camera.main.gameObject.GetComponent<Camera_Follower>().shouldFollow = true;
+    //    Camera.main.gameObject.GetComponent<Camera_Follower>().shouldFollow = true;
         //Camera.main.gameObject.GetComponent<Camera_Follower>().isArriveOrignalPos = false;
         GamePlay = true;
     }
