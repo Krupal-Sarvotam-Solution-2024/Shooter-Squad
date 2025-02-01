@@ -165,11 +165,8 @@ public class Bot_Manager : MonoBehaviour
             }
         }
 
-        // Rotating the object
-        if(SelectedBot.activeInHierarchy == true)
-        {
-            SelectedBot.transform.Rotate(new Vector3(0,0,1));
-        }
+        transform.eulerAngles = new Vector3 (0, transform.eulerAngles.y, 0);
+
     }
 
     // On Collide with any object
@@ -488,6 +485,9 @@ public class Bot_Manager : MonoBehaviour
 
         botAudio.clip = playerDeath;
         botAudio.PlayOneShot(playerDeath);
+
+        GameManager.ShowBlood(transform.position);
+
         yield return new WaitForSeconds(3);
         DeathPartcleSystem.SetActive(false);
         GetComponent<Rigidbody>().isKinematic = false;

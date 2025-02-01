@@ -35,6 +35,10 @@ public class Player_Shooting : MonoBehaviour
     [Header("Damage variables")]
     public int hitDamage = 5; // Bot damage amount
 
+    public float shakeDuration = 0.2f;
+    public float shakeMagnitude = 0.2f;
+    private Vector3 originalPosition;
+
     // Start
     void Start()
     {
@@ -81,6 +85,8 @@ public class Player_Shooting : MonoBehaviour
         bullet.GetComponent<Bullet>().damageAmount = hitDamage;
         bullet.transform.parent = null;
 
+        Camera.main.gameObject.GetComponent<Camera_Follower>().Fire();
+
         PlayerManager.myWeapon.enabled = true;
         PlayerManager.myWeapon.WeaponAudio.clip = PlayerManager.myWeapon.BlastSound;
         PlayerManager.myWeapon.WeaponAudio.Play();
@@ -90,6 +96,8 @@ public class Player_Shooting : MonoBehaviour
 
         StartCoroutine(ShootingInterval());
     }
+
+    
 
     void ResetShooting()
     {

@@ -18,6 +18,7 @@ public class Player_Manager : MonoBehaviour
     [SerializeField] private Image HealthBarSlider;
     [SerializeField] private GameObject HealthBar, HealthBarFG;
     [SerializeField] private TextMeshPro HealthPerText;
+    [SerializeField] private ParticleSystem HealthIncreaserParticle;
 
     [Space(10)]
     [Header("Player Score Managing variable")]
@@ -68,11 +69,11 @@ public class Player_Manager : MonoBehaviour
     public List<GameObject> healthIndicatorUnused;
     public int healthIndicatorCount = 0;
 
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         ReassignValue();
-        InvokeRepeating("HealthUpgradation", 0, 1);
         player_Movement = GetComponent<Player_Movement>();
         player_Shooting = GetComponent<Player_Shooting>();
         AssignMyWeapone();
@@ -111,7 +112,7 @@ public class Player_Manager : MonoBehaviour
                 isTargetSelected = true;
             }
 
-            for(int i = 0; i < GameManager.botAll.Count;i++)
+            for (int i = 0; i < GameManager.botAll.Count; i++)
             {
                 GameManager.botAll[i].SelectedBot.gameObject.SetActive(false);
             }
@@ -164,7 +165,6 @@ public class Player_Manager : MonoBehaviour
         playerHealth -= DamageAmount;
         DamgeIndicator((int)DamageAmount);
         HealthTextUpdate();
-        Handheld.Vibrate();
         if (playerHealth <= 0)
         {
             //Destroy(this.gameObject); 
@@ -173,17 +173,20 @@ public class Player_Manager : MonoBehaviour
         }
     }
 
+
+
     // Player bullet hit
     void BulletHitted(Bullet bullet)
     {
         HealthDeduction(bullet.damageAmount);
-/*        if (playerHealth <= 0)
-        {
-            //Destroy(this.gameObject); 
-            //this.gameObject.SetActive(false);
-            StartCoroutine(PlayerDeath());
-        }
-*/    }
+        /*        if (playerHealth <= 0)
+                {
+                    //Destroy(this.gameObject); 
+                    //this.gameObject.SetActive(false);
+                    StartCoroutine(PlayerDeath());
+                }
+        */
+    }
 
     IEnumerator PlayerDeath()
     {
@@ -248,16 +251,40 @@ public class Player_Manager : MonoBehaviour
     // Player health increaser
     void HealthUpgradation()
     {
+        //StartCoroutine(HealthIncrease());
+    }
+
+    IEnumerator HealthIncrease()
+    {
+        yield return new WaitForSeconds(5);
         if (GameManager.GamePlay == false || isDeath == true)
         {
-            return;
+            yield return null;
         }
+
+        HealthIncreaserParticle.Play();
 
         if (playerHealth < playerMaxHealth)
         {
             playerHealth += playerHealthIncrement;
             HealthTextUpdate();
         }
+        yield return new WaitForSeconds(1);
+        if (playerHealth < playerMaxHealth)
+        {
+            playerHealth += playerHealthIncrement;
+            HealthTextUpdate();
+        }
+        yield return new WaitForSeconds(1);
+        if (playerHealth < playerMaxHealth)
+        {
+            playerHealth += playerHealthIncrement;
+            HealthTextUpdate();
+        }
+        
+        HealthIncreaserParticle.Stop();
+
+        StartCoroutine(HealthIncrease());
     }
 
     // Kill player
@@ -295,7 +322,7 @@ public class Player_Manager : MonoBehaviour
         this.transform.eulerAngles = startingEular;
         this.transform.localScale = startingScale;
 
-        InvokeRepeating("HealthUpgradation", 0, 2);
+        StartCoroutine(HealthIncrease());
     }
 
     public void AssignMyWeapone()

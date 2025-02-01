@@ -43,7 +43,10 @@ public class Player_Movement : MonoBehaviour
     public Vector3 movementDirection;
     public Vector3 newTemp;
     public bool temp;
+    private Vector3 velocity;
 
+    [SerializeField] GameObject PredicatedPosShower;
+    [SerializeField] GameObject PredicatedPosShowerParent;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -74,9 +77,13 @@ public class Player_Movement : MonoBehaviour
         if (movementDirection.magnitude > 0.1f)
         {
             temp = false;
+            PredicatedPosShowerParent.transform.position = transform.position;
+            PredicatedPosShower.SetActive(true);
+            PredicatedPosShower.transform.localPosition = movementDirection.normalized * 1.5f;
         }
         else
         {
+            PredicatedPosShower.SetActive(false);
             if (temp == false)
             {
                 newTemp = transform.position;
@@ -130,31 +137,20 @@ public class Player_Movement : MonoBehaviour
             return;
         }
 
-        // Get input from the player
-        float horizontalInput = playerJoystick.Horizontal;
-        float verticalInput = playerJoystick.Vertical;
+        // Get playerJoystick input
+        Vector3 input = new Vector3(playerJoystick.Horizontal, 0f, playerJoystick.Vertical);
 
-        // Calculate movement direction
-        movementDirection = new Vector3(horizontalInput, 0, verticalInput);
-
-        if (movementDirection.magnitude > 0.1f)
+        if (input.magnitude > 0.1f)
         {
-            // Normalize movement to maintain consistent speed in all directions
-            movementDirection.Normalize();
-
-            // Move the transform smoothly in the direction of input
-            //transform.Translate(movementDirection * moveSpeed * Time.deltaTime, Space.World);
-            // Apply movement
-            playerRigidbody.linearVelocity = movementDirection * moveSpeed;
-            // Smoothly rotate the player to face the movement direction
-            Quaternion targetRotation = Quaternion.LookRotation(movementDirection, Vector3.up);
+            // Accelerate towards target velocity
+            velocity = Vector3.Lerp(velocity, input.normalized * moveSpeed, moveSpeed * Time.deltaTime);
 
             if (player.isTargeting == false)
             {
-                transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
+                // Rotate player towards movement direction
+                transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(input), Time.deltaTime * moveSpeed);
             }
 
-            // Play running animation
             AnimationController(AnimState.RunningForward);
             if (player.isSoundPlaying == false)
             {
@@ -165,14 +161,17 @@ public class Player_Movement : MonoBehaviour
         }
         else
         {
-            transform.Translate(Vector3.zero, Space.World);
-            // Play idle animation
-
+            // Gradually slow down when no input
+            velocity = Vector3.Lerp(velocity, Vector3.zero, (moveSpeed / 2) * Time.deltaTime);
             AnimationController(AnimState.Idle);
             player.playerAudio.Stop();
             player.isSoundPlaying = false;
-
         }
+    }
+    void FixedUpdate()
+    {
+        // Apply movement
+        playerRigidbody.linearVelocity = new Vector3(velocity.x, playerRigidbody.linearVelocity.y, velocity.z);
     }
 
 

@@ -1,6 +1,6 @@
 using TMPro;
 using UnityEngine;
-using static UnityEngine.Rendering.DebugUI;
+using System.Collections;
 
 public class Camera_Follower : MonoBehaviour
 {
@@ -20,6 +20,11 @@ public class Camera_Follower : MonoBehaviour
     [SerializeField] private float maxDistance = 20f; // Maximum distance to normalize the offset calculation 
     public bool shouldFollow = true; // Whether the camera should follow the player
     private Vector3 currentOffset; // Current offset dynamically calculated
+
+    public float shakeDuration = 0.2f;
+    public float shakeMagnitude = 0.2f;
+
+    private Vector3 originalPosition;
 
     private void Update()
     {
@@ -44,5 +49,31 @@ public class Camera_Follower : MonoBehaviour
             // Ensure the camera is looking at the player
             transform.LookAt(playerObject.transform.position);
         }
+    }
+
+    public void Fire()
+    {
+        Debug.Log("Firing!");
+        StartCoroutine(Shake());
+    }
+
+    IEnumerator Shake()
+    {
+        shouldFollow = false;
+        originalPosition = transform.localPosition;
+        float elapsed = 0f;
+
+        while (elapsed < shakeDuration)
+        {
+            float x = Random.Range(-1f, 1f) * shakeMagnitude;
+            float y = Random.Range(-1f, 1f) * shakeMagnitude;
+
+            transform.localPosition = originalPosition + new Vector3(x, y, 0);
+            elapsed += Time.deltaTime;
+            yield return null;
+        }
+
+        transform.localPosition = originalPosition;
+        shouldFollow = true;
     }
 }
