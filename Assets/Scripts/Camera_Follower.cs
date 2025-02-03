@@ -54,6 +54,11 @@ public class Camera_Follower : MonoBehaviour
 
     private Vector3 targetPosition; // The target position for the camera
 
+    public void Fire()
+    {
+
+    }
+
     void LateUpdate()
     {
         // Calculate the target position based on the player's position + offset
