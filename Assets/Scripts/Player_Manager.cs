@@ -55,6 +55,7 @@ public class Player_Manager : MonoBehaviour
     [Header("Audio managing system")]
     public AudioSource playerAudio; // Audio source which handle player audios
     public AudioClip runSurface, runRamp, playerDeath; // All audio clips
+    public List<Weapon> allWeapon;
     public Weapon myWeapon;
     public bool isSoundPlaying;
 
@@ -76,7 +77,7 @@ public class Player_Manager : MonoBehaviour
         ReassignValue();
         player_Movement = GetComponent<Player_Movement>();
         player_Shooting = GetComponent<Player_Shooting>();
-        AssignMyWeapone();
+        
     }
 
     // Update is called once per frame
@@ -112,11 +113,11 @@ public class Player_Manager : MonoBehaviour
                 isTargetSelected = true;
             }
 
-            for (int i = 0; i < GameManager.botAll.Count; i++)
-            {
-                GameManager.botAll[i].SelectedBot.gameObject.SetActive(false);
-            }
-            targetEnemy.GetComponent<Bot_Manager>().SelectedBot.SetActive(true);
+            //for (int i = 0; i < GameManager.botAll.Count; i++)
+            //{
+            //    GameManager.botAll[i].SelectedBot.gameObject.SetActive(false);
+            //}
+            //targetEnemy.GetComponent<Bot_Manager>().SelectedBot.SetActive(true);
             transform.LookAt(targetEnemy.transform.position);
             transform.eulerAngles = new Vector3(0, transform.eulerAngles.y, 0);
             isTargeting = true;
@@ -281,7 +282,7 @@ public class Player_Manager : MonoBehaviour
             playerHealth += playerHealthIncrement;
             HealthTextUpdate();
         }
-        
+
         HealthIncreaserParticle.Stop();
 
         StartCoroutine(HealthIncrease());
@@ -318,6 +319,8 @@ public class Player_Manager : MonoBehaviour
         enemyInRadius = 0;
         listEnemy.Clear();
 
+        AssignMyWeapone();
+
         this.transform.position = startingPos;
         this.transform.eulerAngles = startingEular;
         this.transform.localScale = startingScale;
@@ -327,14 +330,12 @@ public class Player_Manager : MonoBehaviour
 
     public void AssignMyWeapone()
     {
-        for (int i = 0; i < gameObject.transform.childCount; i++)
+        for (int i = 0; i < allWeapon.Count; i++)
         {
-            if (gameObject.transform.GetChild(i).TryGetComponent<Weapon>(out Weapon myweapon))
-            {
-                myWeapon = myweapon;
-            }
-
+            allWeapon[i].gameObject.SetActive(false);
         }
+        myWeapon = allWeapon[Random.Range(0, allWeapon.Count)];
+        myWeapon.gameObject.SetActive(true);
     }
 
     void BodyVisibility(bool visibility)

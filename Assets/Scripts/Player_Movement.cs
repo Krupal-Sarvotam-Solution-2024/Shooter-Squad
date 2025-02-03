@@ -76,21 +76,21 @@ public class Player_Movement : MonoBehaviour
 
         if (movementDirection.magnitude > 0.1f)
         {
-            temp = false;
-            PredicatedPosShowerParent.transform.position = transform.position;
+/*            temp = false;
+*/            PredicatedPosShowerParent.transform.position = transform.position;
             PredicatedPosShower.SetActive(true);
             PredicatedPosShower.transform.localPosition = movementDirection.normalized * 1.5f;
         }
         else
         {
             PredicatedPosShower.SetActive(false);
-            if (temp == false)
+/*            if (temp == false)
             {
                 newTemp = transform.position;
                 temp = true;
             }
             transform.position = newTemp;
-        }
+*/        }
 
         //if (transform.position.y < 0)
         //{
@@ -140,15 +140,43 @@ public class Player_Movement : MonoBehaviour
         // Get playerJoystick input
         Vector3 input = new Vector3(playerJoystick.Horizontal, 0f, playerJoystick.Vertical);
 
-        if (input.magnitude > 0.1f)
-        {
-            // Accelerate towards target velocity
-            velocity = Vector3.Lerp(velocity, input.normalized * moveSpeed, moveSpeed * Time.deltaTime);
+        //if (input.magnitude > 0.1f)
+        //{
+        //    // Accelerate towards target velocity
+        //    velocity = Vector3.Lerp(velocity, input.normalized * moveSpeed, moveSpeed * Time.deltaTime);
 
-            if (player.isTargeting == false)
+        //    if (player.isTargeting == false)
+        //    {
+        //        // Rotate player towards movement direction
+        //        transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(input), Time.deltaTime * moveSpeed);
+        //    }
+
+        //    AnimationController(AnimState.RunningForward);
+        //    if (player.isSoundPlaying == false)
+        //    {
+        //        player.playerAudio.clip = player.runSurface;
+        //        player.playerAudio.Play();
+        //        player.isSoundPlaying = true;
+        //    }
+        //}
+        //else
+        //{
+        //    // Gradually slow down when no input
+        //    velocity = Vector3.Lerp(velocity, Vector3.zero, (moveSpeed / 2) * Time.deltaTime);
+        //    AnimationController(AnimState.Idle);
+        //    player.playerAudio.Stop();
+        //    player.isSoundPlaying = false;
+        //}
+        if (movementDirection.magnitude > 0.1f)
+        {
+            movementDirection.Normalize();
+            velocity = Vector3.Lerp(velocity, movementDirection * moveSpeed, moveSpeed * Time.deltaTime);
+            playerRigidbody.linearVelocity = Vector3.SmoothDamp(playerRigidbody.linearVelocity, new Vector3(velocity.x, playerRigidbody.linearVelocity.y, velocity.z), ref velocity, 0.1f);
+
+            Quaternion targetRotation = Quaternion.LookRotation(movementDirection, Vector3.up);
+            if (!player.isTargeting)
             {
-                // Rotate player towards movement direction
-                transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(input), Time.deltaTime * moveSpeed);
+                transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
             }
 
             AnimationController(AnimState.RunningForward);
@@ -161,8 +189,7 @@ public class Player_Movement : MonoBehaviour
         }
         else
         {
-            // Gradually slow down when no input
-            velocity = Vector3.Lerp(velocity, Vector3.zero, (moveSpeed / 2) * Time.deltaTime);
+            velocity = Vector3.Lerp(velocity, Vector3.zero, moveSpeed * Time.deltaTime);
             AnimationController(AnimState.Idle);
             player.playerAudio.Stop();
             player.isSoundPlaying = false;

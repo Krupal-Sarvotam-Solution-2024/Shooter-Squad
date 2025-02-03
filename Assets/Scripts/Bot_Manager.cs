@@ -109,7 +109,12 @@ public class Bot_Manager : MonoBehaviour
         // Return if game play is off ot bot is death
         if (GameManager.GamePlay == false || isDeath == true)
         {
+            SelectedBot.SetActive(false);
             return;
+        }
+        else
+        {
+            SelectedBot.SetActive(true);
         }
 
 
@@ -283,7 +288,7 @@ public class Bot_Manager : MonoBehaviour
                 isInRadius = false;
                 Player_Manager.listEnemy.Remove(this.gameObject);
                 Player_Manager.enemyInRadius--;
-                SelectedBot.SetActive(false);
+                //SelectedBot.SetActive(false);
             }
         }
         else
@@ -476,7 +481,7 @@ public class Bot_Manager : MonoBehaviour
         Player_Manager = null;
         StopFollowing();
 
-        SelectedBot.SetActive(false);
+        //SelectedBot.SetActive(false);
 
         if (GameManager.botDeath.Contains(this) == false)
         {

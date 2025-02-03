@@ -53,14 +53,20 @@ public class Bullet : MonoBehaviour
         playerHitParicle.transform.position = pos;
         wallHitParticle.transform.parent = null;
         wallHitParticle.transform.position = pos;
-        if (bulletPlayer != null && collision.transform.name.Contains("Bot") == true)
+
+
+        /*if (bulletPlayer == null && collision.transform.name.Contains("Player") == true)
         {
             // Player Shoot
             StartCoroutine(GoParentAfterParticle(playerHitParicle));
         }
-        else if (bulletBot != null && collision.transform.name.Contains("Player") == false)
+        else if (bulletBot == null && collision.transform.name.Contains("Bot") == false)
         {
             // Bot Shoot
+            StartCoroutine(GoParentAfterParticle(playerHitParicle));
+        }*/
+        if (collision.transform.name.Contains("Player") || collision.transform.name.Contains("Bot"))
+        {
             StartCoroutine(GoParentAfterParticle(playerHitParicle));
         }
         else
@@ -78,6 +84,8 @@ public class Bullet : MonoBehaviour
         this.transform.parent = Parent.transform;
         this.transform.localPosition = previousPosition;
         this.transform.localScale = previousScale;
+        this.transform.eulerAngles = Vector3.zero;
+        this.transform.localEulerAngles = Vector3.zero;
 
         wallHitParticle.transform.parent = this.transform;
         playerHitParicle.transform.parent = this.transform;

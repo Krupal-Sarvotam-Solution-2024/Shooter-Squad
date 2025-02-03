@@ -69,35 +69,54 @@ public class Player_Shooting : MonoBehaviour
             return;
         }
 
-        GameObject bullet = bulletUnused[0];
+        for (int i = 0; i < PlayerManager.myWeapon.FirePoints.Count; i++)
+        {
 
-        bulletUnused[0].SetActive(true);
-        bulletUsed.Add(bulletUnused[0]);
-        bulletUnused.Remove(bulletUnused[0]);
 
-        ShootParticle.Play();
+            GameObject bullet = bulletUnused[0];
 
-        Vector3 direction = transform.forward;
+            bulletUnused[0].SetActive(true);
+            bulletUsed.Add(bulletUnused[0]);
+            bulletUnused.Remove(bulletUnused[0]);
 
-        Rigidbody rb_bullet = bullet.GetComponent<Rigidbody>();
-        rb_bullet.linearVelocity = direction * bulletSpeed;
-        bullet.GetComponent<Bullet>().bulletPlayer = this.transform.GetComponent<Player_Manager>();
-        bullet.GetComponent<Bullet>().damageAmount = hitDamage;
-        bullet.transform.parent = null;
+            ShootParticle.Play();
 
+            bullet.transform.position = PlayerManager.myWeapon.FirePoints[i].position;
+            bullet.transform.eulerAngles = PlayerManager.myWeapon.FirePoints[i].eulerAngles;
+
+            Vector3 direction = bullet.transform.forward;
+
+            Rigidbody rb_bullet = bullet.GetComponent<Rigidbody>();
+            rb_bullet.linearVelocity = direction * bulletSpeed;
+            bullet.GetComponent<Bullet>().bulletPlayer = this.transform.GetComponent<Player_Manager>();
+            bullet.GetComponent<Bullet>().damageAmount = hitDamage;
+            bullet.transform.parent = null;
+
+
+            if(PlayerManager.myWeapon.isPlayMultiTime == true)
+            {
+                PlayerManager.myWeapon.enabled = true;
+                PlayerManager.myWeapon.WeaponAudio.clip = PlayerManager.myWeapon.BlastSound;
+            }
+        }
         Camera.main.gameObject.GetComponent<Camera_Follower>().Fire();
-
-        PlayerManager.myWeapon.enabled = true;
-        PlayerManager.myWeapon.WeaponAudio.clip = PlayerManager.myWeapon.BlastSound;
+        
         PlayerManager.myWeapon.WeaponAudio.Play();
+
+        if (PlayerManager.myWeapon.isPlayMultiTime == false)
+        {
+            PlayerManager.myWeapon.enabled = true;
+            PlayerManager.myWeapon.WeaponAudio.clip = PlayerManager.myWeapon.BlastSound;
+        }
 
         PlayerManager.player_Movement.playerAnimator.SetBool("Shoot_Idle", true);
         Invoke("ResetShooting", 0.2f); // Adjust timing based on animation length
 
         StartCoroutine(ShootingInterval());
+
     }
 
-    
+
 
     void ResetShooting()
     {
