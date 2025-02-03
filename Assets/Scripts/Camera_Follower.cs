@@ -1,3 +1,4 @@
+using System.Collections;
 using TMPro;
 using UnityEngine;
 using static UnityEngine.Rendering.DebugUI;
@@ -54,9 +55,33 @@ public class Camera_Follower : MonoBehaviour
 
     private Vector3 targetPosition; // The target position for the camera
 
+
+    public float shakeDuration = 0.025f;
+    public float shakeMagnitude = 0.01f;
+
+    private Vector3 originalPosition;
     public void Fire()
     {
+        Debug.Log("Firing!");
+        StartCoroutine(Shake());
+    }
 
+    IEnumerator Shake()
+    {
+        originalPosition = transform.localPosition;
+        float elapsed = 0f;
+
+        while (elapsed < shakeDuration)
+        {
+            float x = Random.Range(-1f, 1f) * shakeMagnitude;
+            float y = Random.Range(-1f, 1f) * shakeMagnitude;
+
+            transform.localPosition = originalPosition + new Vector3(x, y, 0);
+            elapsed += Time.deltaTime;
+            yield return null;
+        }
+
+        transform.localPosition = originalPosition;
     }
 
     void LateUpdate()
