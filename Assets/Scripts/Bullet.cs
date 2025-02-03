@@ -53,7 +53,7 @@ public class Bullet : MonoBehaviour
         playerHitParicle.transform.position = pos;
         wallHitParticle.transform.parent = null;
         wallHitParticle.transform.position = pos;
-        if (bulletPlayer != null && collision.transform.name.Contains("Player") == true)
+        if (bulletPlayer != null && collision.transform.name.Contains("Bot") == true)
         {
             // Player Shoot
             StartCoroutine(GoParentAfterParticle(playerHitParicle));

@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using static UnityEngine.ParticleSystem;
 
 public class GameManager : MonoBehaviour
 {
@@ -40,6 +41,10 @@ public class GameManager : MonoBehaviour
     public Sprite SoundOn, SoundOff; // Sound on and off sprite
     public SoundManage SoundManage; // Sound manager
 
+    [Space(10)]
+    [Header("Blood Particle Effrcts")]
+    public List<ParticleSystem> AllBloodParticles;
+    public int BloodParticleCount = 0;
 
     // Start
     private void Start()
@@ -234,6 +239,27 @@ public class GameManager : MonoBehaviour
         }
 
         player.gameObject.SetActive(true);
+    }
+
+    // Show blood particles effect
+    public void ShowBlood(Vector3 posPlay)
+    {
+        if(BloodParticleCount >= AllBloodParticles.Count - 1)
+        {
+            BloodParticleCount--;
+        }
+        ParticleSystem currentParticle = AllBloodParticles[BloodParticleCount];
+        AllBloodParticles[BloodParticleCount].transform.position = posPlay;
+        AllBloodParticles[BloodParticleCount].Play();
+        float startLifetime = AllBloodParticles[BloodParticleCount].main.startLifetime.constant;
+        BloodParticleCount++;
+        StartCoroutine(ResetBloodarticle(startLifetime));
+    }
+
+    IEnumerator ResetBloodarticle(float time)
+    {
+        yield return new WaitForSeconds(time);
+        BloodParticleCount--;
     }
 
 }
