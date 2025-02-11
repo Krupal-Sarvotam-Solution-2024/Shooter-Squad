@@ -8,6 +8,8 @@ public class Weapon : MonoBehaviour
     public AudioClip BlastSound; // Audio clip which will play
     public List<Transform> FirePoints;
     public int Damage = 5;
+    public float range;
+    public GameObject showingrange;
     public bool isPlayMultiTime;
 
     private void Start()

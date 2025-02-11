@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-
+ 
 public class Player_Shooting : MonoBehaviour
 {
     [Space(10)]
@@ -12,6 +12,7 @@ public class Player_Shooting : MonoBehaviour
     [Space(10)]
     [Header("Player Manager")]
     public Player_Manager PlayerManager; // Accedd of player manager
+    public FixedJoystick Shottingjoystick;
 
     [Space(10)]
     [Header("All shooting and reloading variables")]
@@ -23,7 +24,8 @@ public class Player_Shooting : MonoBehaviour
     [SerializeField] private float intervalTime; // Interval timing for next shoot
     [SerializeField] private bool isInInterval; // Find that gun is in interval or not
     [SerializeField] private ParticleSystem ShootParticle;
-
+    [SerializeField] private GameObject shootingdirection;
+    
     [Space(10)]
     [Header("All bullet manage variables")]
     public List<GameObject> bulletAll; // All player bullet
@@ -48,17 +50,46 @@ public class Player_Shooting : MonoBehaviour
     // Update
     void Update()
     {
-        if (GameManager.GamePlay == false)
+        if (GameManager.GamePlay == false || PlayerManager.isDeath)
         {
             return;
         }
+ //       DirectionShoot();
+        //Debug.DrawRay(transform.position, transform.forward * 100, Color.green);
+        //if (Input.GetKeyDown(KeyCode.K))
+        //{
+        //    Shoot();
+        //}
+        //DrawTrajectory();
+    }
 
-        Debug.DrawRay(transform.position, transform.forward * 100, Color.green);
-        if (Input.GetKeyDown(KeyCode.K))
+    Vector3 joystickDirection;
+    private bool shooting,shooted;
+    float shooting_direction;
+    float stading_driection;
+    public void DirectionShoot()
+    {
+
+        joystickDirection = new Vector2(Shottingjoystick.Horizontal, Shottingjoystick.Vertical);
+
+        if (joystickDirection.magnitude > 0.1f) // To avoid shooting in place
         {
-            Shoot();
+            shootingdirection.SetActive(true);
+            shooting = true;   
+            float angle = Mathf.Atan2(joystickDirection.x, joystickDirection.y) * Mathf.Rad2Deg;
+            shooting_direction = angle;
+            shootingdirection.transform.rotation = Quaternion.Euler(0, angle, 0); // Rotate player or gun
+
+        }else if (shooting && !shooted && joystickDirection.magnitude < 0.1f)
+        {
+            Debug.Log("SHOTING");
+            Shottingjoystick.gameObject.SetActive(false);
+            shooted = true;
+            shootingdirection.SetActive(false);
+            
+           // StartCoroutine(Shoot());
         }
-        DrawTrajectory();
+        
     }
 
     // Bullet shoot
@@ -66,15 +97,19 @@ public class Player_Shooting : MonoBehaviour
     {
         if (GameManager.GamePlay == false || isInInterval == true || PlayerManager.isDeath == true)
         {
-            return;
+           return;
         }
-
+        stading_driection = transform.eulerAngles.y;
+     //   transform.rotation = Quaternion.Euler(0, shooting_direction, 0); // Rotate player or gun
+         PlayerManager.player_Movement.playerAnimator.SetBool("Shoot_Idle", true);
         for (int i = 0; i < PlayerManager.myWeapon.FirePoints.Count; i++)
         {
 
 
             GameObject bullet = bulletUnused[0];
+           
 
+          
             bulletUnused[0].SetActive(true);
             bulletUsed.Add(bulletUnused[0]);
             bulletUnused.Remove(bulletUnused[0]);
@@ -109,7 +144,13 @@ public class Player_Shooting : MonoBehaviour
             PlayerManager.myWeapon.WeaponAudio.clip = PlayerManager.myWeapon.BlastSound;
         }
 
-        PlayerManager.player_Movement.playerAnimator.SetBool("Shoot_Idle", true);
+     //  yield return new WaitForSeconds(.5f);
+       
+
+        //transform.rotation = Quaternion.Euler(0,stading_driection, 0); // Rotate player or gun
+       // Shottingjoystick.gameObject.SetActive(true);
+        //shooting = false;
+        //shooted = false;
         Invoke("ResetShooting", 0.2f); // Adjust timing based on animation length
 
         StartCoroutine(ShootingInterval());
@@ -168,6 +209,8 @@ public class Player_Shooting : MonoBehaviour
     // Shooting interval
     IEnumerator ShootingInterval()
     {
+       // yield return new WaitForSeconds(1f);
+       //transform.rotation = Quaternion.Euler(0, stading_driection, 0); // Rotate player or gun
         isInInterval = true;
         FireButton.interactable = false;
         // Activate the reload image

@@ -29,12 +29,38 @@ public class Bullet : MonoBehaviour
     [Header("Damage for player/bot")]
     public int damageAmount; // Damage to player or bot
 
+    public AudioSource hitaudio;
+    public AudioClip obsticlehit, playerhit;
+    bool ended;
     // Called on activation of object
     void OnEnable()
     {
+        ended = false;
         StartCoroutine(OffBullet());
     }
+    private void Update()
+    {
+        //distace check from player 
+        if (bulletPlayer)
+        {
+            float distace = Vector3.Distance(bulletPlayer.transform.position, transform.position);
+            if (distace > bulletPlayer.myWeapon.range && !ended)
+            {
+                ended = true;
+                this.transform.GetComponent<Rigidbody>().linearVelocity = Vector3.zero;
+                //     ContactPoint points = collision.contacts[0];
+                Vector3 pos = transform.position;
+                //   Debug.Log(pos);
+                playerHitParicle.transform.parent = null;
+                playerHitParicle.transform.position = pos;
+                wallHitParticle.transform.parent = null;
+                wallHitParticle.transform.position = pos;
+                StartCoroutine(GoParentAfterParticle(wallHitParticle));
+            }
+        }
 
+
+    }
     // Turning off bullet if no object collide
     IEnumerator OffBullet()
     {
@@ -48,7 +74,7 @@ public class Bullet : MonoBehaviour
         this.transform.GetComponent<Rigidbody>().linearVelocity = Vector3.zero;
         ContactPoint points = collision.contacts[0];
         Vector3 pos = points.point;
-        Debug.Log(pos);
+     //   Debug.Log(pos);
         playerHitParicle.transform.parent = null;
         playerHitParicle.transform.position = pos;
         wallHitParticle.transform.parent = null;
@@ -67,11 +93,13 @@ public class Bullet : MonoBehaviour
         }*/
         if (collision.transform.name.Contains("Player") || collision.transform.name.Contains("Bot"))
         {
+            hitaudio.clip = playerhit;
             StartCoroutine(GoParentAfterParticle(playerHitParicle));
         }
         else
         {
             // else
+            hitaudio.clip = obsticlehit;
             StartCoroutine(GoParentAfterParticle(wallHitParticle));
         }
     }
@@ -83,7 +111,7 @@ public class Bullet : MonoBehaviour
         this.gameObject.SetActive(false);
         this.transform.parent = Parent.transform;
         this.transform.localPosition = previousPosition;
-        this.transform.localScale = previousScale;
+//        this.transform.localScale = previousScale;
         this.transform.eulerAngles = Vector3.zero;
         this.transform.localEulerAngles = Vector3.zero;
 
@@ -130,6 +158,7 @@ public class Bullet : MonoBehaviour
         GetComponent<Rigidbody>().linearVelocity = Vector3.zero;
         GetComponent<MeshRenderer>().enabled = false;
         GetComponent<Collider>().enabled = false;
+        hitaudio.Play();
         particleType.Play();
         yield return new WaitForSeconds(2f);
         GoToParent();

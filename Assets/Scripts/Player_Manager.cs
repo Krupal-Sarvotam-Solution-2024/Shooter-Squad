@@ -70,28 +70,78 @@ public class Player_Manager : MonoBehaviour
     public List<GameObject> healthIndicatorUnused;
     public int healthIndicatorCount = 0;
 
+  //  public Vector3 startingpoint;
 
+   public bool insidegrass;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+      //  startingPos = transform.position;
         ReassignValue();
         player_Movement = GetComponent<Player_Movement>();
         player_Shooting = GetComponent<Player_Shooting>();
-        
     }
 
     // Update is called once per frame
     void Update()
     {
-        HealthBar.transform.LookAt(Camera.main.transform.position);
-        if (GameManager.GamePlay == false)
+       // HealthBar.transform.LookAt(Camera.main.transform.position);
+        if (GameManager.GamePlay == false || isDeath)
         {
             return;
         }
 
         AutoTarget();
     }
+    float nearestenemydis=1000;
+    public Transform GetNearestEnemy()
+    {
+        if (listEnemy.Count > 0)
+        {
+            if (targetEnemy == null)
+            {
+                isTargetSelected = false;
+            }
 
+            //if (isTargetSelected == false)
+            //{
+            //    targetEnemy = listEnemy[Random.Range(0, listEnemy.Count)];
+            //    isTargetSelected = true;
+            //}
+            //if (Vector3.Distance(this.gameObject.transform.position, targetEnemy.transform.position) > enemyDistance || targetEnemy.gameObject.activeInHierarchy == false || targetEnemy.GetComponent<Bot_Manager>().isDeath == true)
+            //{
+            //    targetEnemy = listEnemy[Random.Range(0, listEnemy.Count)];
+            //    isTargetSelected = true;
+            //}
+
+            foreach (var item in listEnemy)
+            {
+
+
+                if (Vector3.Distance(this.gameObject.transform.position, item.transform.position) < nearestenemydis)
+                {
+                    nearestenemydis = Vector3.Distance(this.gameObject.transform.position, item.transform.position);
+                    targetEnemy = item;
+                }
+            }
+
+
+          
+            transform.eulerAngles = new Vector3(0, transform.eulerAngles.y, 0);
+            isTargeting = true;
+            player_Shooting.Laser.gameObject.SetActive(true);
+            nearestenemydis = 1000;
+            return targetEnemy.transform;
+        }
+        else
+        {
+
+            player_Shooting.Laser.gameObject.SetActive(false);
+            targetEnemy = null;
+            isTargeting = false;
+            return null;
+        }
+    }
     void AutoTarget()
     {
 
@@ -113,18 +163,32 @@ public class Player_Manager : MonoBehaviour
                 isTargetSelected = true;
             }
 
-            //for (int i = 0; i < GameManager.botAll.Count; i++)
-            //{
-            //    GameManager.botAll[i].SelectedBot.gameObject.SetActive(false);
-            //}
-            //targetEnemy.GetComponent<Bot_Manager>().SelectedBot.SetActive(true);
-            transform.LookAt(targetEnemy.transform.position);
+            foreach (var item in listEnemy)
+            {
+
+
+                if (Vector3.Distance(this.gameObject.transform.position, item.transform.position) < nearestenemydis)
+                {
+                    nearestenemydis = Vector3.Distance(this.gameObject.transform.position, item.transform.position);
+                    targetEnemy = item;
+                }
+            }
+
+
+            if (targetEnemy)
+            {
+                transform.LookAt(targetEnemy.transform.position);
+                player_Shooting.Shoot();
+            }
+
             transform.eulerAngles = new Vector3(0, transform.eulerAngles.y, 0);
             isTargeting = true;
             player_Shooting.Laser.gameObject.SetActive(true);
+            nearestenemydis = 1000;
         }
         else
         {
+           
             player_Shooting.Laser.gameObject.SetActive(false);
             targetEnemy = null;
             isTargeting = false;
@@ -163,10 +227,13 @@ public class Player_Manager : MonoBehaviour
     // Health deduct on player hit
     public void HealthDeduction(int DamageAmount)
     {
+        if (shild)
+            return;
+
         playerHealth -= DamageAmount;
         DamgeIndicator((int)DamageAmount);
         HealthTextUpdate();
-        if (playerHealth <= 0)
+        if (playerHealth <= 0 && isDeath == false)
         {
             //Destroy(this.gameObject); 
             //this.gameObject.SetActive(false);
@@ -174,8 +241,19 @@ public class Player_Manager : MonoBehaviour
         }
     }
 
-
-
+    private bool shild;
+    [SerializeField] private GameObject shildeffect;
+    public IEnumerator shildAcitavte()
+    {
+        //acriavter shild
+        shild = true;
+        shildeffect.SetActive(true);
+        //showing effect
+        yield return new WaitForSeconds(3);
+        shildeffect.SetActive(false);
+        shild = false;
+        //deaactivate shild
+    }
     // Player bullet hit
     void BulletHitted(Bullet bullet)
     {
@@ -192,45 +270,36 @@ public class Player_Manager : MonoBehaviour
     IEnumerator PlayerDeath()
     {
         isDeath = true;
-        player_Movement.playerRigidbody.isKinematic = true;
+        player_Movement.rb.isKinematic = true;
+        //  GetComponent<Rigidbody>.isKinematic = true;
         //player_Movement.AnimationController(Player_Movement.AnimState.Death);
         BodyVisibility(false);
         DeathPartcleSystem.SetActive(true);
         DeathPartcleSystem.GetComponent<ParticleSystem>().Play();
+        playerAudio.clip = playerDeath;
+        playerAudio.PlayOneShot(playerDeath);
+        isSoundPlaying = true;
+        yield return new WaitForSeconds(1);
+
+      //  this.transform.position = player_Movement.newTemp;
+        Debug.Log(this.transform.position);
+        yield return new WaitForSeconds(3);
+        DeathPartcleSystem.SetActive(false);
         for (int i = 0; i < GameManager.botAll.Count; i++)
         {
             GameManager.botAll[i].Player_Manager = null;
             GameManager.botAll[i].StopFollowing();
         }
-        playerAudio.clip = playerDeath;
-        playerAudio.PlayOneShot(playerDeath);
-        isSoundPlaying = true;
-        yield return new WaitForSeconds(4);
-        DeathPartcleSystem.SetActive(false);
+    
         GameManager.RestartGame();
-
+        Debug.Log(this.transform.position);
         isDeath = false;
+    //    this.transform.position = player_Movement.newTemp;
+        Debug.Log(this.transform.position);
+
     }
 
-    /* private void OnTriggerEnter(Collider other)
-     {
-         if (GameManager.GamePlay == false)
-         {
-             return;
-         }
 
-         if (other.gameObject.transform.TryGetComponent<Bullet>(out Bullet bullet))
-         {
-             if (bullet.bulletBot != null)
-             {
-                 bullet.GetComponent<Rigidbody>().linearVelocity = Vector3.zero;
-                 BulletHitted(bullet);
-             }
-         }
-
-
-
-     }*/
 
     private void OnCollisionEnter(Collision collision)
     {
@@ -243,12 +312,40 @@ public class Player_Manager : MonoBehaviour
         {
             if (bullet.bulletBot != null)
             {
-                bullet.GetComponent<Rigidbody>().linearVelocity = Vector3.zero;
+              //  bullet.GetComponent<Rigidbody>().linearVelocity = Vector3.zero;
                 BulletHitted(bullet);
             }
         }
     }
+    private void OnTriggerEnter(Collider other)
+    {
+        if (GameManager.GamePlay == false)
+        {
+            return;
+        }
 
+        if (other.GetComponent<Grass>())
+        {
+            insidegrass = true;
+            other.GetComponent<Grass>().GetingintheGrass();
+        }
+
+
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (GameManager.GamePlay == false)
+        {
+            return;
+        }
+
+        if (other.GetComponent<Grass>())
+        {
+            insidegrass = false;
+            other.GetComponent<Grass>().OutsideGrass();
+        }
+    }
     // Player health increaser
     void HealthUpgradation()
     {
@@ -284,6 +381,8 @@ public class Player_Manager : MonoBehaviour
         }
 
         HealthIncreaserParticle.Stop();
+        
+
 
         StartCoroutine(HealthIncrease());
     }
@@ -297,16 +396,17 @@ public class Player_Manager : MonoBehaviour
 
     public void ResettingGame()
     {
+        StopAllCoroutines();
         CancelInvoke();
 
         this.gameObject.SetActive(true);
         BodyVisibility(true);
 
         player_Movement.AnimationController(Player_Movement.AnimState.Idle);
-        player_Movement.movementDirection = new Vector3(0, 0, 0);
-        player_Movement.temp = true;
-        player_Movement.newTemp = startingPos;
-        player_Movement.playerRigidbody.isKinematic = true;
+       // player_Movement. = new Vector3(0, 0, 0);
+      //  player_Movement.temp = true;
+     //   player_Movement.newTemp = startingPos;
+        player_Movement.rb.isKinematic = false;
 
         playerHealth = playerMaxHealth;
         playerScore = 0;
@@ -314,18 +414,22 @@ public class Player_Manager : MonoBehaviour
         HealthTextUpdate();
         ScoreTextUpdate();
 
-        player_Shooting.CollectingBullet();
+       // player_Shooting.CollectingBullet();
         isSoundPlaying = false;
         enemyInRadius = 0;
         listEnemy.Clear();
 
         AssignMyWeapone();
-
+        Debug.Log(isDeath);
         this.transform.position = startingPos;
+        Debug.Log(startingPos); 
         this.transform.eulerAngles = startingEular;
         this.transform.localScale = startingScale;
+        Debug.Log(this.transform.position +"last poiston");
 
+        playerAudio.Stop();
         StartCoroutine(HealthIncrease());
+
     }
 
     public void AssignMyWeapone()
@@ -348,10 +452,10 @@ public class Player_Manager : MonoBehaviour
 
     public void ReassignValue()
     {
-        startingPos = transform.position;
+        startingPos = new Vector3(transform.position.x, transform.position.y+.5f, transform.position.z);
         startingEular = transform.eulerAngles;
         startingScale = transform.localScale;
-        player_Movement.newTemp = startingPos;
+   //    player_Movement.newTemp = startingPos;
     }
 
     void DamgeIndicator(int damage)

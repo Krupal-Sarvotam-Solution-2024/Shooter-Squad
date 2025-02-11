@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using static UnityEngine.ParticleSystem;
+using TMPro;
 
 public class GameManager : MonoBehaviour
 {
@@ -46,6 +46,12 @@ public class GameManager : MonoBehaviour
     public List<ParticleSystem> AllBloodParticles;
     public int BloodParticleCount = 0;
 
+    [Space(10)]
+    [Header("powerups")]
+    public GameObject[] allPowerups;
+    public Transform[] allPowerupsPostion;
+
+
     // Start
     private void Start()
     {
@@ -70,15 +76,21 @@ public class GameManager : MonoBehaviour
 
 
     }
+    [SerializeField] private TextMeshProUGUI fpsTest;
+    private float deltaTime = 0.0f;
 
     // Update
     private void Update()
     {
-        if (GamePlay == false)
+
+        deltaTime += (Time.unscaledDeltaTime - deltaTime) * 0.1f;
+        float fps = 1.0f / deltaTime;
+        fpsTest.text = "FPS: " + Mathf.Ceil(fps).ToString();
+        if (GamePlay == false || player.isDeath)
             return;
 
         BotCount();
-        playerDistance = Vector3.Distance(player.transform.position, currentGround.GetComponent<Ground>().ExitGate.transform.position);
+        //playerDistance = Vector3.Distance(player.transform.position, currentGround.GetComponent<Ground>().ExitGate.transform.position);
     }
 
     // Game will paused through it
@@ -100,6 +112,7 @@ public class GameManager : MonoBehaviour
     // Start the game
     public void StartGame()
     {
+        Application.targetFrameRate = 60;
         panelPause.SetActive(false);
         panelStart.SetActive(false);
         SetGround();
@@ -116,7 +129,7 @@ public class GameManager : MonoBehaviour
     public void RestartGame()
     {
         Time.timeScale = 1f;
-
+        currentGround.GetComponent<Ground>().Closegate();
         /*for (int i = 0; i < botSpawnPoint.Count; i++)
         {
             botAll[i].gameObject.transform.position = botSpawnPoint[i].transform.position;
@@ -150,9 +163,10 @@ public class GameManager : MonoBehaviour
     // Count down animation for starting the game
     IEnumerator StartGameAnim()
     {
-       // Camera.main.gameObject.GetComponent<Camera_Follower>().shouldFollow = false;
-     //   Camera.main.transform.position = new Vector3(0, 20, -45);
-   //     Camera.main.transform.eulerAngles = new Vector3(30, 0, 0);
+
+        //Camera.main.gameObject.GetComponent<Camera_Follower>().shouldFollow = false;
+        //Camera.main.transform.position = new Vector3(0, 20, -45);
+        //Camera.main.transform.eulerAngles = new Vector3(30, 0, 0);
         GamePlay = false;
         GameStartAnimText.gameObject.SetActive(true);
         SoundManage.SoundPlayStop(0);
@@ -167,11 +181,36 @@ public class GameManager : MonoBehaviour
         yield return new WaitForSeconds(1);
         Time.timeScale = 1f;
         GameStartAnimText.gameObject.SetActive(false);
-        player.player_Movement.playerRigidbody.isKinematic = false;
-    //    Camera.main.gameObject.GetComponent<Camera_Follower>().shouldFollow = true;
+        StartCoroutine(Powerupsspwn());
+        //  player.player_Movement.playerRigidbody.isKinematic = false;
+        //Camera.main.gameObject.GetComponent<Camera_Follower>().shouldFollow = true;
         //Camera.main.gameObject.GetComponent<Camera_Follower>().isArriveOrignalPos = false;
         GamePlay = true;
     }
+
+    public IEnumerator Powerupsspwn()
+    {
+        while (true)
+        {
+            //getting all powerups 
+            Vector3 spawnpostion = allPowerupsPostion[Random.Range(0, allPowerupsPostion.Length)].position;
+            Debug.Log(spawnpostion);
+            //getting all powerups positon
+            GameObject powerups = allPowerups[Random.Range(0, allPowerups.Length)];
+            Debug.Log(powerups.gameObject.name);
+            powerups.gameObject.SetActive(true);
+            powerups.transform.position = spawnpostion;
+            yield return new WaitForSeconds(Random.Range(5, 10));
+
+        }
+
+        //sellecting random powerups and its positon
+
+        //activating powerups
+
+
+    }
+
 
     // Counting bot for game end
     void BotCount()
@@ -190,7 +229,14 @@ public class GameManager : MonoBehaviour
             currentGround.GetComponent<Ground>().isOpenExitDoor = true;
         }
     }
-
+    public GameObject[] allcharacter;
+    public void playersize(float value)
+    {
+        foreach (var item in allcharacter)
+        {
+            item.transform.localScale = new Vector3(value, value, value);
+        }
+    }
     // Set ground, bots and player
     void SetGround()
     {
@@ -219,7 +265,7 @@ public class GameManager : MonoBehaviour
 
         // Set the player 
         player.ResettingGame();
-        player.gameObject.transform.position = groundSctipt.playerSpawnPos.transform.position;
+        player.gameObject.transform.position =new Vector3(groundSctipt.playerSpawnPos.transform.position.x, groundSctipt.playerSpawnPos.transform.position.y+.6f, groundSctipt.playerSpawnPos.transform.position.z);
         player.ReassignValue();
 
         // Set the bot

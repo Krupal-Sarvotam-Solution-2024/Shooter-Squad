@@ -89,7 +89,7 @@ public class Camera_Follower : MonoBehaviour
         // Calculate the target position based on the player's position + offset
         targetPosition = player.position + offset;
 
-        Debug.Log("Camera updating" + targetPosition);
+       // Debug.Log("Camera updating" + targetPosition);
         // Clamp the target position to stay within the defined bounds
         targetPosition.x = Mathf.Clamp(targetPosition.x, minX, maxX);
         targetPosition.z = Mathf.Clamp(targetPosition.z, minY, maxY);
