@@ -5,13 +5,11 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class Bot_Manager : MonoBehaviour
+public class Bot_Manager : Entity
 {
 
     [Space(10)]
     [Header("Bot health system managing variables")]
-    [SerializeField] private float botHealth; // Bot current health
-    [SerializeField] private float botMaxHealth = 100f; // Bot max health
     [SerializeField] private float botHealthIncrement = 1f; // Bot health recovery amount
     [SerializeField] private GameObject HealthBar, HealthBarFG; // Health bar on the head image
     [SerializeField] private TextMeshPro HealthPerText; // Health percantage text
@@ -52,7 +50,7 @@ public class Bot_Manager : MonoBehaviour
     [Header("Bot default value variables")]
     [SerializeField] private Vector3 startingPos; // Bot starting pos
     [SerializeField] private Vector3 startingEular; // Bot starting rotation
-    [SerializeField] private Vector3 startingScale; // Bot starting scale
+    //[SerializeField] private Vector3 startingScale; // Bot starting scale
 
     [Space(10)]
     [Header("All bullet managing variables")]
@@ -62,7 +60,6 @@ public class Bot_Manager : MonoBehaviour
 
     [Space(10)]
     [Header("Nav mesh manager")]
-    private NavMeshAgent navAgent; // Navmesh agent for following the player
     private bool isFollowing = false; // Find that bot is following the player or not
     private bool movingToTarget = true; // Track if moving to target or back to start
     public Transform RandomMovePos;
@@ -72,19 +69,13 @@ public class Bot_Manager : MonoBehaviour
     [Header("Game manager")]
     public GameManager GameManager;
 
-    [Space(10)]
-    [Header("Audio manager")]
-    public AudioSource botAudio; // Audio source which handle player audios
-    public AudioClip playerDeath; // All audio clips
+  
 
     [Space(10)]
     [Header("Weapon manager")]
     public Weapon myWeapon; // Bot weapon
 
-    [Space(10)]
-    [Header("Whole body object manager")]
-    [SerializeField] private List<GameObject> botBodyParts; // All body parts for activation and deactivation
-    [SerializeField] private GameObject DeathPartcleSystem; // Death particle system
+
     [SerializeField] private Color InsideGrass, outsidegrass;
 
     [Space(10)]
@@ -99,10 +90,10 @@ public class Bot_Manager : MonoBehaviour
     public GameObject shildeffect;
     public bool shild;
     // Start
-    void Start()
+    void OnEnable()
     {
-        navAgent = GetComponent<NavMeshAgent>(); // Assigning the component
-        ReassignValue(); // Making bot value as a new bot
+       // navAgent = GetComponent<NavMeshAgent>(); // Assigning the component
+     //   ReassignValue(); // Making bot value as a new bot
         startingPos = transform.position;
     }
 
@@ -138,18 +129,18 @@ public class Bot_Manager : MonoBehaviour
         if (isOnceInRadius == false)
         {
             // Check if the bot has reached its current destination
-            if (!navAgent.pathPending && navAgent.remainingDistance <= navAgent.stoppingDistance)
+            if (!entity_navAi.pathPending && entity_navAi.remainingDistance <= entity_navAi.stoppingDistance)
             {
-                if (!navAgent.hasPath || navAgent.velocity.sqrMagnitude == 0f)
+                if (!entity_navAi.hasPath || entity_navAi.velocity.sqrMagnitude == 0f)
                 {
                     // Switch between the target and start position
                     if (movingToTarget)
                     {
-                        navAgent.SetDestination(startingPos); // Go back to start
+                        entity_navAi.SetDestination(startingPos); // Go back to start
                     }
                     else
                     {
-                        navAgent.SetDestination(RandomMovePos.position); // Go to the target
+                        entity_navAi.SetDestination(RandomMovePos.position); // Go to the target
                     }
 
                     movingToTarget = !movingToTarget; // Toggle the direction
@@ -163,16 +154,16 @@ public class Bot_Manager : MonoBehaviour
         {
             if (Vector3.Distance(Player_Manager.gameObject.transform.position, this.gameObject.transform.position) > stopDistance)
             {
-                Vector3 directionToPlayer = Player_Manager.gameObject.transform.position - navAgent.transform.position;
+                Vector3 directionToPlayer = Player_Manager.gameObject.transform.position - entity_navAi.transform.position;
                 Vector3 targetPosition = Player_Manager.gameObject.transform.position - directionToPlayer.normalized * stopDistance;
 
-                navAgent.SetDestination(targetPosition);
+                entity_navAi.SetDestination(targetPosition);
                 AnimationController(AnimState.Running);
             }
             else
             {
                 AnimationController(AnimState.Idle);
-                botAudio.Stop();
+                enity_audio.Stop();
             }
         }
 
@@ -188,14 +179,10 @@ public class Bot_Manager : MonoBehaviour
             return;
         }
 
-        if (collision.gameObject.transform.TryGetComponent<Bullet>(out Bullet bullet))
-        {
-            if (bullet.bulletPlayer != null)
-            {
-                BulletHitted(bullet);
-            }
-        }
+      
     }
+
+   
     private void OnTriggerEnter(Collider other)
     {
         if (GameManager.GamePlay == false)
@@ -205,18 +192,24 @@ public class Bot_Manager : MonoBehaviour
 
         if (other.GetComponent<Grass>())
         {
-            Debug.Log("TEXT");
-            for (int i = 0; i < botBodyParts.Count; i++)
-            {
-                botBodyParts[i].gameObject.SetActive(false);
-                //if (botBodyParts[i].GetComponent<MeshRenderer>())
-                //{
-                //    botBodyParts[i].GetComponent<MeshRenderer>().material.color = InsideGrass;
-                //}
-            }
+            //Debug.Log("TEXT");
+            //for (int i = 0; i < botBodyParts.Count; i++)
+            //{
+            //    botBodyParts[i].gameObject.SetActive(false);
+            //    //if (botBodyParts[i].GetComponent<MeshRenderer>())
+            //    //{
+            //    //    botBodyParts[i].GetComponent<MeshRenderer>().material.color = InsideGrass;
+            //    //}
+            //}
         }
 
-
+        if (other.gameObject.transform.TryGetComponent<Bullet>(out Bullet bullet))
+        {
+            if (bullet.bulletPlayer != null)
+            {
+                BulletHitted(bullet);
+            }
+        }
     }
 
     private void OnTriggerExit(Collider other)
@@ -226,13 +219,13 @@ public class Bot_Manager : MonoBehaviour
             return;
         }
 
-        if (other.GetComponent<Grass>())
-        {
-            for (int i = 0; i < botBodyParts.Count; i++)
-            {
-                botBodyParts[i].gameObject.SetActive(true);
-            }
-        }
+        //if (other.GetComponent<Grass>())
+        //{
+        //    for (int i = 0; i < botBodyParts.Count; i++)
+        //    {
+        //        botBodyParts[i].gameObject.SetActive(true);
+        //    }
+        //}
 
     }
     public IEnumerator shildAcitavte()
@@ -264,7 +257,7 @@ public class Bot_Manager : MonoBehaviour
         Vector3 targetPosition = Player_Manager.gameObject.transform.position - directionToPlayer * 2f;
 
         // Set the NavMeshAgent's destination
-        navAgent.SetDestination(targetPosition);
+        entity_navAi.SetDestination(targetPosition);
 
         // Check the distance between the bot and the player
         float distanceToPlayer = Vector3.Distance(transform.position, Player_Manager.gameObject.transform.position);
@@ -274,7 +267,7 @@ public class Bot_Manager : MonoBehaviour
             if (!isIdle)
             {
                 AnimationController(AnimState.Idle); // Trigger Idle animation
-                botAudio.Stop();
+                enity_audio.Stop();
                 isIdle = true;
             }
         }
@@ -296,37 +289,38 @@ public class Bot_Manager : MonoBehaviour
             return;
         }
 
-        if (botHealth < botMaxHealth)
-        {
-            botHealth += botHealthIncrement;
-        }
+        //if (botHealth < botMaxHealth)
+        //{
+        //    botHealth += botHealthIncrement;
+        //}
     }
 
     // Health deduct on player hit
-    void HealthDeduction(int DamageAmount)
+    public void HealthDeduction(int DamageAmount)
     {
-        botHealth -= DamageAmount;
+     //   botHealth -= DamageAmount;
         DamgeIndicator((int)DamageAmount);
-        HealthShow();
+      //  HealthShow();
+        //if (botHealth <= 0)
+        //{
+        //   // bullet.bulletPlayer.KillPlayer(botDeathScore);
+        //    StartCoroutine(BotDeath());
+        //}
     }
 
     // Health Show
-    void HealthShow()
-    {
-        float healthPercentage = (botHealth / botMaxHealth) * 100f;
-        HealthBarFG.transform.localScale = new Vector3(healthPercentage / 100, HealthBarFG.transform.localScale.y, HealthBarFG.transform.localScale.z);
-        HealthPerText.text = healthPercentage + "%";
-    }
+    //void HealthShow()
+    //{
+    //   // float healthPercentage = (botHealth / botMaxHealth) * 100f;
+    //    HealthBarFG.transform.localScale = new Vector3(healthPercentage / 100, HealthBarFG.transform.localScale.y, HealthBarFG.transform.localScale.z);
+    //    HealthPerText.text = healthPercentage + "%";
+    //}
 
     // Player bullet hit
     void BulletHitted(Bullet bullet)
     {
-        HealthDeduction(bullet.damageAmount);
-        if (botHealth <= 0)
-        {
-            bullet.bulletPlayer.KillPlayer(botDeathScore);
-            StartCoroutine(BotDeath());
-        }
+        ReduceHeath(bullet.damageAmount);
+       
     }
 
     // Distance check between player and bot
@@ -371,23 +365,8 @@ public class Bot_Manager : MonoBehaviour
         }
     }
 
-    // Collecting the all used bullet
-    void CollectingBullet()
-    {
-        for (int i = 0; i < bulletAll.Count; i++)
-        {
-            bulletAll[i].GetComponent<Bullet>().GoToParent();
-        }
-    }
+ 
 
-    // Change a visibility of the body
-    void BodyVisibility(bool visibility)
-    {
-        for (int i = 0; i < botBodyParts.Count; i++)
-        {
-            botBodyParts[i].gameObject.SetActive(visibility);
-        }
-    }
 
     // Damage indicator
     void DamgeIndicator(int damage)
@@ -444,12 +423,13 @@ public class Bot_Manager : MonoBehaviour
     public void StopFollowing()
     {
         isFollowing = false;
-        if (this.gameObject.activeInHierarchy  && navAgent != null)
+        if (this.gameObject.activeInHierarchy  && entity_navAi != null)
         {
-            navAgent.ResetPath(); // Stops the bot 
+            entity_navAi.ResetPath(); // Stops the bot 
         }
         AnimationController(AnimState.Idle);
-        botAudio.Stop();
+    //    enity_audio.Stop();
+        //botAudio.Stop();
     }
 
     // Bullet shoot
@@ -517,12 +497,12 @@ public class Bot_Manager : MonoBehaviour
 
         GetComponent<Rigidbody>().isKinematic = false;
 
-        botHealth = botMaxHealth;
+       // botHealth = botMaxHealth;
         isOnceInRadius = false;
 
       //  this.transform.position = startingPos;
         this.transform.eulerAngles = startingEular;
-        this.transform.localScale = startingScale;
+       // this.transform.localScale = startingScale;
 
         AnimatorObject.gameObject.transform.localRotation = Quaternion.identity;
 
@@ -531,7 +511,7 @@ public class Bot_Manager : MonoBehaviour
         GetComponent<CapsuleCollider>().enabled = true;
         GetComponent<NavMeshAgent>().enabled = true;
 
-        HealthShow();
+   //     HealthShow();
 
       //  CollectingBullet();
     }
@@ -545,22 +525,16 @@ public class Bot_Manager : MonoBehaviour
     }
 
     // On Bot Death
-    IEnumerator BotDeath()
+    public override IEnumerator Death()
     {
         isDeath = true;
-        GetComponent<Rigidbody>().isKinematic = true;
-        GetComponent<Collider>().enabled = false;
-        GetComponent<NavMeshAgent>().enabled = false;
-        BodyVisibility(false);
-        DeathPartcleSystem.SetActive(true);
-        DeathPartcleSystem.GetComponent<ParticleSystem>().Play();
         if (Player_Manager.listEnemy.Contains(this.gameObject))
         {
             Player_Manager.listEnemy.Remove(this.gameObject);
             Player_Manager.enemyInRadius--;
         }
         CancelInvoke("Shoot");
-
+        Player_Manager.killcount++;
         Player_Manager = null;
 
         //SelectedBot.SetActive(false);
@@ -569,20 +543,24 @@ public class Bot_Manager : MonoBehaviour
         {
             GameManager.botDeath.Add(this);
         }
-
-        botAudio.clip = playerDeath;
-        botAudio.PlayOneShot(playerDeath);
-
         GameManager.ShowBlood(transform.position);
 
-        yield return new WaitForSeconds(3);
-        DeathPartcleSystem.SetActive(false);
-        GetComponent<Rigidbody>().isKinematic = false;
-        GetComponent<Collider>().enabled = false;
-        this.gameObject.SetActive(false);
+     //   yield return new WaitForSeconds(3);
+        //  DeathPartcleSystem.SetActive(false);
+  
+        //    this.gameObject.SetActive(false);
         StopFollowing();
-        BodyVisibility(true);
+        return base.Death();
+
+
     }
+
+
+        
+
+   
+      //  BodyVisibility(true);
+    
 
     // Interval for damage interval
     IEnumerator damageIdicatorInterval(GameObject indicator)

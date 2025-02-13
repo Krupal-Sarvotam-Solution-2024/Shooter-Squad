@@ -7,7 +7,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using System.Collections;
 
-public class Player_Manager : MonoBehaviour
+public class Player_Manager : Entity
 {
     [Space(10)]
     [Header("All Health managing variable")]
@@ -16,7 +16,7 @@ public class Player_Manager : MonoBehaviour
     [SerializeField] private float playerHealthIncrement = 1f; // Player health recovery amount
     [SerializeField] private TextMeshProUGUI textHealth, textHealth1; // Player health amount status
     [SerializeField] private Image HealthBarSlider;
-    [SerializeField] private GameObject HealthBar, HealthBarFG;
+    [SerializeField] private GameObject HealthBarFG;
     [SerializeField] private TextMeshPro HealthPerText;
     [SerializeField] private ParticleSystem HealthIncreaserParticle;
 
@@ -27,6 +27,7 @@ public class Player_Manager : MonoBehaviour
 
     [Space(10)]
     [Header("Auto aim & enemy managing variables")]
+    public int killcount;
     public float enemyDistance; // Enemy distance for fight
     public int enemyInRadius; // Enemy count in our radius
     public List<GameObject> listEnemy; // All enemy in that list
@@ -43,7 +44,7 @@ public class Player_Manager : MonoBehaviour
     [Header("Player default transform")]
     [SerializeField] private Vector3 startingPos; // Player start position
     [SerializeField] private Vector3 startingEular; // Player start eular (rotation)
-    [SerializeField] private Vector3 startingScale; // Player start scale
+   // [SerializeField] private Vector3 startingScale; // Player start scale
 
     [Space(10)]
     [Header("Animations and Death ")]
@@ -73,14 +74,22 @@ public class Player_Manager : MonoBehaviour
   //  public Vector3 startingpoint;
 
    public bool insidegrass;
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    public override void Start()
     {
-      //  startingPos = transform.position;
+        base.Start();
+        //  startingPos = transform.position;
         ReassignValue();
         player_Movement = GetComponent<Player_Movement>();
         player_Shooting = GetComponent<Player_Shooting>();
     }
+    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    //void Start()
+    //{
+    //  //  startingPos = transform.position;
+    //    ReassignValue();
+    //    player_Movement = GetComponent<Player_Movement>();
+    //    player_Shooting = GetComponent<Player_Shooting>();
+    //}
 
     // Update is called once per frame
     void Update()
@@ -424,7 +433,7 @@ public class Player_Manager : MonoBehaviour
         this.transform.position = startingPos;
         Debug.Log(startingPos); 
         this.transform.eulerAngles = startingEular;
-        this.transform.localScale = startingScale;
+     //   this.transform.localScale = startingScale;
         Debug.Log(this.transform.position +"last poiston");
 
         playerAudio.Stop();
@@ -454,7 +463,7 @@ public class Player_Manager : MonoBehaviour
     {
         startingPos = new Vector3(transform.position.x, transform.position.y+.5f, transform.position.z);
         startingEular = transform.eulerAngles;
-        startingScale = transform.localScale;
+    //    startingScale = transform.localScale;
    //    player_Movement.newTemp = startingPos;
     }
 

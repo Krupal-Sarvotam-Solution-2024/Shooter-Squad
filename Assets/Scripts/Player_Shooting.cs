@@ -99,9 +99,11 @@ public class Player_Shooting : MonoBehaviour
         {
            return;
         }
-        stading_driection = transform.eulerAngles.y;
-     //   transform.rotation = Quaternion.Euler(0, shooting_direction, 0); // Rotate player or gun
-         PlayerManager.player_Movement.playerAnimator.SetBool("Shoot_Idle", true);
+        PlayerManager.player_Movement.playerAnimator.SetBool("Shoot_Idle", true);
+       // stading_driection = transform.eulerAngles.y;
+       // Camera.main.gameObject.GetComponent<Camera_Follower>().Fire();
+
+        //   transform.rotation = Quaternion.Euler(0, shooting_direction, 0); // Rotate player or gun
         for (int i = 0; i < PlayerManager.myWeapon.FirePoints.Count; i++)
         {
 
@@ -134,8 +136,7 @@ public class Player_Shooting : MonoBehaviour
                 PlayerManager.myWeapon.WeaponAudio.clip = PlayerManager.myWeapon.BlastSound;
             }
         }
-        Camera.main.gameObject.GetComponent<Camera_Follower>().Fire();
-        
+ 
         PlayerManager.myWeapon.WeaponAudio.Play();
 
         if (PlayerManager.myWeapon.isPlayMultiTime == false)

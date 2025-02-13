@@ -14,6 +14,7 @@ public class SoundManage : MonoBehaviour
     // Change the sound volume
     public void SoundOnOff(float volume)
     {
+        backgroundmusic.volume = volume;
         for (int playerAudios = 0; playerAudios < WholePlayer.Count; playerAudios++)
         {
             WholePlayer[playerAudios].volume = volume;

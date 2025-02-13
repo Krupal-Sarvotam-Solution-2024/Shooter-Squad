@@ -58,6 +58,16 @@ public class Player_Movement : MonoBehaviour
         if (movementDirection.magnitude < 0.1f)
         {
             movementDirection = Vector3.zero;
+
+        }
+        else
+        {
+            if (rb.linearVelocity != Vector3.zero && walksoundtime > .25f)
+            {
+                walksoundtime = 0;
+                player.playerAudio.PlayOneShot(player.runSurface);
+            }
+            walksoundtime += Time.deltaTime;
         }
 
         UpdateAnimation(horizontalInput, verticalInput);
@@ -84,11 +94,12 @@ public class Player_Movement : MonoBehaviour
                 break;
         }
     }
-
+    float walksoundtime;
     void MoveWithRigidbody()
     {
         Vector3 targetVelocity = movementDirection * moveSpeed;
         rb.linearVelocity = Vector3.Lerp(rb.linearVelocity, targetVelocity, Time.fixedDeltaTime * acceleration);
+       
         RotatePlayer();
     }
 

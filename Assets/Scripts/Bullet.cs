@@ -41,23 +41,23 @@ public class Bullet : MonoBehaviour
     private void Update()
     {
         //distace check from player 
-        if (bulletPlayer)
-        {
-            float distace = Vector3.Distance(bulletPlayer.transform.position, transform.position);
-            if (distace > bulletPlayer.myWeapon.range && !ended)
-            {
-                ended = true;
-                this.transform.GetComponent<Rigidbody>().linearVelocity = Vector3.zero;
-                //     ContactPoint points = collision.contacts[0];
-                Vector3 pos = transform.position;
-                //   Debug.Log(pos);
-                playerHitParicle.transform.parent = null;
-                playerHitParicle.transform.position = pos;
-                wallHitParticle.transform.parent = null;
-                wallHitParticle.transform.position = pos;
-                StartCoroutine(GoParentAfterParticle(wallHitParticle));
-            }
-        }
+        //if (bulletPlayer)
+        //{
+        //    float distace = Vector3.Distance(bulletPlayer.transform.position, transform.position);
+        //    if (distace > bulletPlayer.myWeapon.range && !ended)
+        //    {
+        //        ended = true;
+        //        this.transform.GetComponent<Rigidbody>().linearVelocity = Vector3.zero;
+        //        //     ContactPoint points = collision.contacts[0];
+        //        Vector3 pos = transform.position;
+        //        //   Debug.Log(pos);
+        //        playerHitParicle.transform.parent = null;
+        //        playerHitParicle.transform.position = pos;
+        //        wallHitParticle.transform.parent = null;
+        //        wallHitParticle.transform.position = pos;
+        //        StartCoroutine(GoParentAfterParticle(wallHitParticle));
+        //    }
+        //}
 
 
     }
@@ -67,10 +67,48 @@ public class Bullet : MonoBehaviour
         yield return new WaitForSeconds(5f);
         GoToParent();
     }
+    private void OnTriggerEnter(Collider collision)
+    {
+        if (collision.gameObject == Parent.gameObject || collision.transform.GetComponent<Bullet>() || collision.gameObject.name == "Magic circle")
+            return;
+        this.transform.GetComponent<Rigidbody>().linearVelocity = Vector3.zero;
+        
+        Vector3 pos = collision.gameObject.transform.position;
+       //   Debug.Log(pos);
+        playerHitParicle.transform.parent = null;
+        playerHitParicle.transform.position = pos;
+        wallHitParticle.transform.parent = null;
+        wallHitParticle.transform.position = pos;
 
+        Debug.Log(collision.gameObject.name);
+        /*if (bulletPlayer == null && collision.transform.name.Contains("Player") == true)
+        {
+            // Player Shoot
+            StartCoroutine(GoParentAfterParticle(playerHitParicle));
+        }
+        else if (bulletBot == null && collision.transform.name.Contains("Bot") == false)
+        {
+            // Bot Shoot
+            StartCoroutine(GoParentAfterParticle(playerHitParicle));
+        }*/
+        if (collision.transform.name.Contains("Player") || collision.transform.name.Contains("Bot"))
+        {
+            hitaudio.clip = playerhit;
+            StartCoroutine(GoParentAfterParticle(playerHitParicle));
+        }
+        else
+        {
+            // else
+            hitaudio.clip = obsticlehit;
+            StartCoroutine(GoParentAfterParticle(wallHitParticle));
+        }
+    }
     // On Collide with any object
     void OnCollisionEnter(Collision collision)
     {
+
+        if (collision.gameObject == Parent.gameObject || collision.transform.GetComponent<Bullet>())
+            return;
         this.transform.GetComponent<Rigidbody>().linearVelocity = Vector3.zero;
         ContactPoint points = collision.contacts[0];
         Vector3 pos = points.point;
@@ -80,7 +118,7 @@ public class Bullet : MonoBehaviour
         wallHitParticle.transform.parent = null;
         wallHitParticle.transform.position = pos;
 
-
+        Debug.Log(collision.gameObject.name);
         /*if (bulletPlayer == null && collision.transform.name.Contains("Player") == true)
         {
             // Player Shoot
@@ -110,10 +148,11 @@ public class Bullet : MonoBehaviour
         this.transform.GetComponent<Rigidbody>().linearVelocity = Vector3.zero;
         this.gameObject.SetActive(false);
         this.transform.parent = Parent.transform;
-        this.transform.localPosition = previousPosition;
-//        this.transform.localScale = previousScale;
-        this.transform.eulerAngles = Vector3.zero;
-        this.transform.localEulerAngles = Vector3.zero;
+        this.transform.position = Vector3.zero;
+       // this.transform.localPosition = previousPosition;
+       // this.transform.localScale = previousScale;
+        //this.transform.eulerAngles = Vector3.zero;
+       // this.transform.localEulerAngles = Vector3.zero;
 
         wallHitParticle.transform.parent = this.transform;
         playerHitParicle.transform.parent = this.transform;

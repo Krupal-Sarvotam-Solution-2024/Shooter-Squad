@@ -33,7 +33,7 @@ public class GameManager : MonoBehaviour
     public GameObject currentGround; // Ground on using
     [Range(1f, 5f)]
     public int activeGround; // Number of ground on using
-
+    public SafeZone zome;
     [Space(10)]
     [Header("Sound manager")]
     public bool Sound = true; // bool which find sound should play or not
@@ -50,6 +50,7 @@ public class GameManager : MonoBehaviour
     [Header("powerups")]
     public GameObject[] allPowerups;
     public Transform[] allPowerupsPostion;
+    
 
 
     // Start
@@ -115,6 +116,7 @@ public class GameManager : MonoBehaviour
         Application.targetFrameRate = 60;
         panelPause.SetActive(false);
         panelStart.SetActive(false);
+        gamecompletePnale.SetActive(false);
         SetGround();
         StartCoroutine(StartGameAnim());
     }
@@ -125,19 +127,15 @@ public class GameManager : MonoBehaviour
         Application.Quit();
     }
 
+
     // Restart current game
     public void RestartGame()
     {
         Time.timeScale = 1f;
-        currentGround.GetComponent<Ground>().Closegate();
-        /*for (int i = 0; i < botSpawnPoint.Count; i++)
-        {
-            botAll[i].gameObject.transform.position = botSpawnPoint[i].transform.position;
-            botAll[i].gameObject.SetActive(true);
-            botAll[i].GetComponent<Bot_Manager>().ResetingGame();
-            botAll[i].GetComponent<Bot_Manager>().ReassignValue();
-        }
-        player.ResettingGame();*/
+       // currentGround.GetComponent<Ground>().Closegate();
+       
+
+        
         StartGame();
     }
 
@@ -169,7 +167,7 @@ public class GameManager : MonoBehaviour
         //Camera.main.transform.eulerAngles = new Vector3(30, 0, 0);
         GamePlay = false;
         GameStartAnimText.gameObject.SetActive(true);
-        SoundManage.SoundPlayStop(0);
+      //  SoundManage.SoundPlayStop(0);
         GameStartAnimText.text = "3";
         yield return new WaitForSeconds(1);
         GameStartAnimText.text = "2";
@@ -178,10 +176,11 @@ public class GameManager : MonoBehaviour
         yield return new WaitForSeconds(1);
         GameStartAnimText.text = "Go!";
         currentGround.GetComponent<Ground>().isOpenEntryDoor = true;
+        currentGround.GetComponent<Ground>().isOpenExitDoor= false;
         yield return new WaitForSeconds(1);
         Time.timeScale = 1f;
         GameStartAnimText.gameObject.SetActive(false);
-        StartCoroutine(Powerupsspwn());
+       // StartCoroutine(Powerupsspwn());
         //  player.player_Movement.playerRigidbody.isKinematic = false;
         //Camera.main.gameObject.GetComponent<Camera_Follower>().shouldFollow = true;
         //Camera.main.gameObject.GetComponent<Camera_Follower>().isArriveOrignalPos = false;
@@ -197,7 +196,6 @@ public class GameManager : MonoBehaviour
             Debug.Log(spawnpostion);
             //getting all powerups positon
             GameObject powerups = allPowerups[Random.Range(0, allPowerups.Length)];
-            Debug.Log(powerups.gameObject.name);
             powerups.gameObject.SetActive(true);
             powerups.transform.position = spawnpostion;
             yield return new WaitForSeconds(Random.Range(5, 10));
@@ -210,11 +208,13 @@ public class GameManager : MonoBehaviour
 
 
     }
-
+    public GameObject gamecompletePnale;
 
     // Counting bot for game end
     void BotCount()
     {
+        if (currentGround.GetComponent<Ground>().isOpenExitDoor)
+            return;
         int tempBotCounter = 0;
         for (int i = 0; i < botAll.Count; i++)
         {
@@ -227,6 +227,9 @@ public class GameManager : MonoBehaviour
         if (tempBotCounter == 0)
         {
             currentGround.GetComponent<Ground>().isOpenExitDoor = true;
+
+
+            gamecompletePnale.SetActive(true);
         }
     }
     public GameObject[] allcharacter;
@@ -262,7 +265,8 @@ public class GameManager : MonoBehaviour
         //groundSctipt.EntryDoorRight.transform.eulerAngles = new Vector3(0, 0, 0);
         //groundSctipt.isOpenEntryDoor = false;
 
-
+        zome.transform.localScale = zome.startingsclae;
+        zome.start = true;
         // Set the player 
         player.ResettingGame();
         player.gameObject.transform.position =new Vector3(groundSctipt.playerSpawnPos.transform.position.x, groundSctipt.playerSpawnPos.transform.position.y+.6f, groundSctipt.playerSpawnPos.transform.position.z);

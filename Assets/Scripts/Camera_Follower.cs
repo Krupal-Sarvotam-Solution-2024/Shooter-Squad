@@ -60,11 +60,7 @@ public class Camera_Follower : MonoBehaviour
     public float shakeMagnitude = 0.01f;
 
     private Vector3 originalPosition;
-    public void Fire()
-    {
-        Debug.Log("Firing!");
-        StartCoroutine(Shake());
-    }
+   
 
     IEnumerator Shake()
     {
