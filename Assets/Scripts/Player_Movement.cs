@@ -26,7 +26,7 @@ public class Player_Movement : MonoBehaviour
     private Player_Manager player;
     private Vector3 movementDirection;
     private Vector3 currentVelocity;
-    public Rigidbody rb;
+    private Rigidbody rb;
     private CharacterController characterController;
 
     void Start()
@@ -41,16 +41,25 @@ public class Player_Movement : MonoBehaviour
         //    rb.collisionDetectionMode = CollisionDetectionMode.Continuous;
         //}
     }
-
+    public void OnAnimationEventTriggered() // Method name must match the Animation Event
+    {
+        player.Shotting();
+        // Your logic (e.g., shaking the health bar)
+    }
     void Update()
     {
-        if (!GameManager.GamePlay || player.isDeath)
+        if (!GameManager.GamePlay || player.is_death)
         {
             return;
         }
-
-        float horizontalInput = playerJoystick.Horizontal;
-        float verticalInput = playerJoystick.Vertical;
+//#if UNITY_EDITOR
+//        float horizontalInput = Input.GetAxis("Horizontal");
+//        float verticalInput = Input.GetAxis("Vertical");
+//#else
+        
+       float horizontalInput = playerJoystick.Horizontal;
+       float verticalInput = playerJoystick.Vertical;
+////#endif
         Vector3 targetDirection = new Vector3(horizontalInput, 0, verticalInput).normalized;
 
         movementDirection = Vector3.Lerp(movementDirection, targetDirection, Time.deltaTime * acceleration);
@@ -66,8 +75,10 @@ public class Player_Movement : MonoBehaviour
             {
                 walksoundtime = 0;
                 player.playerAudio.PlayOneShot(player.runSurface);
+              
             }
             walksoundtime += Time.deltaTime;
+           
         }
 
         UpdateAnimation(horizontalInput, verticalInput);
@@ -75,7 +86,7 @@ public class Player_Movement : MonoBehaviour
 
     void FixedUpdate()
     {
-        if (!GameManager.GamePlay || player.isDeath)
+        if (!GameManager.GamePlay || player.is_death)
         {
             movementDirection = Vector3.zero;
             return;
@@ -121,7 +132,7 @@ public class Player_Movement : MonoBehaviour
 
     void RotatePlayer()
     {
-        if (movementDirection.magnitude > 0.1f)
+        if (movementDirection.magnitude > 0.1f )
         {
             Quaternion targetRotation = Quaternion.LookRotation(movementDirection, Vector3.up);
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.fixedDeltaTime * rotationSpeed);
@@ -130,15 +141,43 @@ public class Player_Movement : MonoBehaviour
 
     void UpdateAnimation(float horizontal, float vertical)
     {
-        if (movementDirection.magnitude > 0.1f)
+        if (!player.Enemy)
         {
-            AnimationController(AnimState.RunningForward);
+            if (movementDirection.magnitude > 0.1f)
+            {
+                float angle = Vector3.SignedAngle(transform.forward, movementDirection, Vector3.up);
+
+                if (angle > -45f && angle < 45f)
+                    AnimationController(AnimState.RunningForward);
+                else if (angle >= 45f && angle < 135f)
+                    AnimationController(AnimState.RunningRight);
+                else if (angle <= -45f && angle > -135f)
+                    AnimationController(AnimState.RunningLeft);
+                else
+                    AnimationController(AnimState.RunningBackward);
+            }
+            else
+            {
+                AnimationController(AnimState.Idle);
+            }
         }
         else
         {
-            AnimationController(AnimState.Idle);
+            Vector3 relativeMovement = transform.InverseTransformDirection(movementDirection);
+
+            if (relativeMovement.z > 0.1f)      // Moving forward relative to target
+                AnimationController(AnimState.RunningForward);
+            else if (relativeMovement.z < -0.1f)// Moving backward relative to target
+                AnimationController(AnimState.RunningBackward);
+            else if (relativeMovement.x > 0.1f) // Moving right relative to target
+                AnimationController(AnimState.RunningRight);
+            else if (relativeMovement.x < -0.1f)// Moving left relative to target
+                AnimationController(AnimState.RunningLeft);
+            else
+                AnimationController(AnimState.Idle);
         }
     }
+    
 
     public void AnimationController(AnimState newState)
     {
@@ -147,11 +186,17 @@ public class Player_Movement : MonoBehaviour
         playerState = newState;
         playerAnimator.SetBool("Idle", newState == AnimState.Idle);
         playerAnimator.SetBool("Running", newState == AnimState.RunningForward);
+        playerAnimator.SetBool("Right", newState == AnimState.RunningRight);
+        playerAnimator.SetBool("Backward", newState == AnimState.RunningBackward);
+        playerAnimator.SetBool("Left", newState == AnimState.RunningLeft);
     }
 
     public enum AnimState
     {
         Idle,
-        RunningForward
+        RunningForward,
+        RunningBackward,
+        RunningLeft,
+        RunningRight
     }
 }

@@ -7,24 +7,21 @@ public class Powerups : MonoBehaviour
         shild,
         bomb,
     }
-
+    public GameManager manager;
     public allpowerusp powerups;
     public float health;
+    public float damgeradious;
     public void OnTriggerEnter(Collider other)
     {
         if (powerups == allpowerusp.shild)
         {
-            if (other.GetComponent<Bot_Manager>())
+            if (other.GetComponent<Entity>())
             {
 
-                other.GetComponent<Player_Manager>().StartCoroutine(other.GetComponent<Bot_Manager>().shildAcitavte());
+                other.GetComponent<Entity>().StartCoroutine(other.GetComponent<Entity>().shildAcitavte());
                 this.gameObject.SetActive(false);
             }
-            else if(other.GetComponent<Player_Manager>())
-            {
-                other.GetComponent<Player_Manager>().StartCoroutine(other.GetComponent<Player_Manager>().shildAcitavte());
-                this.gameObject.SetActive(false);
-            }
+          
 
 
         }
@@ -45,8 +42,21 @@ public class Powerups : MonoBehaviour
     public void Blast()
     {
         //activating the bomb effect
+        GetComponent<MeshRenderer>().enabled = false;
         effectobject.SetActive(true);
 
+        //get the srounding player
+
+
+        for (int i = 0; i < manager.botAll.Count; i++)
+        {
+            if (Vector3.Distance(manager.botAll[i].transform.position, transform.position) < damgeradious)
+            {
+                manager.botAll[i].ReduceHeath(100);
+            }
+
+
+        }
         
 
 

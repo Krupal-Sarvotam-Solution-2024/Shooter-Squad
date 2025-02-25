@@ -16,7 +16,10 @@ public class Loockat : MonoBehaviour
     void Update()
     {
         Vector3 targetPosition = transform.position + cameraTransform.forward;
+        Quaternion lookRotation = Quaternion.LookRotation(targetPosition - transform.position);
+        transform.rotation = Quaternion.Euler(lookRotation.eulerAngles.x, lookRotation.eulerAngles.y, 0f);
+
+        if (target)
         transform.position = target.position + new Vector3(0, ypos, 0);
-        transform.rotation = Quaternion.LookRotation(targetPosition - transform.position, Vector3.right);
     }
 }

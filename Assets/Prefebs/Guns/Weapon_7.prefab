@@ -394,12 +394,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   WeaponAudio: {fileID: 6722363127079165376}
-  BlastSound: {fileID: 8300000, guid: 865e88b4b32e7c44298c5cffdb7a80af, type: 3}
+  BlastSound: {fileID: 8300000, guid: 101106cd810615041bb13f121e59a2d7, type: 3}
   FirePoints:
   - {fileID: 8692777261478936779}
   - {fileID: 6106896893924188091}
   - {fileID: 2371326855991938764}
-  Damage: 3
+  showingrange: {fileID: 0}
+  isPlayMultiTime: 1
 --- !u!82 &6722363127079165376
 AudioSource:
   m_ObjectHideFlags: 0

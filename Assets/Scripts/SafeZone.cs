@@ -23,15 +23,12 @@ public class SafeZone : MonoBehaviour
     private void OnTriggerExit(Collider other)
     {
 
-        if (other.GetComponent<Player_Manager>())
+        if (other.GetComponent<Entity>())
         {
-            other.GetComponent<Player_Manager>().HealthDeduction(1000);
+            other.GetComponent<Entity>().ReduceHeath(1000);
         }
 
-        if (other.GetComponent<Bot_Manager>())
-        {
-            other.GetComponent<Bot_Manager>().HealthDeduction(1000);
-        }
+   
 
     }
 }

@@ -44,7 +44,7 @@ public class Player_Movement1 : MonoBehaviour
 
     void Update()
     {
-        if (!GameManager.GamePlay || player.isDeath)
+        if (!GameManager.GamePlay || player.is_death)
         {
             return;
         }
@@ -65,7 +65,7 @@ public class Player_Movement1 : MonoBehaviour
 
     void FixedUpdate()
     {
-        if (!GameManager.GamePlay || player.isDeath)
+        if (!GameManager.GamePlay || player.is_death)
         {
             movementDirection = Vector3.zero;
             return;

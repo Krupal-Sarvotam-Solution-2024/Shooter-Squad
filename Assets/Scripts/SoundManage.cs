@@ -11,6 +11,7 @@ public class SoundManage : MonoBehaviour
     [SerializeField] private List<BotSounds> AllBots; // All bots all audio source
     [SerializeField] private Sprite musicon, musicoff;
     [SerializeField] private AudioSource backgroundmusic; 
+    public List<AudioSource> bullets = new List<AudioSource>();
     // Change the sound volume
     public void SoundOnOff(float volume)
     {
@@ -26,6 +27,11 @@ public class SoundManage : MonoBehaviour
             {
                 AllBots[botAudios].BotAudiosource[botAudio1].volume = volume;
             }
+        }
+
+        foreach (AudioSource bullets_audio in bullets)
+        {
+            bullets_audio.volume = volume;
         }
     }
     public void SoundMute()
@@ -50,7 +56,10 @@ public class SoundManage : MonoBehaviour
                 {
                     AllBots[botAudios].BotAudiosource[botAudio1].Play();
                 }
-            } 
+            }
+
+
+          
         }
         else if (status == 0)
         {
@@ -75,5 +84,6 @@ public class SoundManage : MonoBehaviour
 public struct BotSounds
 {
     public List<AudioSource> BotAudiosource; // Bot audio source list
+    
 }
 

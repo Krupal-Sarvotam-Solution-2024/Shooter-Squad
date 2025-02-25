@@ -13,20 +13,24 @@ public class GameManager : MonoBehaviour
     [Space(10)]
     [Header("All panels")]
     public GameObject panelStart, panelPause; // All panels
+    public Image gunfiller;
+
 
     [Space(10)]
     [Header("All bot managing variables")]
-    public List<Bot_Manager> botAll; // All bot gameobject
+    public ObjectPoolManager Objectpool;
+    public List<Entity> botAll; // All bot gameobject
     public List<Bot_Manager> botDeath; // All bot gameobject which is death
     [Space(10)]
     [Header("Player managing variables")]
     public Player_Manager player; // The main player gameobject
     public float playerDistance; // Distance bewtween player and exit gate
-
+    public float shotingInterval;
+    public bool redyforBrustShooting;
     [Space(10)]
     [Header("Game start anim")]
     public Text GameStartAnimText; // Game start count down text
-
+    public TextMeshProUGUI remaning_bot;
     [Space(10)]
     [Header("Ground manager")]
     public List<GameObject> grounds; // All ground
@@ -45,19 +49,29 @@ public class GameManager : MonoBehaviour
     [Header("Blood Particle Effrcts")]
     public List<ParticleSystem> AllBloodParticles;
     public int BloodParticleCount = 0;
-
+    public Transform BulletsHolder;
     [Space(10)]
     [Header("powerups")]
     public GameObject[] allPowerups;
     public Transform[] allPowerupsPostion;
-    
 
-
+    [Header("pooling")]
+    public GameObject damage_indicator;
+    public GameObject ShootPartical;
+    public Transform Holder;
     // Start
     private void Start()
     {
+        Objectpool.CreatePool("DamageIndicator", damage_indicator, 10,Holder);
+        Objectpool.CreatePool("ShootingPartical", ShootPartical, 40,Holder);
         Time.timeScale = 1f; // Make game continue
+        SoundLoad();
+     
 
+    }
+
+    public void SoundLoad()
+    {
         // If statements for checking sound setting
         if (PlayerPrefs.GetString("Sound", "true") == "true")
         {
@@ -74,8 +88,6 @@ public class GameManager : MonoBehaviour
             PlayerPrefs.SetString("Sound", "false");
 
         }
-
-
     }
     [SerializeField] private TextMeshProUGUI fpsTest;
     private float deltaTime = 0.0f;
@@ -87,9 +99,16 @@ public class GameManager : MonoBehaviour
         deltaTime += (Time.unscaledDeltaTime - deltaTime) * 0.1f;
         float fps = 1.0f / deltaTime;
         fpsTest.text = "FPS: " + Mathf.Ceil(fps).ToString();
-        if (GamePlay == false || player.isDeath)
+        if (GamePlay == false || player.is_death)
             return;
 
+
+        if (redyforBrustShooting)
+        {
+            holdtime += Time.deltaTime;
+            gunfiller.fillAmount = holdtime;
+            Debug.Log(holdtime + "hold time");
+        }
         BotCount();
         //playerDistance = Vector3.Distance(player.transform.position, currentGround.GetComponent<Ground>().ExitGate.transform.position);
     }
@@ -108,8 +127,39 @@ public class GameManager : MonoBehaviour
         Time.timeScale = 1f;
         panelPause.SetActive(false);
         GamePlay = true;
+    
     }
 
+    float holdtime = 0;
+    public void onBulletHolding()
+    {
+        redyforBrustShooting = true;
+      
+       
+
+    }
+
+    public void OnBulletHoldingRemove()
+    {
+
+
+        redyforBrustShooting = false;
+        if(holdtime >=1)
+        {
+            shotingInterval = .01f;
+            StartCoroutine(burstshooting());
+        }
+
+    }
+
+    public IEnumerator burstshooting()
+    {
+        yield return new WaitForSeconds(1);
+        gunfiller.fillAmount = 0;
+        holdtime = 0;
+        shotingInterval = 1;
+    }
+    
     // Start the game
     public void StartGame()
     {
@@ -185,6 +235,7 @@ public class GameManager : MonoBehaviour
         //Camera.main.gameObject.GetComponent<Camera_Follower>().shouldFollow = true;
         //Camera.main.gameObject.GetComponent<Camera_Follower>().isArriveOrignalPos = false;
         GamePlay = true;
+        SoundManage.GetComponent<AudioSource>().Play();
     }
 
     public IEnumerator Powerupsspwn()
@@ -221,9 +272,10 @@ public class GameManager : MonoBehaviour
             if (botAll[i].gameObject.activeInHierarchy == true)
             {
                 tempBotCounter++;
+               
             }
         }
-
+        remaning_bot.text = "Remaning :" + tempBotCounter;
         if (tempBotCounter == 0)
         {
             currentGround.GetComponent<Ground>().isOpenExitDoor = true;
@@ -245,7 +297,10 @@ public class GameManager : MonoBehaviour
     {
         // Select ground
         currentGround = null;
-
+        for (int i = 0; i < Holder.childCount; i++)
+        {
+            Holder.GetChild(i).gameObject.SetActive(false);
+        }
         for (int i = 0; i < grounds.Count; i++)
         {
             grounds[i].gameObject.SetActive(false);
@@ -268,7 +323,7 @@ public class GameManager : MonoBehaviour
         zome.transform.localScale = zome.startingsclae;
         zome.start = true;
         // Set the player 
-        player.ResettingGame();
+        player.ResetingGame();
         player.gameObject.transform.position =new Vector3(groundSctipt.playerSpawnPos.transform.position.x, groundSctipt.playerSpawnPos.transform.position.y+.6f, groundSctipt.playerSpawnPos.transform.position.z);
         player.ReassignValue();
 
@@ -278,12 +333,11 @@ public class GameManager : MonoBehaviour
             botAll[i].gameObject.SetActive(false);
 
             botAll[i].transform.position = groundSctipt.allSpawnPoint[i].position;
-
+            botAll[i].starting_pos = groundSctipt.botRandomMove[i].parent.position;
             botAll[i].ResetingGame();
+           // botAll[i].RandomMovePos = groundSctipt.botRandomMove[i];
 
-            botAll[i].ReassignValue();
-
-            botAll[i].RandomMovePos = groundSctipt.botRandomMove[i];
+       
 
             botAll[i].gameObject.SetActive(true);
         }

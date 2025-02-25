@@ -44,17 +44,17 @@ public class Obstacle : MonoBehaviour
             }
         }
 
-        if(ThisObsType == Type.Unbreakable)
-        {
-            if(isCatcus)
-            {
-                if(collision.gameObject.TryGetComponent<Player_Manager>(out Player_Manager player))
-                {
+        //if(ThisObsType == Type.Unbreakable)
+        //{
+        //    if(isCatcus)
+        //    {
+        //        if(collision.gameObject.TryGetComponent<Player_Manager>(out Player_Manager player))
+        //        {
 
-                    player.HealthDeduction(DamageAmount);
-                }
-            }
-        }
+        //            player.ReduceHeath(DamageAmount);
+        //        }
+        //    }
+        //}
     }
 
     // Called when bullet hitted

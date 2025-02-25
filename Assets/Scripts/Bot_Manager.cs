@@ -11,8 +11,7 @@ public class Bot_Manager : Entity
     [Space(10)]
     [Header("Bot health system managing variables")]
     [SerializeField] private float botHealthIncrement = 1f; // Bot health recovery amount
-    [SerializeField] private GameObject HealthBar, HealthBarFG; // Health bar on the head image
-    [SerializeField] private TextMeshPro HealthPerText; // Health percantage text
+
 
     [Space(10)]
     [Header("Bot death score and damage manager")]
@@ -48,54 +47,24 @@ public class Bot_Manager : Entity
 
     [Space(10)]
     [Header("Bot default value variables")]
-    [SerializeField] private Vector3 startingPos; // Bot starting pos
     [SerializeField] private Vector3 startingEular; // Bot starting rotation
     //[SerializeField] private Vector3 startingScale; // Bot starting scale
 
-    [Space(10)]
-    [Header("All bullet managing variables")]
-    public List<GameObject> bulletAll; // All bullet of bot
-    public List<GameObject> bulletUsed; // All used bullet
-    public List<GameObject> bulletUnused; // All unused bullet
 
     [Space(10)]
     [Header("Nav mesh manager")]
     private bool isFollowing = false; // Find that bot is following the player or not
     private bool movingToTarget = true; // Track if moving to target or back to start
     public Transform RandomMovePos;
+    [SerializeField] private bool isInInterval; // Find that gun is in interval or not
 
 
-    [Space(10)]
-    [Header("Game manager")]
-    public GameManager GameManager;
 
-  
-
-    [Space(10)]
-    [Header("Weapon manager")]
-    public Weapon myWeapon; // Bot weapon
-
-
-    [SerializeField] private Color InsideGrass, outsidegrass;
-
-    [Space(10)]
-    [Header("Player death manager")]
-    public bool isDeath; // Find that bot is Death or not
-    public List<GameObject> DeathIndicatorAll; // All Damage indicator gameobject
-    public List<GameObject> DeathIndicatorUsed; // Used damage indicator
-    public List<GameObject> DeathIndicatorUnused; // Unused damage indicator
-    [SerializeField] private bool insidegrass;
 
     [Header("shild")]
     public GameObject shildeffect;
     public bool shild;
-    // Start
-    void OnEnable()
-    {
-       // navAgent = GetComponent<NavMeshAgent>(); // Assigning the component
-     //   ReassignValue(); // Making bot value as a new bot
-        startingPos = transform.position;
-    }
+   
 
     // Update
     void Update()
@@ -103,78 +72,143 @@ public class Bot_Manager : Entity
       //  HealthBar.transform.LookAt(Camera.main.transform.position); // Healthbar saw camera continusoly
 
         // Return if game play is off ot bot is death
-        if (GameManager.GamePlay == false || isDeath == true)
+        if (gameManager.GamePlay == false || is_death == true)
         {
-            if(isDeath)
-            SelectedBot.SetActive(false);
+          
             return;
         }
-        else
-        {
-        //    SelectedBot.SetActive(true);
-        }
+   
 
-
-        // Look at the player contusoly
-        if (Player_Manager != null) // Find that player is not null
-        {
-            DistanceChecker(); // Cheking the distance
-
-            if (isOnceInRadius == true && Player_Manager != null)
-            {
-                transform.LookAt(Player_Manager.transform.position); // After find player it start look the player always
-            }
-        }
 
         if (isOnceInRadius == false)
         {
             // Check if the bot has reached its current destination
-            if (!entity_navAi.pathPending && entity_navAi.remainingDistance <= entity_navAi.stoppingDistance)
-            {
-                if (!entity_navAi.hasPath || entity_navAi.velocity.sqrMagnitude == 0f)
-                {
-                    // Switch between the target and start position
-                    if (movingToTarget)
-                    {
-                        entity_navAi.SetDestination(startingPos); // Go back to start
-                    }
-                    else
-                    {
-                        entity_navAi.SetDestination(RandomMovePos.position); // Go to the target
-                    }
+            //if (!entity_navAi.pathPending && entity_navAi.remainingDistance <= entity_navAi.stoppingDistance)
+            //{
+            //    if (!entity_navAi.hasPath || entity_navAi.velocity.sqrMagnitude == 0f)
+            //    {
+            //        // Switch between the target and start position
+            //        if (movingToTarget)
+            //        {
+            //          //  entity_navAi.SetDestination(starting_pos); // Go back to start
+            //        }
+            //        else
+            //        {
+            //         //   entity_navAi.SetDestination(RandomMovePos.position); // Go to the target
+            //        }
 
-                    movingToTarget = !movingToTarget; // Toggle the direction
+            //        movingToTarget = !movingToTarget; // Toggle the direction
+            //        AnimationController(AnimState.Running);
+            //    }
+            //}
+        }
+        if (Enemy == null) // If no enemy is found, move randomly
+        {
+            if (!isRoaming)
+            {
+                StartCoroutine(RoamRandomly());
+            }
+        }
+        else
+        {
+            isRoaming = false; // Stop random roaming when an enemy appears
+            StopCoroutine(RoamRandomly());
+            // Follow the player and managing the animation
+            if (isFollowing && Enemy)
+            {
+                float distance = Vector3.Distance(Enemy.gameObject.transform.position, this.gameObject.transform.position);
+                if (distance > stopDistance)
+                {
+                    Vector3 directionToPlayer = Enemy.gameObject.transform.position - entity_navAi.transform.position;
+                    Vector3 targetPosition = Enemy.gameObject.transform.position - directionToPlayer.normalized * stopDistance;
+
+                    entity_navAi.SetDestination(targetPosition);
                     AnimationController(AnimState.Running);
                 }
-            }
-        }
+                else if (distance < stopDistance - 0.5f) // Move backwards if too close (adjust buffer if needed)
+                {
+                    // Move away from the player
+                    Vector3 directionAwayFromPlayer = entity_navAi.transform.position - Enemy.gameObject.transform.position;
+                    Vector3 backwardPosition = entity_navAi.transform.position + directionAwayFromPlayer.normalized * 1.5f; // Move back
 
-        // Follow the player and managing the animation
-        if (isFollowing && Player_Manager != null)
-        {
-            if (Vector3.Distance(Player_Manager.gameObject.transform.position, this.gameObject.transform.position) > stopDistance)
-            {
-                Vector3 directionToPlayer = Player_Manager.gameObject.transform.position - entity_navAi.transform.position;
-                Vector3 targetPosition = Player_Manager.gameObject.transform.position - directionToPlayer.normalized * stopDistance;
-
-                entity_navAi.SetDestination(targetPosition);
-                AnimationController(AnimState.Running);
+                    entity_navAi.SetDestination(backwardPosition);
+                    AnimationController(AnimState.Running); // Add a backward animation if needed
+                }
+                else
+                {
+                    // Stop movement
+                    entity_navAi.ResetPath();
+                    AnimationController(AnimState.Idle);
+                    //entity_audio.Stop();
+                }
             }
-            else
-            {
-                AnimationController(AnimState.Idle);
-                enity_audio.Stop();
-            }
-        }
-
+        }  
         transform.eulerAngles = new Vector3 (0, transform.eulerAngles.y, 0);
-
+        GetNeartestEnemy();
     }
-   
+
+    public override void GetNeartestEnemy()
+    {
+        base.GetNeartestEnemy();
+        if (Enemy)
+        {
+            Vector3 targetPosition = new Vector3(Enemy.transform.position.x, transform.position.y, Enemy.transform.position.z);
+            transform.LookAt(targetPosition);
+            Shoot();
+            transform.eulerAngles = new Vector3(0, transform.eulerAngles.y, 0);
+            isTargeting = true;
+            StartFollowing();
+        }
+       
+      
+    }
+    void AutoTarget()
+    {
+
+        if (gameManager.GamePlay == false || is_death)
+            return;
+        if (gameManager.botAll.Count > 0)
+        {
+            if (Enemy == null)
+            {
+                isTargetSelected = false;
+            }
+
+
+            Enemy = null;
+            foreach (var item in gameManager.botAll)
+            {
+
+
+                if (Vector3.Distance(this.gameObject.transform.position, item.transform.position) < nearestenemydis &&
+                    !item.GetComponent<Entity>().insideGrass &&
+                    item.gameObject.activeInHierarchy &&
+                    !item.GetComponent<Entity>().is_death &&
+                    item != this)
+                {
+                    nearestenemydis = Vector3.Distance(this.gameObject.transform.position, item.transform.position);
+                    Enemy = item;
+                }
+            }
+
+
+         
+            //player_Shooting.Laser.gameObject.SetActive(true);
+           // nearestenemydis = enemyDistance;
+        }
+        else
+        {
+
+            //  player_Shooting.Laser.gameObject.SetActive(false);
+            Enemy = null;
+            isTargeting = false;
+        }
+    }
+
     // On Collide with any object
     void OnCollisionEnter(Collision collision)
     {
-        if (GameManager.GamePlay == false || isDeath == true)
+        if (gameManager.GamePlay == false || is_death == true)
         {
             return;
         }
@@ -185,13 +219,15 @@ public class Bot_Manager : Entity
    
     private void OnTriggerEnter(Collider other)
     {
-        if (GameManager.GamePlay == false)
+        if (gameManager.GamePlay == false)
         {
             return;
         }
 
         if (other.GetComponent<Grass>())
         {
+            BodyVisibility(false);
+            insideGrass = true;
             //Debug.Log("TEXT");
             //for (int i = 0; i < botBodyParts.Count; i++)
             //{
@@ -203,29 +239,28 @@ public class Bot_Manager : Entity
             //}
         }
 
-        if (other.gameObject.transform.TryGetComponent<Bullet>(out Bullet bullet))
-        {
-            if (bullet.bulletPlayer != null)
-            {
-                BulletHitted(bullet);
-            }
-        }
+        //if (other.gameObject.transform.TryGetComponent<Bullet>(out Bullet bullet))
+        //{
+        //    if (bullet.entity_holder != null)
+        //    {
+        //        BulletHitted(bullet);
+        //    }
+        //}
     }
 
     private void OnTriggerExit(Collider other)
     {
-        if (GameManager.GamePlay == false)
+        if (gameManager.GamePlay == false)
         {
             return;
         }
 
-        //if (other.GetComponent<Grass>())
-        //{
-        //    for (int i = 0; i < botBodyParts.Count; i++)
-        //    {
-        //        botBodyParts[i].gameObject.SetActive(true);
-        //    }
-        //}
+        if (other.GetComponent<Grass>())
+        {
+            insideGrass = false;
+            BodyVisibility(true);
+           // BodyVisibility(insideGrass);
+        }
 
     }
     public IEnumerator shildAcitavte()
@@ -245,7 +280,7 @@ public class Bot_Manager : Entity
     {
         if (isFollowing && Player_Manager != null)
             return;
-        if (GameManager.GamePlay == false || isDeath == true)
+        if (gameManager.GamePlay == false || is_death == true)
         {
             return;
         }
@@ -281,112 +316,59 @@ public class Bot_Manager : Entity
         }
     }
 
-    // Health increase
-    void HealthUpgradation()
-    {
-        if (GameManager.GamePlay == false || isDeath == true)
-        {
-            return;
-        }
 
-        //if (botHealth < botMaxHealth)
-        //{
-        //    botHealth += botHealthIncrement;
-        //}
-    }
+    
 
-    // Health deduct on player hit
-    public void HealthDeduction(int DamageAmount)
-    {
-     //   botHealth -= DamageAmount;
-        DamgeIndicator((int)DamageAmount);
-      //  HealthShow();
-        //if (botHealth <= 0)
-        //{
-        //   // bullet.bulletPlayer.KillPlayer(botDeathScore);
-        //    StartCoroutine(BotDeath());
-        //}
-    }
-
-    // Health Show
-    //void HealthShow()
+    //// Player bullet hit
+    //void BulletHitted(Bullet bullet)
     //{
-    //   // float healthPercentage = (botHealth / botMaxHealth) * 100f;
-    //    HealthBarFG.transform.localScale = new Vector3(healthPercentage / 100, HealthBarFG.transform.localScale.y, HealthBarFG.transform.localScale.z);
-    //    HealthPerText.text = healthPercentage + "%";
+    //    ReduceHeath(bullet.damageAmount);
+       
     //}
 
-    // Player bullet hit
-    void BulletHitted(Bullet bullet)
-    {
-        ReduceHeath(bullet.damageAmount);
-       
-    }
-
     // Distance check between player and bot
-    void DistanceChecker()
-    {
-        if (GameManager.GamePlay == false || Player_Manager.isDeath)
-        {
-            StopFollowing();
-            return;
-        }
-        if (isInRadius)
-        {
-            if (Vector3.Distance(Player_Manager.gameObject.transform.position, this.gameObject.transform.position) > Player_Manager.enemyDistance || Player_Manager.insidegrass == true)// bot is outside the radious
-            {
-                isOnceInRadius = false;
-                CancelInvoke("Shoot");
-                isInRadius = false;
-                StopFollowing();
-                Player_Manager.listEnemy.Remove(this.gameObject);
-                Player_Manager.enemyInRadius--;
-                //SelectedBot.SetActive(false);
-            }
+    //void DistanceChecker()
+    //{
+    //    if (gameManager.GamePlay == false || Player_Manager.is_death)
+    //    {
+    //        StopFollowing();
+    //        return;
+    //    }
+    //    if (isInRadius)
+    //    {
+    //        botAnimator.SetBool("Shoot", true);
+    //        if (Vector3.Distance(Player_Manager.gameObject.transform.position, this.gameObject.transform.position) > Player_Manager.enemyDistance || Player_Manager.insideGrass == true)// bot is outside the radious
+    //        {
+    //            isOnceInRadius = false;
+                
+    //            isInRadius = false;
+    //            StopFollowing();
+    //        }
            
-        }
-        else
-        {
-            if (Vector3.Distance(Player_Manager.gameObject.transform.position, this.gameObject.transform.position) <= Player_Manager.enemyDistance && Player_Manager.insidegrass == false)// bot in the radious
-            {
-                Debug.Log("Keep shooting");
-                CancelInvoke("Shoot");
-                InvokeRepeating("Shoot", shootStartTime, shootWaitTime);
-                isInRadius = true;
-                isOnceInRadius = true;
-                StartFollowing();
-                Player_Manager.listEnemy.Add(this.gameObject);
-                Player_Manager.enemyInRadius++;
-            }
-            else 
-            {
+    //    }
+    //    else
+    //    {
+    //        if (Vector3.Distance(Player_Manager.gameObject.transform.position, this.gameObject.transform.position) <= Player_Manager.enemyDistance && Player_Manager.insideGrass == false)// bot in the radious
+    //        {
+                
+                
+              
+    //            isInRadius = true;
+    //            isOnceInRadius = true;
+    //            StartFollowing();
+    //        }
 
-            }
-        }
-    }
-
- 
-
-
-    // Damage indicator
-    void DamgeIndicator(int damage)
+    //    }
+    //}
+    public void OnAnimationEventTriggered() // Method name must match the Animation Event
     {
+        Shoot();
 
-        if (DeathIndicatorUnused.Count == 0)
-        {
-            DeathIndicatorUsed[0].gameObject.SetActive(false);
-            DeathIndicatorUnused.Add(DeathIndicatorUsed[0]);
-            DeathIndicatorUsed.Remove(DeathIndicatorUsed[0]);
-        }
-
-        GameObject indicator = DeathIndicatorUnused[0];
-        indicator.SetActive(true);
-        DeathIndicatorUsed.Add(indicator);
-        DeathIndicatorUnused.Remove(indicator);
-
-        indicator.GetComponent<TextMeshPro>().text = "-" + damage.ToString();
-        StartCoroutine(damageIdicatorInterval(indicator));
+        // Your logic (e.g., shaking the health bar)
     }
+
+
+
 
     // Controlling animation
     void AnimationController(AnimState newState)
@@ -435,143 +417,130 @@ public class Bot_Manager : Entity
     // Bullet shoot
     public void Shoot()
     {
-        if (Player_Manager == null || Player_Manager.isDeath)
+        if (gameManager.GamePlay == false ||
+          isInInterval == true ||
+          is_death == true )
+        {
             return;
-        for (int i = 0; i < myWeapon.FirePoints.Count; i++)
-        {
-
-
-            GameObject bullet = bulletUnused[0];
-            bulletUsed.Add(bulletUnused[0]);
-            bulletUnused.Remove(bulletUnused[0]);
-            bullet.SetActive(true);
-            bullet.transform.position =myWeapon.FirePoints[i].position;
-            bullet.transform.eulerAngles = myWeapon.FirePoints[i].eulerAngles;
-            Vector3 direction = bullet.transform.forward;
-            Rigidbody rb_bullet = bullet.GetComponent<Rigidbody>();
-            rb_bullet.linearVelocity = direction * bulletSpeed;
-            bullet.GetComponent<Bullet>().bulletBot = this.transform.GetComponent<Bot_Manager>();
-            bullet.GetComponent<Bullet>().damageAmount = botHitDamage;
-            bullet.transform.parent = null;
-
-            ShootParicle.Play();
-
-            if (myWeapon.isPlayMultiTime == true)
-            {
-                myWeapon.enabled = true;
-               myWeapon.WeaponAudio.clip = myWeapon.BlastSound;
-            }
-        }
-       // Camera.main.gameObject.GetComponent<Camera_Follower>().Fire();
-
-        myWeapon.WeaponAudio.Play();
-
-        if (myWeapon.isPlayMultiTime == false)
-        {
-            myWeapon.enabled = true;
-            myWeapon.WeaponAudio.clip = myWeapon.BlastSound;
         }
 
-        botAnimator.SetBool("Shoot", true);
-        Invoke("ResetShooting", 0.2f); // Adjust timing based on animation length
+        isInInterval = true;
+       
+        base.Shotting();
+
+        botAnimator.SetBool("Shoot", false);
+
+        // Camera.main.gameObject.GetComponent<Camera_Follower>().Fire();
+
+        // my_wepon.WeaponAudio.Play();
+
+     //   Enemy = null;
+
+        Invoke("ResetShooting",1f); // Adjust timing based on animation length
     }
-  
 
     void ResetShooting()
     {
+        isInInterval = false;
         botAnimator.SetBool("Shoot", false);
     }
-
-
+    
     // Making bot value defualt
-    public void ResetingGame()
+    public override void ResetingGame()
     {
-        isDeath = false;
-
-        CancelInvoke();
-
-        this.gameObject.SetActive(true);
+        base.ResetingGame();
 
         AnimationController(AnimState.Idle);
         StopFollowing();
 
-        GetComponent<Rigidbody>().isKinematic = false;
 
-       // botHealth = botMaxHealth;
+
+        // botHealth = botMaxHealth;
         isOnceInRadius = false;
 
-      //  this.transform.position = startingPos;
+        //  this.transform.position = startingPos;
         this.transform.eulerAngles = startingEular;
-       // this.transform.localScale = startingScale;
+        // this.transform.localScale = startingScale;
 
         AnimatorObject.gameObject.transform.localRotation = Quaternion.identity;
 
-        Player_Manager = GameManager.player;
-
-        GetComponent<CapsuleCollider>().enabled = true;
-        GetComponent<NavMeshAgent>().enabled = true;
-
-   //     HealthShow();
-
-      //  CollectingBullet();
+        Player_Manager = gameManager.player;
     }
 
-    // Reassign the bot tranform
-    public void ReassignValue()
+ 
+    public override void Death()
     {
-        startingPos = transform.position;
-        startingEular = transform.eulerAngles;
-    //    startingScale = transform.localScale;
-    }
-
-    // On Bot Death
-    public override IEnumerator Death()
-    {
-        isDeath = true;
-        if (Player_Manager.listEnemy.Contains(this.gameObject))
+        if (!Player_Manager)
         {
-            Player_Manager.listEnemy.Remove(this.gameObject);
-            Player_Manager.enemyInRadius--;
+            return;
         }
-        CancelInvoke("Shoot");
+
+        Player_Manager.Enemy = null;
+       // is_death = true;
+        ////if (Player_Manager.listEnemy.Contains(this.gameObject))
+        ////{
+        ////    Player_Manager.listEnemy.Remove(this.gameObject);
+        ////    Player_Manager.enemyInRadius--;
+        ////}
+        
         Player_Manager.killcount++;
         Player_Manager = null;
 
         //SelectedBot.SetActive(false);
 
-        if (GameManager.botDeath.Contains(this) == false)
+        if (gameManager.botDeath.Contains(this) == false)
         {
-            GameManager.botDeath.Add(this);
+            gameManager.botDeath.Add(this);
         }
-        GameManager.ShowBlood(transform.position);
+        gameManager.ShowBlood(transform.position);
 
-     //   yield return new WaitForSeconds(3);
-        //  DeathPartcleSystem.SetActive(false);
-  
-        //    this.gameObject.SetActive(false);
         StopFollowing();
-        return base.Death();
-
+        isInRadius = false;
+        insideGrass = false;
+        base.Death();
+        StartCoroutine(DeathPartical());
 
     }
-
-
-        
-
-   
-      //  BodyVisibility(true);
-    
-
-    // Interval for damage interval
-    IEnumerator damageIdicatorInterval(GameObject indicator)
+    [SerializeField] private float roamRadius = 10f; // Radius for random movement
+    [SerializeField] private float roamWaitTime = 3f; // Time to wait before picking a new position
+    private bool isRoaming = false;
+    IEnumerator RoamRandomly()
     {
-        yield return new WaitForSeconds(1.5f);
+        isRoaming = true;
 
-        indicator.SetActive(false);
+        while (Enemy == null) // Keep roaming while no enemy is found
+        {
+            Vector3 randomDirection = Random.insideUnitSphere * roamRadius;
+            randomDirection += transform.position;
+            NavMeshHit hit;
+            if (NavMesh.SamplePosition(randomDirection, out hit, roamRadius, NavMesh.AllAreas))
+            {
+                entity_navAi.SetDestination(hit.position);
+                AnimationController(AnimState.Running);
+            }
 
-        DeathIndicatorUsed.Remove(indicator);
-        DeathIndicatorUnused.Add(indicator);
+            yield return new WaitForSeconds(roamWaitTime);
+        }
+
+        isRoaming = false;
     }
+    public IEnumerator DeathPartical()
+    {
+
+        death_partclesystem.SetActive(true);
+        death_partclesystem.GetComponent<ParticleSystem>().Play();
+        enity_audio.PlayOneShot(playerDeath);
+
+
+        yield return new WaitForSeconds(2);
+        this.gameObject.SetActive(false);
+        BodyVisibility(true);
+    }
+
+
+
+
+
 
     // All animation state
     enum AnimState
