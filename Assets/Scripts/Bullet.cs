@@ -16,7 +16,7 @@ public class Bullet : MonoBehaviour
     [SerializeField] private ParticleSystem wallHitParticle; // Particle for playing when hit wall
     [SerializeField] private ParticleSystem playerHitParicle; // Particle for playing when hit player/bot
     [SerializeField] private ParticleSystem projectile;
-   
+
     [SerializeField] private ParticleSystem flash;
 
     [Space(10)]
@@ -27,17 +27,17 @@ public class Bullet : MonoBehaviour
     public AudioSource hitaudio;
     public AudioClip obsticlehit, playerhit;
     bool ended;
-    
+
 
     // Called on activation of object
     void OnEnable()
     {
         ended = false;
 
-        
+        projectile.gameObject.SetActive(true);
         colider.enabled = true;
 
-        for (int i = 0; i < transform.childCount-2; i++)
+        for (int i = 0; i < transform.childCount - 2; i++)
         {
             transform.GetChild(i).gameObject.SetActive(true);
         }
@@ -65,12 +65,12 @@ public class Bullet : MonoBehaviour
     public void BulletFire()
     {
         Debug.Log("Firingsss");
-     //   StartCoroutine(Fireing());
+        //   StartCoroutine(Fireing());
     }
     //public IEnumerator Fireing()
     //{
     //    Debug.Log("Firin11g");
-  
+
     //}
     private void Awake()
     {
@@ -79,15 +79,15 @@ public class Bullet : MonoBehaviour
     }
     private void Update()
     {
-        
+
 
     }
     // Turning off bullet if no object collide
 
     private void OnTriggerEnter(Collider collision)
     {
-        if (entity_holder == null || 
-            collision.gameObject ==entity_holder.gameObject ||
+        if (entity_holder == null ||
+            collision.gameObject == entity_holder.gameObject ||
             collision.transform.GetComponent<Bullet>() ||
             collision.gameObject.name == "Magic circle" || collision.GetComponent<Grass>())
             return;
@@ -98,7 +98,7 @@ public class Bullet : MonoBehaviour
         if (collision.GetComponent<Entity>() && collision.gameObject != entity_holder)
         {
             playerHitParicle.transform.position = pos;
-           
+
             hitaudio.PlayOneShot(playerhit);
             StartCoroutine(GoParentAfterParticle(playerHitParicle));
             collision.GetComponent<Entity>().ReduceHeath(damageAmount);
@@ -112,21 +112,55 @@ public class Bullet : MonoBehaviour
             hitaudio.PlayOneShot(obsticlehit);
             StartCoroutine(GoParentAfterParticle(wallHitParticle));
         }
-       
-        
-      
+
+
+
 
         Debug.Log("Deactivating bullets");
-       
-       
+
+
     }
-   
+
+    private void OnTriggerExit(Collider collision)
+    {
+        if (entity_holder == null ||
+            collision.gameObject == entity_holder.gameObject ||
+            collision.transform.GetComponent<Bullet>() ||
+            collision.gameObject.name == "Magic circle" || collision.GetComponent<Grass>())
+            return;
+
+        this.transform.GetComponent<Rigidbody>().linearVelocity = Vector3.zero;
+        Vector3 pos = this.transform.position;
+
+        if (collision.GetComponent<Entity>() && collision.gameObject != entity_holder)
+        {
+            playerHitParicle.transform.position = pos;
+
+            hitaudio.PlayOneShot(playerhit);
+            StartCoroutine(GoParentAfterParticle(playerHitParicle));
+            collision.GetComponent<Entity>().ReduceHeath(damageAmount);
+            //player hit
+        }
+        else if (collision.gameObject != entity_holder)
+        {
+            //wall hit
+            Debug.Log("object hitting");
+            wallHitParticle.transform.position = pos;
+            hitaudio.PlayOneShot(obsticlehit);
+            StartCoroutine(GoParentAfterParticle(wallHitParticle));
+        }
+
+
+
+
+        Debug.Log("Deactivating bullets");
+    }
 
     // Playing particle when hit anything
     IEnumerator GoParentAfterParticle(ParticleSystem particleType)
     {
 
-        
+
         for (int i = 0; i < transform.childCount; i++)
         {
             transform.GetChild(i).gameObject.SetActive(false);
@@ -135,11 +169,12 @@ public class Bullet : MonoBehaviour
         particleType.Play();
         //need to deactivate eeveertything
         rb.linearVelocity = Vector3.zero;
+        projectile.gameObject.SetActive(false);
         colider.enabled = false;
-       
+
         hitaudio.Play();
         yield return new WaitForSeconds(2f);
         entity_holder.gameManager.Objectpool.ReturnToPool(entity_holder.my_wepon.bullets.name, this.gameObject);
-       // gameManager.Objectpool.ReturnToPool(Bullets.name, bulletObj);
+        // gameManager.Objectpool.ReturnToPool(Bullets.name, bulletObj);
     }
 }

@@ -248,6 +248,21 @@ public class Bot_Manager : Entity
         //}
     }
 
+    private void OnTriggerStay(Collider other)
+    {
+        if (gameManager.GamePlay == false)
+        {
+            return;
+        }
+
+        if (other.GetComponent<Grass>())
+        {
+            BodyVisibility(false);
+            insideGrass = true;
+            
+        }
+    }
+
     private void OnTriggerExit(Collider other)
     {
         if (gameManager.GamePlay == false)
