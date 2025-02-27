@@ -9,10 +9,13 @@ public class SoundManage : MonoBehaviour
     [Header("All Sound manager")]
     [SerializeField] private List<AudioSource> WholePlayer; // Player all audiosource
     [SerializeField] private List<BotSounds> AllBots; // All bots all audio source
-
+    [SerializeField] private Sprite musicon, musicoff;
+    [SerializeField] private AudioSource backgroundmusic; 
+    public List<AudioSource> bullets = new List<AudioSource>();
     // Change the sound volume
     public void SoundOnOff(float volume)
     {
+        backgroundmusic.volume = volume;
         for (int playerAudios = 0; playerAudios < WholePlayer.Count; playerAudios++)
         {
             WholePlayer[playerAudios].volume = volume;
@@ -25,13 +28,22 @@ public class SoundManage : MonoBehaviour
                 AllBots[botAudios].BotAudiosource[botAudio1].volume = volume;
             }
         }
-    }
 
+        foreach (AudioSource bullets_audio in bullets)
+        {
+            bullets_audio.volume = volume;
+        }
+    }
+    public void SoundMute()
+    {
+
+    }
     // Play or Stop sound
     public void SoundPlayStop(int status)
     {
         if (status == 1)
         {
+            backgroundmusic.Play();
 
             for (int playerAudios = 0; playerAudios < WholePlayer.Count; playerAudios++)
             {
@@ -44,11 +56,14 @@ public class SoundManage : MonoBehaviour
                 {
                     AllBots[botAudios].BotAudiosource[botAudio1].Play();
                 }
-            } 
+            }
+
+
+          
         }
         else if (status == 0)
         {
-
+            backgroundmusic.Stop();
             for (int playerAudios = 0; playerAudios < WholePlayer.Count; playerAudios++)
             {
                 WholePlayer[playerAudios].Stop();
@@ -69,5 +84,6 @@ public class SoundManage : MonoBehaviour
 public struct BotSounds
 {
     public List<AudioSource> BotAudiosource; // Bot audio source list
+    
 }
 

@@ -34,10 +34,10 @@ public class Ground : MonoBehaviour
     private float targetRightRotation = 90f;
 
 
-    // Start
+    //Start
     private void Start()
     {
-        // Activing all object which should show in the ground
+        //Activing all object which should show in the ground
         for (int i = 0; i < ActiveObject.Count; i++)
         {
             ActiveObject[i].SetActive(true);
@@ -48,22 +48,22 @@ public class Ground : MonoBehaviour
     {
         
         // Smoothly rotate the left door if it's not yet at target
-        if (isOpenEntryDoor && EntryDoorLeft.transform.eulerAngles.y != targetLeftRotation)
-        {
-            // Calculate the step for each frame
-            float step = rotationSpeed * Time.deltaTime;
-            float currentRotation = Mathf.MoveTowardsAngle(EntryDoorLeft.transform.eulerAngles.y, targetLeftRotation, step);
-            EntryDoorLeft.transform.eulerAngles = new Vector3(0, currentRotation, 0);
-        }
+        //if (isOpenEntryDoor && EntryDoorLeft.transform.eulerAngles.y != targetLeftRotation)
+        //{
+        //    // Calculate the step for each frame
+        //    float step = rotationSpeed * Time.deltaTime;
+        //    float currentRotation = Mathf.MoveTowardsAngle(EntryDoorLeft.transform.eulerAngles.y, targetLeftRotation, step);
+        //    EntryDoorLeft.transform.eulerAngles = new Vector3(0, currentRotation, 0);
+        //}
 
         // Smoothly rotate the right door if it's not yet at target
-        if (isOpenEntryDoor && EntryDoorRight.transform.eulerAngles.y != targetRightRotation)
-        {
-            // Calculate the step for each frame
-            float step = rotationSpeed * Time.deltaTime;
-            float currentRotation = Mathf.MoveTowardsAngle(EntryDoorRight.transform.eulerAngles.y, targetRightRotation, step);
-            EntryDoorRight.transform.eulerAngles = new Vector3(0, currentRotation, 0);
-        }
+        //if (isOpenEntryDoor && EntryDoorRight.transform.eulerAngles.y != targetRightRotation)
+        //{
+        //    // Calculate the step for each frame
+        //    float step = rotationSpeed * Time.deltaTime;
+        //    float currentRotation = Mathf.MoveTowardsAngle(EntryDoorRight.transform.eulerAngles.y, targetRightRotation, step);
+        //    EntryDoorRight.transform.eulerAngles = new Vector3(0, currentRotation, 0);
+        //}
 
         // Check if both doors have reached their target rotation
         //if (EntryDoorLeft.transform.eulerAngles.y == targetLeftRotation && EntryDoorRight.transform.eulerAngles.y == targetRightRotation)
@@ -73,28 +73,28 @@ public class Ground : MonoBehaviour
 
        
 
-        if (isOpenExitDoor && ExitDoorLeft.transform.eulerAngles.y != targetRightRotation)
-        {
-            // Calculate the step for each frame
-            float step = rotationSpeed * Time.deltaTime;
-            float currentRotation = Mathf.MoveTowardsAngle(ExitDoorLeft.transform.eulerAngles.y, targetRightRotation, step);
-            ExitDoorLeft.transform.eulerAngles = new Vector3(0, currentRotation, 0);
-        }
+        //if (isOpenExitDoor && ExitDoorLeft.transform.eulerAngles.y != targetRightRotation)
+        //{
+        //    // Calculate the step for each frame
+        //    float step = rotationSpeed * Time.deltaTime;
+        //    float currentRotation = Mathf.MoveTowardsAngle(ExitDoorLeft.transform.eulerAngles.y, targetRightRotation, step);
+        //    ExitDoorLeft.transform.eulerAngles = new Vector3(0, currentRotation, 0);
+        //}
 
-        // Smoothly rotate the right door if it's not yet at target
-        if (isOpenExitDoor && ExitDoorRight.transform.eulerAngles.y != targetLeftRotation)
-        {
-            // Calculate the step for each frame
-            float step = rotationSpeed * Time.deltaTime;
-            float currentRotation = Mathf.MoveTowardsAngle(ExitDoorRight.transform.eulerAngles.y, targetLeftRotation, step);
-            ExitDoorRight.transform.eulerAngles = new Vector3(0, currentRotation, 0);
-        }
+        //// Smoothly rotate the right door if it's not yet at target
+        //if (isOpenExitDoor && ExitDoorRight.transform.eulerAngles.y != targetLeftRotation)
+        //{
+        //    // Calculate the step for each frame
+        //    float step = rotationSpeed * Time.deltaTime;
+        //    float currentRotation = Mathf.MoveTowardsAngle(ExitDoorRight.transform.eulerAngles.y, targetLeftRotation, step);
+        //    ExitDoorRight.transform.eulerAngles = new Vector3(0, currentRotation, 0);
+        //}
 
         // Check if both doors have reached their target rotation
-        if (ExitDoorLeft.transform.eulerAngles.y == targetRightRotation && ExitDoorRight.transform.eulerAngles.y == targetLeftRotation)
-        {
-            isOpenExitDoor = false; // Set the bool to false once the doors are fully open
-        }
+        //if (ExitDoorLeft.transform.eulerAngles.y == targetRightRotation && ExitDoorRight.transform.eulerAngles.y == targetLeftRotation)
+        //{
+        //    isOpenExitDoor = false; // Set the bool to false once the doors are fully open
+        //}
     }
 
     public void OpenEntryDoor()
@@ -102,4 +102,14 @@ public class Ground : MonoBehaviour
         EntryDoorLeft.transform.eulerAngles = new Vector3(0, 0, 0);
     }
 
+
+    public void Closegate()
+    {
+        isOpenEntryDoor = false;
+        isOpenExitDoor = false;
+        EntryDoorLeft.transform.eulerAngles = new Vector3(0, 0, 0);
+        EntryDoorRight.transform.eulerAngles = new Vector3(0, 0, 0);
+        ExitDoorLeft.transform.eulerAngles = new Vector3(0, 0, 0);
+        ExitDoorRight.transform.eulerAngles = new Vector3(0, 0, 0);
+    }
 }

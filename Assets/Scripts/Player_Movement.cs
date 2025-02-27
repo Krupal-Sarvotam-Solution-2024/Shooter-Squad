@@ -1,275 +1,202 @@
-using System.Collections;
 using UnityEngine;
-using UnityEngine.EventSystems;
-using UnityEngine.InputSystem;
 
 public class Player_Movement : MonoBehaviour
 {
-    [Space(10)]
-    [Header("Player Rigidbody")]
-    [SerializeField] public Rigidbody playerRigidbody;
+    public enum MovementType { Rigidbody, Translate, CharacterController }
+    public MovementType movementType = MovementType.Rigidbody;
 
-    [Space(10)]
     [Header("Movement Settings")]
-    [SerializeField] private float moveSpeed;
+    [SerializeField] private float moveSpeed = 5f;
     [SerializeField] private float rotationSpeed = 10f;
+    [SerializeField] private float acceleration = 10f;
+    [SerializeField] private float deceleration = 10f;
 
-    [Space(10)]
     [Header("Joystick Input Settings")]
     [SerializeField] private Joystick playerJoystick;
 
-    [Space(10)]
     [Header("Animations Controller")]
     public Animator playerAnimator;
 
-    [Space(10)]
-    [Header("Radius Ring")]
-    [SerializeField] private GameObject RadiusRing;
-
-    [Space(10)]
     [Header("Game Manager")]
     public GameManager GameManager;
 
-    [Space(10)]
     [Header("Current player state")]
     public AnimState playerState;
 
-    [Space(10)]
-    [Header("Player manager")]
     private Player_Manager player;
+    private Vector3 movementDirection;
+    private Vector3 currentVelocity;
+    private Rigidbody rb;
+    private CharacterController characterController;
 
-    [Space(10)]
-    [Header("Movement manager")]
-    public Vector3 movementDirection;
-    public Vector3 newTemp;
-    public bool temp;
-    private Vector3 velocity;
-
-    [SerializeField] GameObject PredicatedPosShower;
-    [SerializeField] GameObject PredicatedPosShowerParent;
-
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        playerRigidbody = GetComponent<Rigidbody>();
         player = GetComponent<Player_Manager>();
-        //StartCoroutine(kinematicSetting());
-        //playerAnimator = GetComponent<Animator>();
-    }
+        rb = GetComponent<Rigidbody>();
+        //characterController = GetComponent<CharacterController>();
 
-    // Update is called once per frame
+        //if (rb != null)
+        //{
+        //    rb.interpolation = RigidbodyInterpolation.Interpolate;
+        //    rb.collisionDetectionMode = CollisionDetectionMode.Continuous;
+        //}
+    }
+    public void OnAnimationEventTriggered() // Method name must match the Animation Event
+    {
+        player.Shotting();
+        // Your logic (e.g., shaking the health bar)
+    }
     void Update()
     {
-        if ((GameManager.GamePlay == false) || (player.isDeath == true))
+        if (!GameManager.GamePlay || player.is_death)
         {
             return;
         }
+//#if UNITY_EDITOR
+//        float horizontalInput = Input.GetAxis("Horizontal");
+//        float verticalInput = Input.GetAxis("Vertical");
+//#else
+        
+       float horizontalInput = playerJoystick.Horizontal;
+       float verticalInput = playerJoystick.Vertical;
+////#endif
+        Vector3 targetDirection = new Vector3(horizontalInput, 0, verticalInput).normalized;
 
+        movementDirection = Vector3.Lerp(movementDirection, targetDirection, Time.deltaTime * acceleration);
 
-
-        // Get input from the player
-        float horizontalInput = playerJoystick.Horizontal;
-        float verticalInput = playerJoystick.Vertical;
-
-        // Calculate movement direction
-        movementDirection = new Vector3(horizontalInput, 0, verticalInput);
-
-        if (movementDirection.magnitude > 0.1f)
+        if (movementDirection.magnitude < 0.1f)
         {
-/*            temp = false;
-*/            PredicatedPosShowerParent.transform.position = transform.position;
-            PredicatedPosShower.SetActive(true);
-            PredicatedPosShower.transform.localPosition = movementDirection.normalized * 1.5f;
+            movementDirection = Vector3.zero;
+
         }
         else
         {
-            PredicatedPosShower.SetActive(false);
-/*            if (temp == false)
+            if (rb.linearVelocity != Vector3.zero && walksoundtime > .25f)
             {
-                newTemp = transform.position;
-                temp = true;
+                walksoundtime = 0;
+                player.playerAudio.PlayOneShot(player.runSurface);
+              
             }
-            transform.position = newTemp;
-*/        }
+            walksoundtime += Time.deltaTime;
+           
+        }
 
-        //if (transform.position.y < 0)
-        //{
-        //    transform.position = new Vector3(transform.position.x, 0, transform.position.z);
-        //    // Move the transform smoothly in the direction of input
-        //    transform.Translate(movementDirection * moveSpeed * Time.deltaTime, Space.World);
-        //}
-        JoystickInput();
+        UpdateAnimation(horizontalInput, verticalInput);
+    }
 
-        if (player.enemyInRadius > 0)
+    void FixedUpdate()
+    {
+        if (!GameManager.GamePlay || player.is_death)
         {
-            if (verticalInput > 0 && Mathf.Abs(horizontalInput) < 0.5f)
+            movementDirection = Vector3.zero;
+            return;
+        }
+
+        switch (movementType)
+        {
+            case MovementType.Rigidbody:
+                MoveWithRigidbody();
+                break;
+            case MovementType.Translate:
+                MoveWithTranslate();
+                break;
+            case MovementType.CharacterController:
+                MoveWithCharacterController();
+                break;
+        }
+    }
+    float walksoundtime;
+    void MoveWithRigidbody()
+    {
+        Vector3 targetVelocity = movementDirection * moveSpeed;
+        rb.linearVelocity = Vector3.Lerp(rb.linearVelocity, targetVelocity, Time.fixedDeltaTime * acceleration);
+       
+        RotatePlayer();
+    }
+
+    void MoveWithTranslate()
+    {
+        transform.position = Vector3.Lerp(transform.position, transform.position + movementDirection * moveSpeed * Time.fixedDeltaTime, Time.fixedDeltaTime * acceleration);
+        RotatePlayer();
+    }
+
+    void MoveWithCharacterController()
+    {
+        if (characterController != null)
+        {
+            Vector3 smoothedMovement = Vector3.Lerp(characterController.velocity, movementDirection * moveSpeed, Time.fixedDeltaTime * acceleration);
+            characterController.Move(smoothedMovement * Time.fixedDeltaTime);
+            RotatePlayer();
+        }
+    }
+
+    void RotatePlayer()
+    {
+        if (movementDirection.magnitude > 0.1f )
+        {
+            Quaternion targetRotation = Quaternion.LookRotation(movementDirection, Vector3.up);
+            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.fixedDeltaTime * rotationSpeed);
+        }
+    }
+
+    void UpdateAnimation(float horizontal, float vertical)
+    {
+        if (!player.Enemy)
+        {
+            if (movementDirection.magnitude > 0.1f)
             {
-                AnimationController(AnimState.RunningForward);
+                float angle = Vector3.SignedAngle(transform.forward, movementDirection, Vector3.up);
+
+                if (angle > -45f && angle < 45f)
+                    AnimationController(AnimState.RunningForward);
+                else if (angle >= 45f && angle < 135f)
+                    AnimationController(AnimState.RunningRight);
+                else if (angle <= -45f && angle > -135f)
+                    AnimationController(AnimState.RunningLeft);
+                else
+                    AnimationController(AnimState.RunningBackward);
             }
-            else if (verticalInput < 0 && Mathf.Abs(horizontalInput) < 0.5f)
-            {
-                AnimationController(AnimState.RunningBackward);
-            }
-            else if (horizontalInput > 0 && Mathf.Abs(verticalInput) < 0.5f)
-            {
-                AnimationController(AnimState.RunningRight);
-            }
-            else if (horizontalInput < 0 && Mathf.Abs(verticalInput) < 0.5f)
-            {
-                AnimationController(AnimState.RunningLeft);
-            }
-            else if (horizontalInput == 0 && Mathf.Abs(verticalInput) == 0)
+            else
             {
                 AnimationController(AnimState.Idle);
             }
         }
-
-        RadiusRing.transform.eulerAngles = Vector3.zero;
-    }
-
-
-    void JoystickInput()
-    {
-        if (player.isDeath == true)
-        {
-            player.playerAudio.Stop();
-            player.isSoundPlaying = false;
-            return;
-        }
-
-        // Get playerJoystick input
-        Vector3 input = new Vector3(playerJoystick.Horizontal, 0f, playerJoystick.Vertical);
-
-        //if (input.magnitude > 0.1f)
-        //{
-        //    // Accelerate towards target velocity
-        //    velocity = Vector3.Lerp(velocity, input.normalized * moveSpeed, moveSpeed * Time.deltaTime);
-
-        //    if (player.isTargeting == false)
-        //    {
-        //        // Rotate player towards movement direction
-        //        transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(input), Time.deltaTime * moveSpeed);
-        //    }
-
-        //    AnimationController(AnimState.RunningForward);
-        //    if (player.isSoundPlaying == false)
-        //    {
-        //        player.playerAudio.clip = player.runSurface;
-        //        player.playerAudio.Play();
-        //        player.isSoundPlaying = true;
-        //    }
-        //}
-        //else
-        //{
-        //    // Gradually slow down when no input
-        //    velocity = Vector3.Lerp(velocity, Vector3.zero, (moveSpeed / 2) * Time.deltaTime);
-        //    AnimationController(AnimState.Idle);
-        //    player.playerAudio.Stop();
-        //    player.isSoundPlaying = false;
-        //}
-        if (movementDirection.magnitude > 0.1f)
-        {
-            movementDirection.Normalize();
-            velocity = Vector3.Lerp(velocity, movementDirection * moveSpeed, moveSpeed * Time.deltaTime);
-            playerRigidbody.linearVelocity = Vector3.SmoothDamp(playerRigidbody.linearVelocity, new Vector3(velocity.x, playerRigidbody.linearVelocity.y, velocity.z), ref velocity, 0.1f);
-
-            Quaternion targetRotation = Quaternion.LookRotation(movementDirection, Vector3.up);
-            if (!player.isTargeting)
-            {
-                transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
-            }
-
-            AnimationController(AnimState.RunningForward);
-            if (player.isSoundPlaying == false)
-            {
-                player.playerAudio.clip = player.runSurface;
-                player.playerAudio.Play();
-                player.isSoundPlaying = true;
-            }
-        }
         else
         {
-            velocity = Vector3.Lerp(velocity, Vector3.zero, moveSpeed * Time.deltaTime);
-            AnimationController(AnimState.Idle);
-            player.playerAudio.Stop();
-            player.isSoundPlaying = false;
+            Vector3 relativeMovement = transform.InverseTransformDirection(movementDirection);
+
+            if (relativeMovement.z > 0.1f)      // Moving forward relative to target
+                AnimationController(AnimState.RunningForward);
+            else if (relativeMovement.z < -0.1f)// Moving backward relative to target
+                AnimationController(AnimState.RunningBackward);
+            else if (relativeMovement.x > 0.1f) // Moving right relative to target
+                AnimationController(AnimState.RunningRight);
+            else if (relativeMovement.x < -0.1f)// Moving left relative to target
+                AnimationController(AnimState.RunningLeft);
+            else
+                AnimationController(AnimState.Idle);
         }
     }
-    void FixedUpdate()
-    {
-        // Apply movement
-        playerRigidbody.linearVelocity = new Vector3(velocity.x, playerRigidbody.linearVelocity.y, velocity.z);
-    }
-
+    
 
     public void AnimationController(AnimState newState)
     {
+        if (playerState == newState) return;
+
         playerState = newState;
-        switch (newState)
-        {
-            case AnimState.Idle:
-                playerAnimator.SetBool("Idle", true);
-                playerAnimator.SetBool("Running", false);
-                playerAnimator.SetBool("Right", false);
-                playerAnimator.SetBool("Left", false);
-                playerAnimator.SetBool("Backward", false);
-                break;
-            case AnimState.RunningForward:
-                playerAnimator.SetBool("Idle", false);
-                playerAnimator.SetBool("Running", true);
-                playerAnimator.SetBool("Right", false);
-                playerAnimator.SetBool("Left", false);
-                playerAnimator.SetBool("Backward", false);
-                break;
-            case AnimState.RunningBackward:
-                playerAnimator.SetBool("Idle", false);
-                playerAnimator.SetBool("Running", true);
-                playerAnimator.SetBool("Right", false);
-                playerAnimator.SetBool("Left", false);
-                playerAnimator.SetBool("Backward", true);
-                break;
-            case AnimState.RunningLeft:
-                playerAnimator.SetBool("Idle", false);
-                playerAnimator.SetBool("Running", true);
-                playerAnimator.SetBool("Right", false);
-                playerAnimator.SetBool("Left", true);
-                playerAnimator.SetBool("Backward", false);
-                break;
-            case AnimState.RunningRight:
-                playerAnimator.SetBool("Idle", false);
-                playerAnimator.SetBool("Running", true);
-                playerAnimator.SetBool("Right", true);
-                playerAnimator.SetBool("Left", false);
-                playerAnimator.SetBool("Backward", false);
-                break;
-            case AnimState.IdleShoot:
-                playerAnimator.SetBool("Idle", true);
-                playerAnimator.SetBool("Running", false);
-                playerAnimator.SetBool("Right", false);
-                playerAnimator.SetBool("Left", false);
-                playerAnimator.SetBool("Backward", false);
-                break;
-        }
+        playerAnimator.SetBool("Idle", newState == AnimState.Idle);
+        playerAnimator.SetBool("Running", newState == AnimState.RunningForward);
+        playerAnimator.SetBool("Right", newState == AnimState.RunningRight);
+        playerAnimator.SetBool("Backward", newState == AnimState.RunningBackward);
+        playerAnimator.SetBool("Left", newState == AnimState.RunningLeft);
     }
 
     public enum AnimState
     {
         Idle,
         RunningForward,
-        RunningRight,
-        RunningLeft,
         RunningBackward,
-        IdleShoot
+        RunningLeft,
+        RunningRight
     }
-
-    IEnumerator kinematicSetting()
-    {
-        yield return new WaitForSeconds(3);
-        if (player.isDeath == false && GameManager.GamePlay == true)
-        {
-            playerRigidbody.isKinematic = true;
-            playerRigidbody.isKinematic = false;
-        }
-    }
-
 }

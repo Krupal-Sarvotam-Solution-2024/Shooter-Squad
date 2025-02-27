@@ -3,135 +3,178 @@ using UnityEngine;
 
 public class Bullet : MonoBehaviour
 {
-    [Space(10)]
-    [Header("Player manager")]
-    public Player_Manager bulletPlayer; // Shooter player
-
+    private Rigidbody rb;
+    private Collider colider;
     [Space(10)]
     [Header("Bot manager")]
-    public Bot_Manager bulletBot; // Shooter bot
+    public Entity entity_holder; // Shooter bot
+    public bool small_bullets;
 
-    [Space(10)]
-    [Header("Bullet parent")]
-    public GameObject Parent; // Bullet parent
-
-    [Space(10)]
-    [Header("Deafult value")]
-    public Vector3 previousScale; // Starting scale
-    public Vector3 previousPosition; // Starting position
 
     [Space(10)]
     [Header("Paricle systems")]
     [SerializeField] private ParticleSystem wallHitParticle; // Particle for playing when hit wall
     [SerializeField] private ParticleSystem playerHitParicle; // Particle for playing when hit player/bot
+    [SerializeField] private ParticleSystem projectile;
+
+    [SerializeField] private ParticleSystem flash;
 
     [Space(10)]
     [Header("Damage for player/bot")]
     public int damageAmount; // Damage to player or bot
+    public float bulletSpeed;
+
+    public AudioSource hitaudio;
+    public AudioClip obsticlehit, playerhit;
+    bool ended;
+
 
     // Called on activation of object
     void OnEnable()
     {
+        ended = false;
+
+        projectile.gameObject.SetActive(true);
+        colider.enabled = true;
+
+        for (int i = 0; i < transform.childCount - 2; i++)
+        {
+            transform.GetChild(i).gameObject.SetActive(true);
+        }
         StartCoroutine(OffBullet());
     }
-
-    // Turning off bullet if no object collide
     IEnumerator OffBullet()
     {
-        yield return new WaitForSeconds(5f);
-        GoToParent();
+        projectile.gameObject.SetActive(false);
+        wallHitParticle.gameObject.SetActive(false);
+        wallHitParticle.Stop();
+        flash.Play();
+        yield return new WaitForSeconds(.1f);
+        //flash.gameObject.SetActive(false);
+        projectile.gameObject.SetActive(true);
+        projectile.Play();
+        Debug.Log("Firing");
+
+        Vector3 direction = transform.forward;
+
+        rb.linearVelocity = direction * bulletSpeed;
+        yield return new WaitForSeconds(2f);
+
+        entity_holder.gameManager.Objectpool.ReturnToPool(entity_holder.my_wepon.bullets.name, this.gameObject);
     }
-
-    // On Collide with any object
-    void OnCollisionEnter(Collision collision)
+    public void BulletFire()
     {
+        Debug.Log("Firingsss");
+        //   StartCoroutine(Fireing());
+    }
+    //public IEnumerator Fireing()
+    //{
+    //    Debug.Log("Firin11g");
+
+    //}
+    private void Awake()
+    {
+        rb = GetComponent<Rigidbody>();
+        colider = GetComponent<Collider>();
+    }
+    private void Update()
+    {
+
+
+    }
+    // Turning off bullet if no object collide
+
+    private void OnTriggerEnter(Collider collision)
+    {
+        if (entity_holder == null ||
+            collision.gameObject == entity_holder.gameObject ||
+            collision.transform.GetComponent<Bullet>() ||
+            collision.gameObject.name == "Magic circle" || collision.GetComponent<Grass>())
+            return;
+
         this.transform.GetComponent<Rigidbody>().linearVelocity = Vector3.zero;
-        ContactPoint points = collision.contacts[0];
-        Vector3 pos = points.point;
-        Debug.Log(pos);
-        playerHitParicle.transform.parent = null;
-        playerHitParicle.transform.position = pos;
-        wallHitParticle.transform.parent = null;
-        wallHitParticle.transform.position = pos;
+        Vector3 pos = this.transform.position;
 
+        if (collision.GetComponent<Entity>() && collision.gameObject != entity_holder)
+        {
+            playerHitParicle.transform.position = pos;
 
-        /*if (bulletPlayer == null && collision.transform.name.Contains("Player") == true)
-        {
-            // Player Shoot
+            hitaudio.PlayOneShot(playerhit);
             StartCoroutine(GoParentAfterParticle(playerHitParicle));
+            collision.GetComponent<Entity>().ReduceHeath(damageAmount);
+            //player hit
         }
-        else if (bulletBot == null && collision.transform.name.Contains("Bot") == false)
+        else if (collision.gameObject != entity_holder)
         {
-            // Bot Shoot
-            StartCoroutine(GoParentAfterParticle(playerHitParicle));
-        }*/
-        if (collision.transform.name.Contains("Player") || collision.transform.name.Contains("Bot"))
-        {
-            StartCoroutine(GoParentAfterParticle(playerHitParicle));
-        }
-        else
-        {
-            // else
+            //wall hit
+            Debug.Log("object hitting");
+            wallHitParticle.transform.position = pos;
+            hitaudio.PlayOneShot(obsticlehit);
             StartCoroutine(GoParentAfterParticle(wallHitParticle));
         }
+
+
+
+
+        Debug.Log("Deactivating bullets");
+
+
     }
 
-    // Go to parent timing over of bullet
-    public void GoToParent()
+    private void OnTriggerExit(Collider collision)
     {
+        if (entity_holder == null ||
+            collision.gameObject == entity_holder.gameObject ||
+            collision.transform.GetComponent<Bullet>() ||
+            collision.gameObject.name == "Magic circle" || collision.GetComponent<Grass>())
+            return;
+
         this.transform.GetComponent<Rigidbody>().linearVelocity = Vector3.zero;
-        this.gameObject.SetActive(false);
-        this.transform.parent = Parent.transform;
-        this.transform.localPosition = previousPosition;
-        this.transform.localScale = previousScale;
-        this.transform.eulerAngles = Vector3.zero;
-        this.transform.localEulerAngles = Vector3.zero;
+        Vector3 pos = this.transform.position;
 
-        wallHitParticle.transform.parent = this.transform;
-        playerHitParicle.transform.parent = this.transform;
-
-        GetComponent<MeshRenderer>().enabled = true;
-        GetComponent<Collider>().enabled = true;
-
-        if (bulletPlayer != null)
+        if (collision.GetComponent<Entity>() && collision.gameObject != entity_holder)
         {
-            Player_Shooting player_Shooting = bulletPlayer.gameObject.transform.GetComponent<Player_Shooting>();
+            playerHitParicle.transform.position = pos;
 
-            if (player_Shooting.bulletUsed.Contains(this.gameObject))
-            {
-                player_Shooting.bulletUsed.Remove(this.gameObject);
-            }
-
-            if (player_Shooting.bulletUnused.Contains(this.gameObject) == false)
-            {
-                player_Shooting.bulletUnused.Add(this.gameObject);
-            }
-
+            hitaudio.PlayOneShot(playerhit);
+            StartCoroutine(GoParentAfterParticle(playerHitParicle));
+            collision.GetComponent<Entity>().ReduceHeath(damageAmount);
+            //player hit
+        }
+        else if (collision.gameObject != entity_holder)
+        {
+            //wall hit
+            Debug.Log("object hitting");
+            wallHitParticle.transform.position = pos;
+            hitaudio.PlayOneShot(obsticlehit);
+            StartCoroutine(GoParentAfterParticle(wallHitParticle));
         }
 
-        if (bulletBot != null)
-        {
 
-            if (bulletBot.bulletUsed.Contains(this.gameObject))
-            {
-                bulletBot.bulletUsed.Remove(this.gameObject);
-            }
 
-            if (bulletBot.bulletUnused.Contains(this.gameObject) == false)
-            {
-                bulletBot.bulletUnused.Add(this.gameObject);
-            }
-        }
+
+        Debug.Log("Deactivating bullets");
     }
 
     // Playing particle when hit anything
     IEnumerator GoParentAfterParticle(ParticleSystem particleType)
     {
-        GetComponent<Rigidbody>().linearVelocity = Vector3.zero;
-        GetComponent<MeshRenderer>().enabled = false;
-        GetComponent<Collider>().enabled = false;
+
+
+        for (int i = 0; i < transform.childCount; i++)
+        {
+            transform.GetChild(i).gameObject.SetActive(false);
+        }
+        particleType.gameObject.SetActive(true);
         particleType.Play();
+        //need to deactivate eeveertything
+        rb.linearVelocity = Vector3.zero;
+        projectile.gameObject.SetActive(false);
+        colider.enabled = false;
+
+        hitaudio.Play();
         yield return new WaitForSeconds(2f);
-        GoToParent();
+        entity_holder.gameManager.Objectpool.ReturnToPool(entity_holder.my_wepon.bullets.name, this.gameObject);
+        // gameManager.Objectpool.ReturnToPool(Bullets.name, bulletObj);
     }
 }
