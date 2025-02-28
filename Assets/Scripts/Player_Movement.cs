@@ -176,12 +176,13 @@ public class Player_Movement : MonoBehaviour
         playerAnimator.SetBool("Left", newState == AnimState.RunningLeft);
     }
 
-    public enum AnimState
-    {
-        Idle,
-        RunningForward,
-        RunningBackward,
-        RunningLeft,
-        RunningRight
-    }
+   
+}
+public enum AnimState
+{
+    Idle,
+    RunningForward,
+    RunningBackward,
+    RunningLeft,
+    RunningRight
 }

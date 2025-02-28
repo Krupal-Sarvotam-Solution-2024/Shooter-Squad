@@ -265,7 +265,7 @@ public class GameManager : MonoBehaviour
 
 
         botcount--;
-
+        remaning_bot.text = botcount + " Remaning";
         if (botcount <= 0)
         {
 
@@ -305,6 +305,7 @@ public class GameManager : MonoBehaviour
         // Declare ground variable
         Ground groundSctipt = currentGround.GetComponent<Ground>();
         botcount = groundSctipt.botCount;
+        remaning_bot.text = botcount + " Remaning";
         zome.transform.localScale = zome.startingsclae;
         zome.start = true;
         // Set the player 

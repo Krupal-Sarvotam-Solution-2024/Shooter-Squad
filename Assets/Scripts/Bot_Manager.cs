@@ -41,7 +41,8 @@ public class Bot_Manager : Entity
     public override void Start()
     {
         base.Start();
-        StartCoroutine(RandomMovement());
+       
+       
     }
     void Update()
     {
@@ -53,69 +54,17 @@ public class Bot_Manager : Entity
           
             return;
         }
+        Vector3 targetDirection = new Vector3(horizotalinput, 0, verticalinput).normalized;
 
-        if (Enemy == null) // If no enemy is found, move randomly
+        movementDirection = Vector3.Lerp(movementDirection, targetDirection, Time.deltaTime * acceleration);
+
+        if (movementDirection.magnitude < 0.1f)
         {
-            if (!isRoaming)
-            {
-                Vector3 targetDirection = new Vector3(horizotalinput, 0,verticalinput).normalized;
+            movementDirection = Vector3.zero;
 
-                movementDirection = Vector3.Lerp(movementDirection, targetDirection, Time.deltaTime * acceleration);
-
-                if (movementDirection.magnitude < 0.1f)
-                {
-                    movementDirection = Vector3.zero;
-
-                }
-                else
-                {
-                    //if (entity_rb.linearVelocity != Vector3.zero)
-                    //{
-                    // //   walksoundtime = 0;
-                    //  //  player.playerAudio.PlayOneShot(player.runSurface);
-
-                    //}
-                    //walksoundtime += Time.deltaTime;
-
-                }
-                //  StartCoroutine(RoamRandomly());
-            }
         }
-        else
-        {
-            isRoaming = false; // Stop random roaming when an enemy appears
-            // StopCoroutine(RoamRandomly());
-            // Follow the player and managing the animation
-            //if (isFollowing && Enemy)
-            //{
-            //    float distance = Vector3.Distance(Enemy.gameObject.transform.position, this.gameObject.transform.position);
-            //    if (distance > stopDistance)
-            //    {
-            //        Vector3 directionToPlayer = Enemy.gameObject.transform.position - entity_navAi.transform.position;
-            //        Vector3 targetPosition = Enemy.gameObject.transform.position - directionToPlayer.normalized * stopDistance;
-
-            //        entity_navAi.SetDestination(targetPosition);
-            //        AnimationController(AnimState.Running);
-            //    }
-            //    else if (distance < stopDistance - 0.5f) // Move backwards if too close (adjust buffer if needed)
-            //    {
-            //        // Move away from the player
-            //        Vector3 directionAwayFromPlayer = entity_navAi.transform.position - Enemy.gameObject.transform.position;
-            //        Vector3 backwardPosition = entity_navAi.transform.position + directionAwayFromPlayer.normalized * 1.5f; // Move back
-
-            //        entity_navAi.SetDestination(backwardPosition);
-            //        AnimationController(AnimState.Running); // Add a backward animation if needed
-            //    }
-            //    else
-            //    {
-            //        // Stop movement
-            //        entity_navAi.ResetPath();
-            //        AnimationController(AnimState.Idle);
-            //        //entity_audio.Stop();
-            //    }
-            //}
-        }  
-        transform.eulerAngles = new Vector3 (0, transform.eulerAngles.y, 0);
+       
+        UpdateAnimation();
         GetNeartestEnemy();
     }
     void FixedUpdate()
@@ -138,8 +87,38 @@ public class Bot_Manager : Entity
         if(!Enemy)
         RotatePlayer();
     }
+    void UpdateAnimation()
+    {
+        if (!Enemy)
+        {
 
-   
+            if (movementDirection.magnitude > 0.1f)
+            {
+                AnimationController(AnimState.RunningForward);
+            }
+            else
+            {
+                AnimationController(AnimState.Idle);
+            }
+        }
+        else
+        {
+            Vector3 relativeMovement = transform.InverseTransformDirection(movementDirection);
+
+            if (relativeMovement.z > 0.1f)      // Moving forward relative to target
+                AnimationController(AnimState.RunningForward);
+            else if (relativeMovement.z < -0.1f)// Moving backward relative to target
+                AnimationController(AnimState.RunningBackward);
+            else if (relativeMovement.x > 0.1f) // Moving right relative to target
+                AnimationController(AnimState.RunningRight);
+            else if (relativeMovement.x < -0.1f)// Moving left relative to target
+                AnimationController(AnimState.RunningLeft);
+            else
+                AnimationController(AnimState.Idle);
+        }
+    }
+
+
     void RotatePlayer()
     {
         if (movementDirection.magnitude > 0.1f)
@@ -183,7 +162,6 @@ public class Bot_Manager : Entity
 
 
                 if (Vector3.Distance(this.gameObject.transform.position, item.transform.position) < nearestenemydis &&
-                    !item.GetComponent<Entity>().insideGrass &&
                     item.gameObject.activeInHierarchy &&
                     !item.GetComponent<Entity>().is_death &&
                     item != this)
@@ -228,7 +206,7 @@ public class Bot_Manager : Entity
 
         if (other.GetComponent<Grass>())
         {
-            BodyVisibility(false);
+           // BodyVisibility(false);
             insideGrass = true;
             //Debug.Log("TEXT");
             //for (int i = 0; i < botBodyParts.Count; i++)
@@ -259,7 +237,7 @@ public class Bot_Manager : Entity
 
         if (other.GetComponent<Grass>())
         {
-            BodyVisibility(false);
+           // BodyVisibility(false);
             insideGrass = true;
             
         }
@@ -275,7 +253,7 @@ public class Bot_Manager : Entity
         if (other.GetComponent<Grass>())
         {
             insideGrass = false;
-            BodyVisibility(true);
+           // BodyVisibility(true);
            // BodyVisibility(insideGrass);
         }
 
@@ -292,89 +270,7 @@ public class Bot_Manager : Entity
         //deaactivate shild
     }
 
-    // Follow the player and managin animtion
-    void FollowPlayer()
-    {
-        if (gameManager.GamePlay == false || is_death == true)
-        {
-            return;
-        }
-
-        // Calculate the direction from the bot to the player
-        Vector3 directionToPlayer = (Enemy.gameObject.transform.position - transform.position).normalized;
-
-        // Calculate the target position some distance away from the player
-        Vector3 targetPosition = Enemy.gameObject.transform.position - directionToPlayer * 2f;
-
-        // Set the NavMeshAgent's destination
-        entity_navAi.SetDestination(targetPosition);
-
-        // Check the distance between the bot and the player
-        float distanceToPlayer = Vector3.Distance(transform.position, Enemy.transform.position);
-
-        if (distanceToPlayer <= stopDistance)
-        {
-            if (!isIdle)
-            {
-                AnimationController(AnimState.Idle); // Trigger Idle animation
-                enity_audio.Stop();
-                isIdle = true;
-            }
-        }
-        else
-        {
-            if (isIdle)
-            {
-                AnimationController(AnimState.Running); // Trigger Running animation
-                isIdle = false;
-            }
-        }
-    }
-
-
     
-
-    //// Player bullet hit
-    //void BulletHitted(Bullet bullet)
-    //{
-    //    ReduceHeath(bullet.damageAmount);
-       
-    //}
-
-    // Distance check between player and bot
-    //void DistanceChecker()
-    //{
-    //    if (gameManager.GamePlay == false || Player_Manager.is_death)
-    //    {
-    //        StopFollowing();
-    //        return;
-    //    }
-    //    if (isInRadius)
-    //    {
-    //        botAnimator.SetBool("Shoot", true);
-    //        if (Vector3.Distance(Player_Manager.gameObject.transform.position, this.gameObject.transform.position) > Player_Manager.enemyDistance || Player_Manager.insideGrass == true)// bot is outside the radious
-    //        {
-    //            isOnceInRadius = false;
-                
-    //            isInRadius = false;
-    //            StopFollowing();
-    //        }
-           
-    //    }
-    //    else
-    //    {
-    //        if (Vector3.Distance(Player_Manager.gameObject.transform.position, this.gameObject.transform.position) <= Player_Manager.enemyDistance && Player_Manager.insideGrass == false)// bot in the radious
-    //        {
-                
-                
-              
-    //            isInRadius = true;
-    //            isOnceInRadius = true;
-    //            StartFollowing();
-    //        }
-
-    //    }
-    //}
     public void OnAnimationEventTriggered() // Method name must match the Animation Event
     {
         Shoot();
@@ -395,16 +291,12 @@ public class Bot_Manager : Entity
                 entity_animator.SetBool("Running", false);
                 entity_animator.SetBool("Turn", false);
                 break;
-            case AnimState.Running:
+            case AnimState.RunningForward:
                 entity_animator.SetBool("Idle", false);
                 entity_animator.SetBool("Running", true);
                 entity_animator.SetBool("Turn", false);
                 break;
-            case AnimState.Turn:
-                entity_animator.SetBool("Idle", false);
-                entity_animator.SetBool("Running", false);
-                entity_animator.SetBool("Turn", true);
-                break;
+     
         }
     }
 
@@ -413,7 +305,7 @@ public class Bot_Manager : Entity
     public void StartFollowing()
     {
         isFollowing = true;
-        AnimationController(AnimState.Running);
+        AnimationController(AnimState.RunningForward);
     }
 
     // Stop follow to player
@@ -425,8 +317,6 @@ public class Bot_Manager : Entity
             entity_navAi.ResetPath(); // Stops the bot 
         }
         AnimationController(AnimState.Idle);
-    //    enity_audio.Stop();
-        //botAudio.Stop();
     }
 
     // Bullet shoot
@@ -444,12 +334,6 @@ public class Bot_Manager : Entity
         base.Shotting();
 
         entity_animator.SetBool("Shoot", false);
-
-        // Camera.main.gameObject.GetComponent<Camera_Follower>().Fire();
-
-        // my_wepon.WeaponAudio.Play();
-
-     //   Enemy = null;
 
         Invoke("ResetShooting",1f); // Adjust timing based on animation length
     }
@@ -482,21 +366,11 @@ public class Bot_Manager : Entity
     public override void ResetingGame()
     {
         base.ResetingGame();
-
+        
         AnimationController(AnimState.Idle);
         StopFollowing();
-
-
-
-        // botHealth = botMaxHealth;
-       // isOnceInRadius = false;
-
-        //  this.transform.position = startingPos;
-     
-        // this.transform.localScale = startingScale;
-
         AnimatorObject.gameObject.transform.localRotation = Quaternion.identity;
-
+        StartCoroutine(RandomMovement());
         //Player_Manager = gameManager.player;
     }
 
@@ -504,13 +378,7 @@ public class Bot_Manager : Entity
     public override void Death()
     {
        
-      
-        //SelectedBot.SetActive(false);
 
-        //if (gameManager.botDeath.Contains(this) == false)
-        //{
-        //    gameManager.botDeath.Add(this);
-        //}
         gameManager.ShowBlood(transform.position);
 
         StopFollowing();
@@ -532,21 +400,9 @@ public class Bot_Manager : Entity
 
 
         yield return new WaitForSeconds(2);
-        this.gameObject.SetActive(false);
-        BodyVisibility(true);
-    }
-
-
-
-
-
-
-    // All animation state
-    enum AnimState
-    {
-        Idle,
-        Running,
-        Turn
+        death_partclesystem.SetActive(false);
+        //this.gameObject.SetActive(false);
+        //BodyVisibility(true);
     }
 
 }

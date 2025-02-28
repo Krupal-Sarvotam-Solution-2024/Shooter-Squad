@@ -16,27 +16,27 @@ public class Grass : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(entered_player.Count > 1)
-        {
-            bool playeravilabe = false;
-            foreach (var item in entered_player)
-            {
-                if (item.is_player) 
-                {
-                    playeravilabe = true;
-                    break;
-                }
+        //if(entered_player.Count > 1)
+        //{
+        //    bool playeravilabe = false;
+        //    foreach (var item in entered_player)
+        //    {
+        //        if (item.is_player) 
+        //        {
+        //            playeravilabe = true;
+        //            break;
+        //        }
 
-            }
-            if (playeravilabe)
-            {
-                foreach (var item in entered_player)
-                {
-                    item.BodyVisibility(true);
-                    item.insideGrass = false;
-                }
-            }
-        }
+        //    }
+        //    if (playeravilabe)
+        //    {
+        //        foreach (var item in entered_player)
+        //        {
+        //            item.BodyVisibility(true);
+        //            item.insideGrass = false;
+        //        }
+        //    }
+        //}
     }
 
     private void OnTriggerEnter(Collider other)
@@ -69,33 +69,20 @@ public class Grass : MonoBehaviour
     }
     public void GetingintheGrass(Entity enity)
     {
-        if (enity.is_player)
+        for (int i = 0; i < allgrass.Length; i++)
         {
-
-            for (int i = 0; i < allgrass.Length; i++)
-            {
-                allgrass[i].material.color = InsideGrass;
-            }
+            allgrass[i].material.color = InsideGrass;
         }
-        else
-        {
-            enity.BodyVisibility(false);
-        }
+       
     }
 
     public void OutsideGrass(Entity enity)
     {
 
-        if (enity.is_player)
+        for (int i = 0; i < allgrass.Length; i++)
         {
-            for (int i = 0; i < allgrass.Length; i++)
-            {
-                allgrass[i].material.color = outsidegrass;
-            }
+            allgrass[i].material.color = outsidegrass;
         }
-        else
-        {
-            enity.BodyVisibility(true);
-        }
+        
     }
 }

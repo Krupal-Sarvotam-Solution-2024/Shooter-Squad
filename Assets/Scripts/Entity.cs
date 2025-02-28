@@ -28,7 +28,7 @@ public class Entity : MonoBehaviour
     protected float killcount;
     public float moveSpeed =5f;
     public float rotationSpeed = 10f;
-
+    public Vector3 startingpostion;
 
     [Space(10)]
     [Header("Audio manager")]
@@ -60,38 +60,34 @@ public class Entity : MonoBehaviour
 
     public virtual void Awake()
     {
+
         enity_audio = GetComponent<AudioSource>();
         entity_rb = GetComponent<Rigidbody>();
         entity_navAi = GetComponent<NavMeshAgent>();
         entity_colider = GetComponent<Collider>();
         entity_animator = GetComponent<Animator>();
+
     }
     public virtual void Start()
     {
        // starting_pos = transform.position;
         currentHealth = MaxHealth;
-      
-       
-
-
         for (int i = 0; i < transform.childCount-1; i++)
         {
-
             body_parts.Add(transform.GetChild(i).gameObject);
         }
-
         gameManager.SoundLoad();
-
     }
 
     
     public  virtual void Update()
     {
+
         insideGrass = EnteredGrass == null ? false : true;
+
     }
     public void ReduceHeath(float damage)
     {
-
         if (shild)
             return;
         currentHealth -= damage;
@@ -103,9 +99,7 @@ public class Entity : MonoBehaviour
         if (currentHealth <= 0)
         {
             currentHealth = 0;
-            // death
             Death();
-
         }
     }
     public void ResetingHealth()
@@ -116,7 +110,6 @@ public class Entity : MonoBehaviour
     public void HealthShow()
     {
         float healthPercentage = (currentHealth / MaxHealth) * 100f;
-      
         if (healthPercentage >= 0)
         {
             HealthBarFG.transform.localScale = new Vector3(healthPercentage / 100, HealthBarFG.transform.localScale.y, HealthBarFG.transform.localScale.z);
@@ -126,11 +119,13 @@ public class Entity : MonoBehaviour
             HealthBarFG.transform.localScale = new Vector3(0, HealthBarFG.transform.localScale.y, HealthBarFG.transform.localScale.z);
         }
         HealthPerText.text = healthPercentage.ToString("00") + "%";
+
     }
     public virtual IEnumerator IncreaseHeath(float value)
     {
         while (Healing)
         {
+
             if (currentHealth < MaxHealth)
             {
                 currentHealth += value;
@@ -153,18 +148,33 @@ public class Entity : MonoBehaviour
         }
         //   Enemy.ki++;
         Enemy = null;
-
         Debug.Log("dead");
         Healthbarmain.SetActive(false);
-        //entity is dead
         is_death = true;
         if (entity_rb) entity_rb.isKinematic = true;
         if (entity_colider) entity_colider.enabled = false;
         if (entity_navAi) entity_navAi.enabled = false;
         BodyVisibility(false);
-        gameManager.BotCount();
+        //gameManager.BotCount();
         //  StartCoroutine(DeathPartical());
+        StartCoroutine(Respawn());
     }
+
+    IEnumerator Respawn()
+    {
+        yield return new WaitForSeconds(3);
+        transform.position = startingpostion;
+        if (entity_rb) entity_rb.isKinematic = false;
+        if (entity_colider) entity_colider.enabled = true;
+        if (entity_navAi) entity_navAi.enabled = true;
+        Healthbarmain.SetActive(true);
+        BodyVisibility(true);
+        is_death = false;
+        currentHealth = MaxHealth;
+        HealthShow();
+
+    }
+
 
     public virtual void ResetingGame()
     {
@@ -183,13 +193,10 @@ public class Entity : MonoBehaviour
         }
         my_wepon = allWepons[Random.Range(0, allWepons.Length)];
         my_wepon.gameObject.SetActive(true);
-
         this.gameObject.SetActive(true);
-
         if(entity_rb)entity_rb.isKinematic = false;
         if(entity_colider)entity_colider.enabled = true;
         if(entity_navAi)entity_navAi.enabled = true;
-
         this.transform.position = starting_pos;
         transform.rotation = Quaternion.identity;//making 000
         StartCoroutine(IncreaseHeath(1));
@@ -215,10 +222,7 @@ public class Entity : MonoBehaviour
     IEnumerator DeactivatingObject(GameObject objects,float time =1.5f)
     {
         yield return new WaitForSeconds(time);
-
         gameManager.Objectpool.ReturnToPool("DamageIndicator", objects);
-        
-        
     }
 
     //shooting
@@ -238,8 +242,6 @@ public class Entity : MonoBehaviour
             {
                 Vector3 targetPosition = new Vector3(Enemy.transform.position.x, transform.position.y, Enemy.transform.position.z);
                 my_wepon.FirePoints[i].LookAt(targetPosition);
-
-
                 Bullet spawnedBullets = gameManager.Objectpool.GetFromPool(my_wepon.bullets.name, my_wepon.FirePoints[i].transform.position, Quaternion.Euler(0, my_wepon.FirePoints[i].transform.eulerAngles.y, 0)).GetComponent<Bullet>();
                 spawnedBullets.entity_holder = this;
                 spawnedBullets.BulletFire();
@@ -324,7 +326,7 @@ public class Entity : MonoBehaviour
         Enemy = null;
         foreach (var item in gameManager.botAll)
         {
-            if(!item.is_death && item != this && item.gameObject.activeInHierarchy && !item.insideGrass)
+            if(!item.is_death && item != this && item.gameObject.activeInHierarchy )
             {
                 float distace = Vector3.Distance(this.transform.position, item.transform.position);
             
@@ -342,9 +344,5 @@ public class Entity : MonoBehaviour
             nearestenemydis = shooting_radious;
           
         }
-        
-
-
-
     }
 }

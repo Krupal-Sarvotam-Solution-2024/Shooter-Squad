@@ -105,7 +105,7 @@ public class Player_Shooting : MonoBehaviour
             PlayerManager.player_Movement.playerAnimator.SetBool("SmallBullets", false);
         }
        // stading_driection = transform.eulerAngles.y;
-        Camera.main.gameObject.GetComponent<Camera_Follower>().Fire();
+
 
        
 

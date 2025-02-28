@@ -115,6 +115,11 @@ public class Player_Manager : Entity
         }
         
     }
+    
+    public void Respawing()
+    {
+        ResetingGame();
+    }
     void AutoTarget()
     {
 
@@ -244,7 +249,7 @@ public class Player_Manager : Entity
     public override void ResetingGame()
     {
         base.ResetingGame();
-        player_Movement.AnimationController(Player_Movement.AnimState.Idle);
+        player_Movement.AnimationController(AnimState.Idle);
         playerScore = 0;
         HealthTextUpdate();
       ///  ScoreTextUpdate();
