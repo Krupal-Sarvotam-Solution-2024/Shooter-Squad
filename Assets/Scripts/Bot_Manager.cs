@@ -196,38 +196,7 @@ public class Bot_Manager : Entity
       
     }
 
-   
-    private void OnTriggerEnter(Collider other)
-    {
-        if (gameManager.GamePlay == false)
-        {
-            return;
-        }
-
-        if (other.GetComponent<Grass>())
-        {
-           // BodyVisibility(false);
-            insideGrass = true;
-            //Debug.Log("TEXT");
-            //for (int i = 0; i < botBodyParts.Count; i++)
-            //{
-            //    botBodyParts[i].gameObject.SetActive(false);
-            //    //if (botBodyParts[i].GetComponent<MeshRenderer>())
-            //    //{
-            //    //    botBodyParts[i].GetComponent<MeshRenderer>().material.color = InsideGrass;
-            //    //}
-            //}
-        }
-
-        //if (other.gameObject.transform.TryGetComponent<Bullet>(out Bullet bullet))
-        //{
-        //    if (bullet.entity_holder != null)
-        //    {
-        //        BulletHitted(bullet);
-        //    }
-        //}
-    }
-
+ 
     private void OnTriggerStay(Collider other)
     {
         if (gameManager.GamePlay == false)

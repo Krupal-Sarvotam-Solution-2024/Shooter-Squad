@@ -48,7 +48,7 @@ public class Entity : MonoBehaviour
     public bool isTargetSelected; // Check that tarhet is selected or not
     public bool isTargeting; // Check that is finding target or not
     //shooting
-    public Weapon[] allWepons;
+    
     public Weapon my_wepon;
     public bool insideGrass;
     public Grass EnteredGrass;
@@ -57,7 +57,7 @@ public class Entity : MonoBehaviour
     [Header("powerups")]
     public GameObject shildeffect,speedeffect;
     public bool shild;
-
+    #region MonoMethods
     public virtual void Awake()
     {
 
@@ -78,14 +78,42 @@ public class Entity : MonoBehaviour
         }
         gameManager.SoundLoad();
     }
-
-    
     public  virtual void Update()
     {
 
         insideGrass = EnteredGrass == null ? false : true;
 
     }
+
+    public virtual void FixedUpdate()
+    {
+
+    }
+
+    public virtual void OnTriggerEnter(Collider other)
+    {
+        if (gameManager.GamePlay == false)
+        {
+            return;
+        }
+        Debug.Log("Trigering");
+        if (other.GetComponent<Grass>())
+        {
+
+            insideGrass = true;
+
+        }
+
+        if (other.GetComponent<Weapon>())
+        {
+            my_wepon.gameObject.SetActive(false);
+            my_wepon = my_wepon.gameObject.transform.parent.GetChild(other.GetComponent<Weapon>().id).GetComponent<Weapon>();
+            my_wepon.gameObject.SetActive(true);
+        }
+        //trigering powerups
+
+    }
+    #endregion
     public void ReduceHeath(float damage)
     {
         if (shild)
@@ -187,11 +215,11 @@ public class Entity : MonoBehaviour
         StopAllCoroutines();
         CancelInvoke();
         BodyVisibility(true);
-        foreach (var wepoins in allWepons)
-        {
-            wepoins.gameObject.SetActive(false);
-        }
-        my_wepon = allWepons[Random.Range(0, allWepons.Length)];
+        //foreach (var wepoins in allWepons)
+        //{
+        //    wepoins.gameObject.SetActive(false);
+        //}
+      //  my_wepon = allWepons[Random.Range(0, allWepons.Length)];
         my_wepon.gameObject.SetActive(true);
         this.gameObject.SetActive(true);
         if(entity_rb)entity_rb.isKinematic = false;

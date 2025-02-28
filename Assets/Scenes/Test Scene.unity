@@ -2669,6 +2669,10 @@ PrefabInstance:
       propertyPath: m_LocalPosition.z
       value: -0.38
       objectReference: {fileID: 0}
+    - target: {fileID: 4639856359463880055, guid: 4eb07cb84d3d0954bbe5439e904ad554, type: 3}
+      propertyPath: gameManager
+      value: 
+      objectReference: {fileID: 1780184668}
     - target: {fileID: 4924243329332894362, guid: 4eb07cb84d3d0954bbe5439e904ad554, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0.189
@@ -9535,6 +9539,71 @@ ParticleSystem:
   m_CorrespondingSourceObject: {fileID: 1441252613932994769, guid: b096ae7ae351a4f43b98c01f5c2679a1, type: 3}
   m_PrefabInstance: {fileID: 1916193583781047814}
   m_PrefabAsset: {fileID: 0}
+--- !u!1001 &396700026
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 2519490059651301788, guid: 4eb07cb84d3d0954bbe5439e904ad554, type: 3}
+      propertyPath: m_Name
+      value: Weapon_3
+      objectReference: {fileID: 0}
+    - target: {fileID: 3676762196848617643, guid: 4eb07cb84d3d0954bbe5439e904ad554, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 21.85
+      objectReference: {fileID: 0}
+    - target: {fileID: 3676762196848617643, guid: 4eb07cb84d3d0954bbe5439e904ad554, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -1.283764
+      objectReference: {fileID: 0}
+    - target: {fileID: 3676762196848617643, guid: 4eb07cb84d3d0954bbe5439e904ad554, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -5.86
+      objectReference: {fileID: 0}
+    - target: {fileID: 3676762196848617643, guid: 4eb07cb84d3d0954bbe5439e904ad554, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: -0.0049041496
+      objectReference: {fileID: 0}
+    - target: {fileID: 3676762196848617643, guid: 4eb07cb84d3d0954bbe5439e904ad554, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3676762196848617643, guid: 4eb07cb84d3d0954bbe5439e904ad554, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0.999988
+      objectReference: {fileID: 0}
+    - target: {fileID: 3676762196848617643, guid: 4eb07cb84d3d0954bbe5439e904ad554, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3676762196848617643, guid: 4eb07cb84d3d0954bbe5439e904ad554, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3676762196848617643, guid: 4eb07cb84d3d0954bbe5439e904ad554, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 180.562
+      objectReference: {fileID: 0}
+    - target: {fileID: 3676762196848617643, guid: 4eb07cb84d3d0954bbe5439e904ad554, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4639856359463880055, guid: 4eb07cb84d3d0954bbe5439e904ad554, type: 3}
+      propertyPath: id
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4639856359463880055, guid: 4eb07cb84d3d0954bbe5439e904ad554, type: 3}
+      propertyPath: gameManager
+      value: 
+      objectReference: {fileID: 1780184668}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 4eb07cb84d3d0954bbe5439e904ad554, type: 3}
 --- !u!1 &404941623
 GameObject:
   m_ObjectHideFlags: 0
@@ -23539,7 +23608,7 @@ Canvas:
   m_RenderMode: 0
   m_Camera: {fileID: 0}
   m_PlaneDistance: 100
-  m_PixelPerfect: 0
+  m_PixelPerfect: 1
   m_ReceivesEvents: 1
   m_OverrideSorting: 0
   m_OverridePixelPerfect: 0
@@ -30075,6 +30144,7 @@ MonoBehaviour:
   playerDistance: 0
   shotingInterval: 2
   redyforBrustShooting: 0
+  Allwepons: []
   GameStartAnimText: {fileID: 1263406982}
   remaning_bot: {fileID: 1401121539}
   grounds:
@@ -33724,6 +33794,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 76a0d2e417bbe154ab2730f8beefca59, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  id: 0
   WeaponAudio: {fileID: 1931262079}
   BlastSound: {fileID: 8300000, guid: c0baf407ccaae3344be42045229eb619, type: 3}
   FirePoints:
@@ -89527,6 +89598,7 @@ MonoBehaviour:
   is_player: 1
   moveSpeed: 7.5
   rotationSpeed: 10
+  startingpostion: {x: 0, y: 0, z: 0}
   playerDeath: {fileID: 8300000, guid: bc1091349482e7e4899df97f20862a84, type: 3}
   body_parts: []
   death_partclesystem: {fileID: 0}
@@ -89536,8 +89608,6 @@ MonoBehaviour:
   HealthPerText: {fileID: 5494572114237740818}
   isTargetSelected: 0
   isTargeting: 0
-  allWepons:
-  - {fileID: 8146185464063298236}
   my_wepon: {fileID: 8146185464063298236}
   insideGrass: 0
   EnteredGrass: {fileID: 0}
@@ -95098,3 +95168,4 @@ SceneRoots:
   - {fileID: 979973336}
   - {fileID: 1282159459}
   - {fileID: 1697743128}
+  - {fileID: 396700026}

@@ -87,11 +87,11 @@ public class Player_Manager : Entity
     int weponid = 0;
     public void NextWepon()
     {
-        foreach (var item in allWepons)
-        {
-            item.gameObject.SetActive(false);
-        }
-        my_wepon = allWepons[weponid];
+        //foreach (var item in allWepons)
+        //{
+        //    item.gameObject.SetActive(false);
+        //}
+        //my_wepon = allWepons[weponid];
         my_wepon.gameObject.SetActive(true);
         weponid++;
         if (weponid > 14)
@@ -217,27 +217,6 @@ public class Player_Manager : Entity
 
     }
 
-
-    private void OnTriggerEnter(Collider other)
-    {
-        if (gameManager.GamePlay == false)
-        {
-            return;
-        }
-        
-
-    }
-
-    private void OnTriggerExit(Collider other)
-    {
-        if (gameManager.GamePlay == false)
-        {
-            return;
-        }
-
-        
-    }
-   
 
     // Kill player
     public void KillPlayer(int ScoreIncrementAmount)

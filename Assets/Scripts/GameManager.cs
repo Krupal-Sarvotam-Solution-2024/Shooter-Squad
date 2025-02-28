@@ -26,6 +26,7 @@ public class GameManager : MonoBehaviour
     public float playerDistance; // Distance bewtween player and exit gate
     public float shotingInterval;
     public bool redyforBrustShooting;
+    public Weapon[] Allwepons;
     [Space(10)]
     [Header("Game start anim")]
     public Text GameStartAnimText; // Game start count down text
