@@ -6,8 +6,7 @@ public class Player_Movement : MonoBehaviour
     public MovementType movementType = MovementType.Rigidbody;
 
     [Header("Movement Settings")]
-    [SerializeField] private float moveSpeed = 5f;
-    [SerializeField] private float rotationSpeed = 10f;
+
     [SerializeField] private float acceleration = 10f;
     [SerializeField] private float deceleration = 10f;
 
@@ -27,7 +26,6 @@ public class Player_Movement : MonoBehaviour
     private Vector3 movementDirection;
     private Vector3 currentVelocity;
     private Rigidbody rb;
-    private CharacterController characterController;
 
     void Start()
     {
@@ -81,7 +79,7 @@ public class Player_Movement : MonoBehaviour
            
         }
 
-        UpdateAnimation(horizontalInput, verticalInput);
+        UpdateAnimation();
     }
 
     void FixedUpdate()
@@ -97,64 +95,51 @@ public class Player_Movement : MonoBehaviour
             case MovementType.Rigidbody:
                 MoveWithRigidbody();
                 break;
-            case MovementType.Translate:
-                MoveWithTranslate();
-                break;
-            case MovementType.CharacterController:
-                MoveWithCharacterController();
-                break;
+         
         }
     }
     float walksoundtime;
     void MoveWithRigidbody()
     {
-        Vector3 targetVelocity = movementDirection * moveSpeed;
+        Vector3 targetVelocity = movementDirection * player.moveSpeed;
         rb.linearVelocity = Vector3.Lerp(rb.linearVelocity, targetVelocity, Time.fixedDeltaTime * acceleration);
        
         RotatePlayer();
     }
 
-    void MoveWithTranslate()
-    {
-        transform.position = Vector3.Lerp(transform.position, transform.position + movementDirection * moveSpeed * Time.fixedDeltaTime, Time.fixedDeltaTime * acceleration);
-        RotatePlayer();
-    }
+    //void MoveWithTranslate()
+    //{
+    //    transform.position = Vector3.Lerp(transform.position, transform.position + movementDirection * moveSpeed * Time.fixedDeltaTime, Time.fixedDeltaTime * acceleration);
+    //    RotatePlayer();
+    //}
 
-    void MoveWithCharacterController()
-    {
-        if (characterController != null)
-        {
-            Vector3 smoothedMovement = Vector3.Lerp(characterController.velocity, movementDirection * moveSpeed, Time.fixedDeltaTime * acceleration);
-            characterController.Move(smoothedMovement * Time.fixedDeltaTime);
-            RotatePlayer();
-        }
-    }
+    //void MoveWithCharacterController()
+    //{
+    //    if (characterController != null)
+    //    {
+    //        Vector3 smoothedMovement = Vector3.Lerp(characterController.velocity, movementDirection * moveSpeed, Time.fixedDeltaTime * acceleration);
+    //        characterController.Move(smoothedMovement * Time.fixedDeltaTime);
+    //        RotatePlayer();
+    //    }
+    //}
 
     void RotatePlayer()
     {
         if (movementDirection.magnitude > 0.1f )
         {
             Quaternion targetRotation = Quaternion.LookRotation(movementDirection, Vector3.up);
-            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.fixedDeltaTime * rotationSpeed);
+            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.fixedDeltaTime * player.rotationSpeed);
         }
     }
 
-    void UpdateAnimation(float horizontal, float vertical)
+    void UpdateAnimation()
     {
         if (!player.Enemy)
         {
+
             if (movementDirection.magnitude > 0.1f)
             {
-                float angle = Vector3.SignedAngle(transform.forward, movementDirection, Vector3.up);
-
-                if (angle > -45f && angle < 45f)
-                    AnimationController(AnimState.RunningForward);
-                else if (angle >= 45f && angle < 135f)
-                    AnimationController(AnimState.RunningRight);
-                else if (angle <= -45f && angle > -135f)
-                    AnimationController(AnimState.RunningLeft);
-                else
-                    AnimationController(AnimState.RunningBackward);
+                AnimationController(AnimState.RunningForward);
             }
             else
             {

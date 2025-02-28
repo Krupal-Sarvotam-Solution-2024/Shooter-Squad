@@ -20,7 +20,6 @@ public class GameManager : MonoBehaviour
     [Header("All bot managing variables")]
     public ObjectPoolManager Objectpool;
     public List<Entity> botAll; // All bot gameobject
-    public List<Bot_Manager> botDeath; // All bot gameobject which is death
     [Space(10)]
     [Header("Player managing variables")]
     public Player_Manager player; // The main player gameobject
@@ -109,7 +108,7 @@ public class GameManager : MonoBehaviour
             gunfiller.fillAmount = holdtime;
             Debug.Log(holdtime + "hold time");
         }
-        BotCount();
+       
         //playerDistance = Vector3.Distance(player.transform.position, currentGround.GetComponent<Ground>().ExitGate.transform.position);
     }
 
@@ -163,7 +162,7 @@ public class GameManager : MonoBehaviour
     // Start the game
     public void StartGame()
     {
-        Application.targetFrameRate = 60;
+        Application.targetFrameRate = -60;
         panelPause.SetActive(false);
         panelStart.SetActive(false);
         gamecompletePnale.SetActive(false);
@@ -225,8 +224,7 @@ public class GameManager : MonoBehaviour
         GameStartAnimText.text = "1";
         yield return new WaitForSeconds(1);
         GameStartAnimText.text = "Go!";
-        currentGround.GetComponent<Ground>().isOpenEntryDoor = true;
-        currentGround.GetComponent<Ground>().isOpenExitDoor= false;
+
         yield return new WaitForSeconds(1);
         Time.timeScale = 1f;
         GameStartAnimText.gameObject.SetActive(false);
@@ -260,29 +258,22 @@ public class GameManager : MonoBehaviour
 
     }
     public GameObject gamecompletePnale;
-
+    public int botcount;
     // Counting bot for game end
-    void BotCount()
+    public void BotCount()
     {
-        if (currentGround.GetComponent<Ground>().isOpenExitDoor)
-            return;
-        int tempBotCounter = 0;
-        for (int i = 0; i < botAll.Count; i++)
+
+
+        botcount--;
+
+        if (botcount <= 0)
         {
-            if (botAll[i].gameObject.activeInHierarchy == true)
-            {
-                tempBotCounter++;
-               
-            }
-        }
-        remaning_bot.text = "Remaning :" + tempBotCounter;
-        if (tempBotCounter == 0)
-        {
-            currentGround.GetComponent<Ground>().isOpenExitDoor = true;
+
 
 
             gamecompletePnale.SetActive(true);
         }
+
     }
     public GameObject[] allcharacter;
     public void playersize(float value)
@@ -313,13 +304,7 @@ public class GameManager : MonoBehaviour
 
         // Declare ground variable
         Ground groundSctipt = currentGround.GetComponent<Ground>();
-        //groundSctipt.ExitDoorLeft.transform.eulerAngles = new Vector3(0, 0, 0);
-        //groundSctipt.ExitDoorRight.transform.eulerAngles = new Vector3(0, 0, 0);
-        //groundSctipt.isOpenExitDoor = false;
-        //groundSctipt.EntryDoorLeft.transform.eulerAngles = new Vector3(0, 0, 0);
-        //groundSctipt.EntryDoorRight.transform.eulerAngles = new Vector3(0, 0, 0);
-        //groundSctipt.isOpenEntryDoor = false;
-
+        botcount = groundSctipt.botCount;
         zome.transform.localScale = zome.startingsclae;
         zome.start = true;
         // Set the player 

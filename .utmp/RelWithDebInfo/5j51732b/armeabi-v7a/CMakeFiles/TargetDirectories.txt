@@ -1,0 +1,5 @@
+C:/Users/koush/OneDrive/Desktop/New folder (3)/Sarvatha soltion/New folder/Shooter-Squad/.utmp/RelWithDebInfo/5j51732b/armeabi-v7a/CMakeFiles/edit_cache.dir
+C:/Users/koush/OneDrive/Desktop/New folder (3)/Sarvatha soltion/New folder/Shooter-Squad/.utmp/RelWithDebInfo/5j51732b/armeabi-v7a/CMakeFiles/rebuild_cache.dir
+C:/Users/koush/OneDrive/Desktop/New folder (3)/Sarvatha soltion/New folder/Shooter-Squad/.utmp/RelWithDebInfo/5j51732b/armeabi-v7a/GameActivity/CMakeFiles/game.dir
+C:/Users/koush/OneDrive/Desktop/New folder (3)/Sarvatha soltion/New folder/Shooter-Squad/.utmp/RelWithDebInfo/5j51732b/armeabi-v7a/GameActivity/CMakeFiles/edit_cache.dir
+C:/Users/koush/OneDrive/Desktop/New folder (3)/Sarvatha soltion/New folder/Shooter-Squad/.utmp/RelWithDebInfo/5j51732b/armeabi-v7a/GameActivity/CMakeFiles/rebuild_cache.dir
