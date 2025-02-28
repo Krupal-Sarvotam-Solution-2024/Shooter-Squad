@@ -7,31 +7,32 @@ using UnityEngine.AI;
 
 public class Entity : MonoBehaviour
 {
-    [Header("Manager")]
-    public GameManager gameManager;
-    protected float nearestenemydis = 1000;
 
-    //heath 
+    [Header("Coponets")]
+    public GameManager gameManager;
+    public Entity Enemy; // All enemy in that list
+    protected Rigidbody entity_rb;
+    protected Collider entity_colider;
+    protected NavMeshAgent entity_navAi;
+    protected Animator entity_animator;
+    protected AudioSource enity_audio; // Audio source which handle player audios
+
     protected float currentHealth { get; private set; }
+    protected float nearestenemydis = 1000;
     [Space(10)]
     [Header("Heath Manager")]
     [SerializeField]protected float MaxHealth;
     [SerializeField]private bool Healing;
     public bool is_player;
     public bool is_death {get; private set; }
-    [SerializeField]protected AudioClip playerDeath;
-    [Header("Pooling Objects")]
-  
-    public Entity Enemy; // All enemy in that list
-    //physics
-    protected Rigidbody entity_rb;
-    protected Collider entity_colider;
-    protected NavMeshAgent entity_navAi;
+    protected float killcount;
+    public float moveSpeed =5f;
+    public float rotationSpeed = 10f;
 
 
     [Space(10)]
     [Header("Audio manager")]
-    protected AudioSource enity_audio; // Audio source which handle player audios
+    [SerializeField]protected AudioClip playerDeath;
 
     //parts
     [Space(10)]
@@ -53,17 +54,23 @@ public class Entity : MonoBehaviour
     public Grass EnteredGrass;
     public Color insidegrass, outsidegrass;
     public float shooting_radious;
-    [Header("shild")]
-    public GameObject shildeffect;
+    [Header("powerups")]
+    public GameObject shildeffect,speedeffect;
     public bool shild;
-    public virtual void Start()
+
+    public virtual void Awake()
     {
-       // starting_pos = transform.position;
-        currentHealth = MaxHealth;
         enity_audio = GetComponent<AudioSource>();
         entity_rb = GetComponent<Rigidbody>();
         entity_navAi = GetComponent<NavMeshAgent>();
         entity_colider = GetComponent<Collider>();
+        entity_animator = GetComponent<Animator>();
+    }
+    public virtual void Start()
+    {
+       // starting_pos = transform.position;
+        currentHealth = MaxHealth;
+      
        
 
 
@@ -74,7 +81,7 @@ public class Entity : MonoBehaviour
         }
 
         gameManager.SoundLoad();
-        StartCoroutine(IncreaseHeath(1));
+
     }
 
     
@@ -109,7 +116,7 @@ public class Entity : MonoBehaviour
     public void HealthShow()
     {
         float healthPercentage = (currentHealth / MaxHealth) * 100f;
-        Debug.Log(healthPercentage);
+      
         if (healthPercentage >= 0)
         {
             HealthBarFG.transform.localScale = new Vector3(healthPercentage / 100, HealthBarFG.transform.localScale.y, HealthBarFG.transform.localScale.z);
@@ -127,24 +134,36 @@ public class Entity : MonoBehaviour
             if (currentHealth < MaxHealth)
             {
                 currentHealth += value;
+                Debug.Log("health is increaing");
+                HealthShow();
             }
-            yield return new WaitForSeconds(1);
+
+            Debug.Log("coming inside the health");
+            yield return new WaitForSeconds(value);
+            currentHealth = currentHealth > MaxHealth ? MaxHealth : currentHealth;
         }
-        currentHealth = currentHealth > MaxHealth ? MaxHealth : currentHealth;
     }
 
     public virtual void Death()
     {
+        if (Enemy)
+        {
+            Enemy.Enemy = null;
+            Enemy.killcount++;
+        }
+        //   Enemy.ki++;
+        Enemy = null;
+
         Debug.Log("dead");
         Healthbarmain.SetActive(false);
-       
         //entity is dead
         is_death = true;
         if (entity_rb) entity_rb.isKinematic = true;
         if (entity_colider) entity_colider.enabled = false;
         if (entity_navAi) entity_navAi.enabled = false;
         BodyVisibility(false);
-      //  StartCoroutine(DeathPartical());
+        gameManager.BotCount();
+        //  StartCoroutine(DeathPartical());
     }
 
     public virtual void ResetingGame()
@@ -173,7 +192,7 @@ public class Entity : MonoBehaviour
 
         this.transform.position = starting_pos;
         transform.rotation = Quaternion.identity;//making 000
-
+        StartCoroutine(IncreaseHeath(1));
     }
 
     // Change a visibility of the body
@@ -263,6 +282,7 @@ public class Entity : MonoBehaviour
         
 
     }
+    #region Powerups
     public IEnumerator shildAcitavte()
     {
         //acriavter shild
@@ -274,6 +294,31 @@ public class Entity : MonoBehaviour
         shild = false;
         //deaactivate shild
     }
+    bool speedbosting;
+    public IEnumerator SpeedBost()
+    {
+        if (!speedbosting)
+        {
+            speedbosting = true;
+
+            float tempspeed = 0;
+            tempspeed = moveSpeed;
+            speedeffect.SetActive(true);
+            moveSpeed *= 2;
+            yield return new WaitForSeconds(4);
+            speedeffect.SetActive(false);
+            moveSpeed = tempspeed;
+            speedbosting = false;
+        }
+        else
+        {
+
+            yield return new WaitForSeconds(.1f);
+           
+        }
+       
+    }
+    #endregion
     public virtual void GetNeartestEnemy()
     {
         Enemy = null;
@@ -282,7 +327,7 @@ public class Entity : MonoBehaviour
             if(!item.is_death && item != this && item.gameObject.activeInHierarchy && !item.insideGrass)
             {
                 float distace = Vector3.Distance(this.transform.position, item.transform.position);
-                Debug.Log("Distace Calculating" + distace);
+            
                 if (distace < nearestenemydis && distace < shooting_radious)
                 {
                     nearestenemydis = distace;
@@ -295,6 +340,7 @@ public class Entity : MonoBehaviour
         if(Enemy == null)
         {
             nearestenemydis = shooting_radious;
+          
         }
         
 

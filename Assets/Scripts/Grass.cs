@@ -5,7 +5,7 @@ public class Grass : MonoBehaviour
 {
     [SerializeField] private MeshRenderer[] allgrass;
     [SerializeField] private Color InsideGrass,outsidegrass;
-    [SerializeField] private List<Entity> entered_player = new List<Entity>();
+    public List<Entity> entered_player = new List<Entity>();
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -33,6 +33,7 @@ public class Grass : MonoBehaviour
                 foreach (var item in entered_player)
                 {
                     item.BodyVisibility(true);
+                    item.insideGrass = false;
                 }
             }
         }

@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using TMPro;
 
 public class Camera_Follower : MonoBehaviour
 {
@@ -20,29 +21,26 @@ public class Camera_Follower : MonoBehaviour
 
     public void Fire()
     {
-        StartCoroutine(Shake());
+     //   StartCoroutine(Shake());
+     //   StartCoroutine(Shake());
     }
-
-    IEnumerator Shake()
+    public TextMeshProUGUI XValue, YValue, ZValue;
+    public void changeX(float value)
     {
-        float elapsed = 0f;
-        isShaking = true;
-
-        while (elapsed < shakeDuration)
-        {
-            // Use Perlin Noise for smooth shake effect
-            float x = (Mathf.PerlinNoise(Time.time * 20f, 0f) * 2f - 1f) * shakeMagnitude;
-            float y = (Mathf.PerlinNoise(0f, Time.time * 20f) * 2f - 1f) * shakeMagnitude;
-
-            shakeOffset = new Vector3(x, y, 0); // Apply shake as an offset
-            elapsed += Time.deltaTime;
-            yield return null;
-        }
-
-        shakeOffset = Vector3.zero; // Reset shake effect
-        isShaking = false;
+        offset.x = value;
+        XValue.text = value.ToString();
     }
+    public void changeY(float value)
+    {
+        offset.y = value;
+        YValue.text = value.ToString();
 
+    }
+    public void changeZ(float value)
+    {
+        offset.z = value;
+        ZValue.text = value.ToString(); 
+    }
     void LateUpdate()
     {
         // Calculate the target position based on the player's position + offset

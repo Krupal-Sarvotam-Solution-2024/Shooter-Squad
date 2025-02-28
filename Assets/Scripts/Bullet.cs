@@ -50,17 +50,20 @@ public class Bullet : MonoBehaviour
         wallHitParticle.Stop();
         flash.Play();
         yield return new WaitForSeconds(.1f);
-        //flash.gameObject.SetActive(false);
-        projectile.gameObject.SetActive(true);
-        projectile.Play();
-        Debug.Log("Firing");
+        if (!ended)
+        {
+            //flash.gameObject.SetActive(false);
+            projectile.gameObject.SetActive(true);
+            projectile.Play();
+            Debug.Log("Firing");
 
-        Vector3 direction = transform.forward;
+            Vector3 direction = transform.forward;
 
-        rb.linearVelocity = direction * bulletSpeed;
-        yield return new WaitForSeconds(2f);
+            rb.linearVelocity = direction * bulletSpeed;
+            yield return new WaitForSeconds(2f);
 
-        entity_holder.gameManager.Objectpool.ReturnToPool(entity_holder.my_wepon.bullets.name, this.gameObject);
+            entity_holder.gameManager.Objectpool.ReturnToPool(entity_holder.my_wepon.bullets.name, this.gameObject);
+        }
     }
     public void BulletFire()
     {
@@ -94,7 +97,7 @@ public class Bullet : MonoBehaviour
 
         this.transform.GetComponent<Rigidbody>().linearVelocity = Vector3.zero;
         Vector3 pos = this.transform.position;
-
+        ended = true;
         if (collision.GetComponent<Entity>() && collision.gameObject != entity_holder)
         {
             playerHitParicle.transform.position = pos;

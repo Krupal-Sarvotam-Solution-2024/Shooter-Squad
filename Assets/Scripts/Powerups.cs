@@ -6,6 +6,8 @@ public class Powerups : MonoBehaviour
     {
         shild,
         bomb,
+        speed,
+        bigbomb
     }
     public GameManager manager;
     public allpowerusp powerups;
@@ -13,17 +15,15 @@ public class Powerups : MonoBehaviour
     public float damgeradious;
     public void OnTriggerEnter(Collider other)
     {
+
+        Entity enity = other.GetComponent<Entity>();
         if (powerups == allpowerusp.shild)
         {
-            if (other.GetComponent<Entity>())
+            if (enity)
             {
-
-                other.GetComponent<Entity>().StartCoroutine(other.GetComponent<Entity>().shildAcitavte());
+                enity.StartCoroutine(enity.shildAcitavte());
                 this.gameObject.SetActive(false);
             }
-          
-
-
         }
         else if(powerups == allpowerusp.bomb)
         {
@@ -36,6 +36,14 @@ public class Powerups : MonoBehaviour
          
 
 
+        }else if(powerups == allpowerusp.speed)
+        {
+            if (enity)
+            {
+                enity.StartCoroutine(enity.SpeedBost());
+                this.gameObject.SetActive(false);
+                //enity.
+            }
         }
     }
     public GameObject effectobject;
