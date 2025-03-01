@@ -42,7 +42,6 @@ public class Powerups : MonoBehaviour
             {
                 enity.StartCoroutine(enity.SpeedBost());
                 this.gameObject.SetActive(false);
-                //enity.
             }
         }
     }

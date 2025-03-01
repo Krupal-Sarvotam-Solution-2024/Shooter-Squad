@@ -166,7 +166,7 @@ public class Entity : MonoBehaviour
             currentHealth = currentHealth > MaxHealth ? MaxHealth : currentHealth;
         }
     }
-
+    public GameObject dropingwepon;
     public virtual void Death()
     {
         if (Enemy)
@@ -183,6 +183,8 @@ public class Entity : MonoBehaviour
         if (entity_colider) entity_colider.enabled = false;
         if (entity_navAi) entity_navAi.enabled = false;
         BodyVisibility(false);
+        dropingwepon.transform.GetChild(my_wepon.id).gameObject.SetActive(true);
+
         //gameManager.BotCount();
         //  StartCoroutine(DeathPartical());
         StartCoroutine(Respawn());
@@ -191,6 +193,7 @@ public class Entity : MonoBehaviour
     IEnumerator Respawn()
     {
         yield return new WaitForSeconds(3);
+        dropingwepon.transform.GetChild(my_wepon.id).gameObject.SetActive(false);
         transform.position = startingpostion;
         if (entity_rb) entity_rb.isKinematic = false;
         if (entity_colider) entity_colider.enabled = true;
@@ -215,11 +218,6 @@ public class Entity : MonoBehaviour
         StopAllCoroutines();
         CancelInvoke();
         BodyVisibility(true);
-        //foreach (var wepoins in allWepons)
-        //{
-        //    wepoins.gameObject.SetActive(false);
-        //}
-      //  my_wepon = allWepons[Random.Range(0, allWepons.Length)];
         my_wepon.gameObject.SetActive(true);
         this.gameObject.SetActive(true);
         if(entity_rb)entity_rb.isKinematic = false;
