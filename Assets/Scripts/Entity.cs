@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.AI;
-
+using UnityEngine.Rendering;
 
 public class Entity : MonoBehaviour
 {
@@ -25,7 +25,7 @@ public class Entity : MonoBehaviour
     [SerializeField]private bool Healing;
     public bool is_player;
     public bool is_death {get; private set; }
-    protected float killcount;
+    public float killcount;
     public float moveSpeed =5f;
     public float rotationSpeed = 10f;
     public Vector3 startingpostion;
@@ -55,12 +55,13 @@ public class Entity : MonoBehaviour
     public Color insidegrass, outsidegrass;
     public float shooting_radious;
     [Header("powerups")]
-    public GameObject shildeffect,speedeffect;
+    public GameObject shildeffect,speedeffect,passthroughEffect;
     public bool shild;
+
     #region MonoMethods
     public virtual void Awake()
     {
-
+        
         enity_audio = GetComponent<AudioSource>();
         entity_rb = GetComponent<Rigidbody>();
         entity_navAi = GetComponent<NavMeshAgent>();
@@ -76,12 +77,13 @@ public class Entity : MonoBehaviour
         {
             body_parts.Add(transform.GetChild(i).gameObject);
         }
+     
         gameManager.SoundLoad();
     }
     public  virtual void Update()
     {
 
-        insideGrass = EnteredGrass == null ? false : true;
+      
 
     }
 
@@ -96,25 +98,25 @@ public class Entity : MonoBehaviour
         {
             return;
         }
-        Debug.Log("Trigering");
-        if (other.GetComponent<Grass>())
-        {
-
-            insideGrass = true;
-
-        }
+    
 
         if (other.GetComponent<Weapon>())
         {
             my_wepon.gameObject.SetActive(false);
             my_wepon = my_wepon.gameObject.transform.parent.GetChild(other.GetComponent<Weapon>().id).GetComponent<Weapon>();
+            my_wepon.enity = this;
             my_wepon.gameObject.SetActive(true);
+        }
+
+        if (other.GetComponent<Powerups>() && other.GetComponent<Reactivate>()|| other.GetComponent<Weapon>() && other.GetComponent<Reactivate>())
+        {
+            StartCoroutine(other.GetComponent<Reactivate>().reacrivate());
         }
         //trigering powerups
 
     }
     #endregion
-    public void ReduceHeath(float damage)
+    public void ReduceHeath(float damage,Entity gethitfrom)
     {
         if (shild)
             return;
@@ -124,8 +126,10 @@ public class Entity : MonoBehaviour
         StartCoroutine(DeactivatingObject(indicator));
         HealthShow();//showing the current Health
         // Show damage indicator
-        if (currentHealth <= 0)
+        if (currentHealth <= 0 )
         {
+            if(gethitfrom)
+            gethitfrom.killcount += 1;
             currentHealth = 0;
             Death();
         }
@@ -157,11 +161,11 @@ public class Entity : MonoBehaviour
             if (currentHealth < MaxHealth)
             {
                 currentHealth += value;
-                Debug.Log("health is increaing");
+              
                 HealthShow();
             }
 
-            Debug.Log("coming inside the health");
+ 
             yield return new WaitForSeconds(value);
             currentHealth = currentHealth > MaxHealth ? MaxHealth : currentHealth;
         }
@@ -169,12 +173,9 @@ public class Entity : MonoBehaviour
     public GameObject dropingwepon;
     public virtual void Death()
     {
-        if (Enemy)
-        {
-            Enemy.Enemy = null;
-            Enemy.killcount++;
-        }
+
         //   Enemy.ki++;
+        gameManager.BotCount();
         Enemy = null;
         Debug.Log("dead");
         Healthbarmain.SetActive(false);
@@ -183,6 +184,7 @@ public class Entity : MonoBehaviour
         if (entity_colider) entity_colider.enabled = false;
         if (entity_navAi) entity_navAi.enabled = false;
         BodyVisibility(false);
+        dropingwepon.gameObject.SetActive(true);
         dropingwepon.transform.GetChild(my_wepon.id).gameObject.SetActive(true);
 
         //gameManager.BotCount();
@@ -194,7 +196,7 @@ public class Entity : MonoBehaviour
     {
         yield return new WaitForSeconds(3);
         dropingwepon.transform.GetChild(my_wepon.id).gameObject.SetActive(false);
-        transform.position = startingpostion;
+        transform.position =starting_pos;
         if (entity_rb) entity_rb.isKinematic = false;
         if (entity_colider) entity_colider.enabled = true;
         if (entity_navAi) entity_navAi.enabled = true;
@@ -252,28 +254,23 @@ public class Entity : MonoBehaviour
     }
 
     //shooting
-
+    public bool isInInterval;
     public virtual void Shotting()
     {
-        if (gameManager.GamePlay == false ||is_death)
-        {
-            return;
-        }
-        Debug.Log("Shooting" +this.gameObject.name);
+       
+    
         for (int i = 0; i < my_wepon.FirePoints.Count; i++)
         {
 
             //.LookAt(Enemy.transform.position);
-            if (Enemy)
-            {
-                Vector3 targetPosition = new Vector3(Enemy.transform.position.x, transform.position.y, Enemy.transform.position.z);
-                my_wepon.FirePoints[i].LookAt(targetPosition);
-                Bullet spawnedBullets = gameManager.Objectpool.GetFromPool(my_wepon.bullets.name, my_wepon.FirePoints[i].transform.position, Quaternion.Euler(0, my_wepon.FirePoints[i].transform.eulerAngles.y, 0)).GetComponent<Bullet>();
-                spawnedBullets.entity_holder = this;
-                spawnedBullets.BulletFire();
+           
+           
+            Debug.Log("fireing");
+            Bullet spawnedBullets = gameManager.Objectpool.GetFromPool(my_wepon.bullets.name, my_wepon.FirePoints[i].transform.position, Quaternion.Euler(0, my_wepon.FirePoints[i].transform.eulerAngles.y, 0)).GetComponent<Bullet>();
+            spawnedBullets.entity_holder = this;
+           // spawnedBullets.BulletFire();
+          //  isInInterval = false;
 
-                my_wepon.WeaponAudio.PlayOneShot(my_wepon.BlastSound);
-            }
         }
 
     }
@@ -346,6 +343,80 @@ public class Entity : MonoBehaviour
         }
        
     }
+
+    public IEnumerator Invisible()
+    {
+        GetComponent<Rigidbody>().useGravity = false;
+        GetComponent<Collider>().isTrigger=true ;
+        passthroughEffect.SetActive(true);
+        yield return new WaitForSeconds(4);
+        passthroughEffect.SetActive(false);
+        GetComponent<Collider>().isTrigger = false;
+        GetComponent<Rigidbody>().useGravity = true;
+    }
+    public SkinnedMeshRenderer[] allmaterial;
+    public Material mat;
+    public IEnumerator Hide()
+    {
+        insideGrass = true;
+        for (int i = 0; i < allmaterial.Length; i++)
+        {
+            SetTransparent(allmaterial[i].material);
+
+            // SetMaterialTransparent(allmaterial[i].material);
+            //    yield return StartCoroutine(FadeToTransparent(allmaterial[i].material, 3));
+            //need to make it trasparent
+      
+        }
+            yield return new WaitForSeconds(10);
+
+        insideGrass = false;
+        for (int i = 0; i < allmaterial.Length; i++)
+        {
+           
+
+            // SetMaterialTransparent(allmaterial[i].material);
+            //    yield return StartCoroutine(FadeToTransparent(allmaterial[i].material, 3));
+         
+            SetOpaque(allmaterial[i].material);
+        }
+    }
+    private IEnumerator FadeToTransparent(Material mat, float duration)
+    {
+        Color color = mat.color;
+        float startAlpha = color.a;
+        float time = 0f;
+
+        while (time < duration)
+        {
+            time += Time.deltaTime;
+            color.a = Mathf.Lerp(startAlpha, 0f, time / duration);
+            mat.color = color;
+            yield return null;
+        }
+    }
+    void SetTransparent(Material targetMaterial)
+    {
+        targetMaterial.SetFloat("_Surface", 1); // Transparent
+        targetMaterial.renderQueue = (int)RenderQueue.Transparent; // Move to Transparent queue
+        targetMaterial.SetFloat("_SrcBlend", (float)UnityEngine.Rendering.BlendMode.SrcAlpha);
+        targetMaterial.SetFloat("_DstBlend", (float)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+        targetMaterial.SetFloat("_ZWrite", 0); // Disable ZWrite for proper transparency
+        targetMaterial.EnableKeyword("_SURFACE_TYPE_TRANSPARENT");
+
+        
+    }
+
+    void SetOpaque(Material targetMaterial)
+    {
+        targetMaterial.SetFloat("_Surface", 0); // Opaque
+        targetMaterial.renderQueue = (int)RenderQueue.Geometry; // Move to Opaque queue
+        targetMaterial.SetFloat("_SrcBlend", (float)UnityEngine.Rendering.BlendMode.One);
+        targetMaterial.SetFloat("_DstBlend", (float)UnityEngine.Rendering.BlendMode.Zero);
+        targetMaterial.SetFloat("_ZWrite", 1); // Enable ZWrite
+        targetMaterial.DisableKeyword("_SURFACE_TYPE_TRANSPARENT");
+    }
+
     #endregion
     public virtual void GetNeartestEnemy()
     {
@@ -356,7 +427,7 @@ public class Entity : MonoBehaviour
             {
                 float distace = Vector3.Distance(this.transform.position, item.transform.position);
             
-                if (distace < nearestenemydis && distace < shooting_radious)
+                if (distace < nearestenemydis && distace < shooting_radious && !item.insideGrass)
                 {
                     nearestenemydis = distace;
                     Enemy = item;

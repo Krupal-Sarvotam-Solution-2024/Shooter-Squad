@@ -23,7 +23,7 @@ public class Blast : MonoBehaviour
             Debug.Log("trigering");
         if (collision.GetComponent<Player_Manager>())
         {
-            collision.GetComponent<Player_Manager>().ReduceHeath(damangeamount);
+            collision.GetComponent<Player_Manager>().ReduceHeath(damangeamount,null);
         }      
     }
 

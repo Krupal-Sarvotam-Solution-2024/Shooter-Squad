@@ -16,10 +16,14 @@ public class ObjectPoolManager : MonoBehaviour
             for (int i = 0; i < initialSize; i++)
             {
                 GameObject obj = Instantiate(prefab, parent);
-                if (obj.GetComponent<AudioSource>())
+                
+                for (int j = 0; j < obj.transform.childCount; j++)
                 {
-                    soundmanger.bullets.Add(obj.GetComponent<AudioSource>());
+                    if (obj.transform.GetChild(j).GetComponent<AudioSource>())
+                        soundmanger.bullets.Add(obj.transform.GetChild(j).GetComponent<AudioSource>());
+
                 }
+                
                 obj.SetActive(false);
                 objectPool.Enqueue(obj);
             }
@@ -43,7 +47,13 @@ public class ObjectPoolManager : MonoBehaviour
                     newObj.SetActive(true);
                     if (newObj.GetComponent<AudioSource>())
                     {
-                        soundmanger.bullets.Add(newObj.GetComponent<AudioSource>());
+                        for (int i = 0; i < newObj.transform.childCount; i++)
+                        {
+                            if(newObj.transform.GetChild(i).GetComponent<AudioSource>())
+                            soundmanger.bullets.Add(newObj.transform.GetChild(i).GetComponent<AudioSource>());
+
+                        }
+                       
                     }
                     return newObj;
                 }

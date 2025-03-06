@@ -65,9 +65,9 @@ public class Player_Manager : Entity
 
     public void OnAnimationEventTriggered() // Method name must match the Animation Event
     {
+        Debug.Log("Event Trigered from playermanager1 time");
         Shotting();
-     //   Enemy = null;
-        // Your logic (e.g., shaking the health bar)
+ 
     }
 
     // Update is called once per frame

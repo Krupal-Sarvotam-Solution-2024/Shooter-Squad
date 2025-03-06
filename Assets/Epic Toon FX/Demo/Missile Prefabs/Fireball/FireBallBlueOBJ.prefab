@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 11464288}
   m_Layer: 0
   m_Name: FireBallBlueOBJ
-  m_TagString: Untagged
+  m_TagString: Missile
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -60,8 +60,8 @@ MonoBehaviour:
   impactParticle: {fileID: 193692, guid: 2aa1e7c21640d254492fa8035a6411e1, type: 2}
   projectileParticle: {fileID: 110298, guid: deec2987c8cae8c4a97dea31b6ddb2c5, type: 2}
   muzzleParticle: {fileID: 117382, guid: f6fd7c6469f235a4595c9be5430ef7d9, type: 2}
-  trailParticles: []
-  impactNormal: {x: 0, y: 0, z: 0}
+  colliderRadius: 0.1
+  collideOffset: 0.1
 --- !u!135 &13576440
 SphereCollider:
   m_ObjectHideFlags: 1

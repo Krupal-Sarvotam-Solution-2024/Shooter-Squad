@@ -39,11 +39,7 @@ public class Player_Movement : MonoBehaviour
         //    rb.collisionDetectionMode = CollisionDetectionMode.Continuous;
         //}
     }
-    public void OnAnimationEventTriggered() // Method name must match the Animation Event
-    {
-        player.Shotting();
-        // Your logic (e.g., shaking the health bar)
-    }
+  
     void Update()
     {
         if (!GameManager.GamePlay || player.is_death)

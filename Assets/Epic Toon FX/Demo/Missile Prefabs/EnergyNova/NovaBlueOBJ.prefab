@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 11464288}
   m_Layer: 0
   m_Name: NovaBlueOBJ
-  m_TagString: Untagged
+  m_TagString: Missile
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -60,8 +60,8 @@ MonoBehaviour:
   impactParticle: {fileID: 111992, guid: ef697b4cb271b7642af97a1a70394631, type: 2}
   projectileParticle: {fileID: 183996, guid: dde93ea5512f0e242a654a566c8605e5, type: 2}
   muzzleParticle: {fileID: 177544, guid: 7bbb0c53be846834980c36dd3251a29c, type: 2}
-  trailParticles: []
-  impactNormal: {x: 0, y: 0, z: 0}
+  colliderRadius: 0.1
+  collideOffset: 0.1
 --- !u!135 &13576440
 SphereCollider:
   m_ObjectHideFlags: 1

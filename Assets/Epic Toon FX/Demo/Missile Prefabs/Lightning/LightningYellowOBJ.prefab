@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 11464288}
   m_Layer: 0
   m_Name: LightningYellowOBJ
-  m_TagString: Untagged
+  m_TagString: Missile
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -60,8 +60,8 @@ MonoBehaviour:
   impactParticle: {fileID: 160900, guid: 1b1f4eecb848b384f93fd0216a95f56e, type: 2}
   projectileParticle: {fileID: 145690, guid: f8719d945ee38e64f8a6a13b8e569992, type: 2}
   muzzleParticle: {fileID: 173556, guid: 2b51c58abe6c8a9448349f2b39e25bb8, type: 2}
-  trailParticles: []
-  impactNormal: {x: 0, y: 0, z: 0}
+  colliderRadius: 0.1
+  collideOffset: 0.1
 --- !u!135 &13576440
 SphereCollider:
   m_ObjectHideFlags: 1

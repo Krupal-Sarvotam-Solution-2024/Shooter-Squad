@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 11464288}
   m_Layer: 0
   m_Name: FrostMissileOBJ
-  m_TagString: Untagged
+  m_TagString: Missile
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -60,8 +60,8 @@ MonoBehaviour:
   impactParticle: {fileID: 153912, guid: 932046b7eaf3b554f8d74c81e2f00558, type: 2}
   projectileParticle: {fileID: 160792, guid: 7e9a3591984cda1499dc675622a57b0b, type: 2}
   muzzleParticle: {fileID: 157556, guid: f217d1d708cdaf14e8cfa730ff75126e, type: 2}
-  trailParticles: []
-  impactNormal: {x: 0, y: 0, z: 0}
+  colliderRadius: 0.1
+  collideOffset: 0.1
 --- !u!135 &13576440
 SphereCollider:
   m_ObjectHideFlags: 1

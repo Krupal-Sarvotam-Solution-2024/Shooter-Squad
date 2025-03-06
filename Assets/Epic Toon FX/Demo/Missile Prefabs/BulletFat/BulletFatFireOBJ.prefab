@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 11464288}
   m_Layer: 0
   m_Name: BulletFatFireOBJ
-  m_TagString: Untagged
+  m_TagString: Missile
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -58,10 +58,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   impactParticle: {fileID: 132352, guid: 71b02155078e4bf4e962f302d3675af2, type: 2}
-  projectileParticle: {fileID: 144206, guid: eecfd95aa06159440b824635d22e0f24, type: 2}
+  projectileParticle: {fileID: 144206, guid: 6531fcf59340b354fa8ac2e69f4c29ce, type: 2}
   muzzleParticle: {fileID: 105160, guid: 8deb1def3de25b04b8371070fbb372fe, type: 2}
-  trailParticles: []
-  impactNormal: {x: 0, y: 0, z: 0}
+  colliderRadius: 0.1
+  collideOffset: 0.1
 --- !u!135 &13576440
 SphereCollider:
   m_ObjectHideFlags: 1

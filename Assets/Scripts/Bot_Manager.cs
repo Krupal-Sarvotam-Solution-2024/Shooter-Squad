@@ -24,7 +24,7 @@ public class Bot_Manager : Entity
     [Header("Nav mesh manager")]
     private bool isFollowing = false; // Find that bot is following the player or not
     public Transform RandomMovePos;
-    [SerializeField] private bool isInInterval; // Find that gun is in interval or not
+
 
 
 
@@ -37,6 +37,7 @@ public class Bot_Manager : Entity
     public float horizotalinput = 0;
     public float verticalinput = 0;
     // Update
+    public Vector3 minimum, maximum;
 
     public override void Start()
     {
@@ -55,7 +56,10 @@ public class Bot_Manager : Entity
             return;
         }
         Vector3 targetDirection = new Vector3(horizotalinput, 0, verticalinput).normalized;
-
+        minimum.x += Time.deltaTime;
+        minimum.z += Time.deltaTime;
+        maximum.z -= Time.deltaTime;
+        maximum.x -= Time.deltaTime;
         movementDirection = Vector3.Lerp(movementDirection, targetDirection, Time.deltaTime * acceleration);
 
         if (movementDirection.magnitude < 0.1f)
@@ -79,13 +83,54 @@ public class Bot_Manager : Entity
         MoveWithRigidbody();
          
     }
-
+    bool interval;
     void MoveWithRigidbody()
     {
         Vector3 targetVelocity = movementDirection * 7;
         entity_rb.linearVelocity = Vector3.Lerp(entity_rb.linearVelocity, targetVelocity, Time.fixedDeltaTime * acceleration);
         if(!Enemy)
         RotatePlayer();
+        RaycastHit hit;
+        if(Physics.SphereCast(transform.position,1f,transform.forward,out hit))
+        {
+          
+            if (hit.transform.name.Contains("Wall"))
+            {
+
+                // Generate random movement input values between -1 and 1
+                horizotalinput = Random.Range(-1f, 1f);
+                verticalinput = Random.Range(-1f, 1f);
+
+                // Normalize the movement direction to ensure consistent speed
+                Vector3 targetDirection = new Vector3(horizotalinput, 0, verticalinput).normalized;
+
+                // Apply movement
+                movementDirection = targetDirection;
+            }
+        }
+
+        if(transform.position.x < minimum.x || transform.position.z< minimum.z || transform.position.x>maximum.x || transform.position.z > maximum.z)
+        {
+            if (!interval)
+            {
+                interval = true;
+                StartCoroutine(changeDirection());
+            }
+        }
+    }
+    IEnumerator changeDirection()
+    {
+        interval = true;
+        horizotalinput = Random.Range(-1f, 1f);
+        verticalinput = Random.Range(-1f, 1f);
+
+        // Normalize the movement direction to ensure consistent speed
+        Vector3 targetDirection = new Vector3(horizotalinput, 0, verticalinput).normalized;
+
+        // Apply movement
+        movementDirection = targetDirection;
+        yield return new WaitForSeconds(1);
+        interval = false;
     }
     void UpdateAnimation()
     {
@@ -164,7 +209,7 @@ public class Bot_Manager : Entity
                 if (Vector3.Distance(this.gameObject.transform.position, item.transform.position) < nearestenemydis &&
                     item.gameObject.activeInHierarchy &&
                     !item.GetComponent<Entity>().is_death &&
-                    item != this)
+                    item != this && !item.insideGrass)
                 {
                     nearestenemydis = Vector3.Distance(this.gameObject.transform.position, item.transform.position);
                     Enemy = item;
@@ -207,7 +252,7 @@ public class Bot_Manager : Entity
         if (other.GetComponent<Grass>())
         {
            // BodyVisibility(false);
-            insideGrass = true;
+       //     insideGrass = true;
             
         }
     }
@@ -221,7 +266,7 @@ public class Bot_Manager : Entity
 
         if (other.GetComponent<Grass>())
         {
-            insideGrass = false;
+          //  insideGrass = false;
            // BodyVisibility(true);
            // BodyVisibility(insideGrass);
         }
@@ -242,7 +287,8 @@ public class Bot_Manager : Entity
     
     public void OnAnimationEventTriggered() // Method name must match the Animation Event
     {
-        Shoot();
+        Debug.Log("Event Trigered from playermanager1 time");
+        base.Shotting();
 
         // Your logic (e.g., shaking the health bar)
     }
@@ -287,8 +333,9 @@ public class Bot_Manager : Entity
         }
         AnimationController(AnimState.Idle);
     }
-
+  
     // Bullet shoot
+
     public void Shoot()
     {
         if (gameManager.GamePlay == false ||
@@ -300,11 +347,12 @@ public class Bot_Manager : Entity
 
         isInInterval = true;
        
-        base.Shotting();
+       // base.Shotting();
 
-        entity_animator.SetBool("Shoot", false);
-
-        Invoke("ResetShooting",1f); // Adjust timing based on animation length
+        entity_animator.SetBool("Shoot", true);
+        entity_animator.SetFloat("Shooting Speed", my_wepon.firerate *10);
+        Invoke("ResetShooting", .1f);
+        // Adjust timing based on animation length
     }
 
     void ResetShooting()
@@ -325,7 +373,7 @@ public class Bot_Manager : Entity
 
             // Apply movement
             movementDirection = targetDirection;
-
+            
             // Wait for a few seconds before changing direction
             yield return new WaitForSeconds(Random.Range(1.5f, 3f));
         }

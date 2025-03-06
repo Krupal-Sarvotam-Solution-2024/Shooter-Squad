@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 11464288}
   m_Layer: 0
   m_Name: NukeFireOBJ
-  m_TagString: Untagged
+  m_TagString: Missile
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -57,11 +57,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: acd27932048c3254597a02078fa2cb26, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  impactParticle: {fileID: 150222, guid: 9f03f372adf02874cb666857a9f97abd, type: 2}
+  impactParticle: {fileID: 130346, guid: 07bf9ced87963e24299c2c2a22bfeeb6, type: 2}
   projectileParticle: {fileID: 113030, guid: 25a78a965241d084996f23857207e95f, type: 2}
   muzzleParticle: {fileID: 167570, guid: 5c129ddc4d253164a8e65c5e372cf150, type: 2}
-  trailParticles: []
-  impactNormal: {x: 0, y: 0, z: 0}
+  colliderRadius: 0.1
+  collideOffset: 0.1
 --- !u!135 &13576440
 SphereCollider:
   m_ObjectHideFlags: 1

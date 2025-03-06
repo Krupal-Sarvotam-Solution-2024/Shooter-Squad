@@ -21,7 +21,7 @@ public class Player_Shooting : MonoBehaviour
     [SerializeField] private Button FireButton; // Fire button
     [SerializeField] private Image FireReloadingImage; // Fire realoding image
     [SerializeField] private float intervalTime; // Interval timing for next shoot
-    [SerializeField] private bool isInInterval; // Find that gun is in interval or not
+    // Find that gun is in interval or not
     [SerializeField] private ParticleSystem ShootParticle;
     [SerializeField] private GameObject shootingdirection;
     
@@ -89,25 +89,30 @@ public class Player_Shooting : MonoBehaviour
     public void Shoot()
     {
         if (GameManager.GamePlay == false ||
-            isInInterval == true ||
+            PlayerManager.isInInterval ||
             PlayerManager.is_death == true || 
             PlayerManager.gameManager.redyforBrustShooting)
         {
            return;
         }
+        PlayerManager.isInInterval = true;
         PlayerManager.player_Movement.playerAnimator.SetBool("Shoot_Idle", true);
-        if (PlayerManager.my_wepon.bullets.GetComponent<Bullet>().small_bullets)
-        {
-            PlayerManager.player_Movement.playerAnimator.SetBool("SmallBullets", true);
-        }
-        else
-        {
-            PlayerManager.player_Movement.playerAnimator.SetBool("SmallBullets", false);
-        }
+
+        //if (PlayerManager.my_wepon.bullets.GetComponent<Bullet>().small_bullets)
+        //{
+        //    PlayerManager.player_Movement.playerAnimator.SetBool("SmallBullets", true);
+        //}
+        //else
+        //{
+        //    PlayerManager.player_Movement.playerAnimator.SetBool("SmallBullets", false);
+        //}
+        //PlayerManager.player_Movement.playerAnimator["YourAnimationName"].speed = 2.0f;
+        PlayerManager.player_Movement.playerAnimator.SetFloat("Shooting Speed", PlayerManager.my_wepon.firerate*10);
+       // PlayerManager.player_Movement.playerAnimator.speed = PlayerManager.my_wepon.firerate;
        // stading_driection = transform.eulerAngles.y;
 
 
-       
+
 
         //   transform.rotation = Quaternion.Euler(0, shooting_direction, 0); // Rotate player or gun
 
@@ -127,9 +132,9 @@ public class Player_Shooting : MonoBehaviour
         // Shottingjoystick.gameObject.SetActive(true);
         //shooting = false;
         //shooted = false;
-        Invoke("ResetShooting", GameManager.shotingInterval); // Adjust timing based on animation length
+        Invoke("ResetShooting",.1f); // Adjust timing based on animation length
 
-        StartCoroutine(ShootingInterval());
+     //   StartCoroutine(ShootingInterval());
 
     }
 
@@ -138,6 +143,7 @@ public class Player_Shooting : MonoBehaviour
     void ResetShooting()
     {
         PlayerManager.player_Movement.playerAnimator.SetBool("Shoot_Idle", false);
+        PlayerManager.isInInterval = false;
     }
 
     // Draw laser aim
@@ -171,20 +177,14 @@ public class Player_Shooting : MonoBehaviour
     }
 
     // Collecting bullet for reseting the player
-    public void CollectingBullet()
-    {
-        
-        // Deactivate the reload image once the reload is complete
-        FireReloadingImage.gameObject.SetActive(false);
-        isInInterval = false;
-    }
+   
 
     // Shooting interval
     IEnumerator ShootingInterval()
     {
        // yield return new WaitForSeconds(1f);
        //transform.rotation = Quaternion.Euler(0, stading_driection, 0); // Rotate player or gun
-        isInInterval = true;
+       // isInInterval = true;
         FireButton.interactable = false;
         // Activate the reload image
         FireReloadingImage.gameObject.SetActive(true);
@@ -206,6 +206,6 @@ public class Player_Shooting : MonoBehaviour
         FireReloadingImage.gameObject.SetActive(false);
 
         FireButton.interactable = true;
-        isInInterval = false;
+        //isInInterval = false;
     }
 }

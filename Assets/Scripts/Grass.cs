@@ -47,7 +47,7 @@ public class Grass : MonoBehaviour
             entered_player.Add(entity);
             GetingintheGrass(entity);
             entity.EnteredGrass = this;
-            entity.insideGrass = true;
+          //  entity.insideGrass = true;
           //  entity.BodyVisibility(InsideGrass);
         }
     }

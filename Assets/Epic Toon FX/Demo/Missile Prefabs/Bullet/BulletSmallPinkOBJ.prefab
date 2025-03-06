@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 11464288}
   m_Layer: 0
   m_Name: BulletSmallPinkOBJ
-  m_TagString: Untagged
+  m_TagString: Missile
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -58,10 +58,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   impactParticle: {fileID: 151354, guid: 666381b24c234194882b77851e943ef1, type: 2}
-  projectileParticle: {fileID: 173562, guid: 985812ee18738f5498883b84d92bd41b, type: 2}
+  projectileParticle: {fileID: 173562, guid: 8d92d451b68cf664ea9a6eb86de58142, type: 2}
   muzzleParticle: {fileID: 196364, guid: 061b27571e89e4746921e6780954fc33, type: 2}
-  trailParticles: []
-  impactNormal: {x: 0, y: 0, z: 0}
+  colliderRadius: 0.1
+  collideOffset: 0.1
 --- !u!135 &13576440
 SphereCollider:
   m_ObjectHideFlags: 1

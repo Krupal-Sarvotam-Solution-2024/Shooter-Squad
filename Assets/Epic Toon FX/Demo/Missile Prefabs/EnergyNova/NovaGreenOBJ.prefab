@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 11464288}
   m_Layer: 0
   m_Name: NovaGreenOBJ
-  m_TagString: Untagged
+  m_TagString: Missile
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -60,8 +60,8 @@ MonoBehaviour:
   impactParticle: {fileID: 182876, guid: b69cacae8a5b6f24ea06ba15a8bb910e, type: 2}
   projectileParticle: {fileID: 176456, guid: 21c7e6a26feeb564fb859ba8c5cae356, type: 2}
   muzzleParticle: {fileID: 119382, guid: 233adeb09e8111242a2a710da4874451, type: 2}
-  trailParticles: []
-  impactNormal: {x: 0, y: 0, z: 0}
+  colliderRadius: 0.1
+  collideOffset: 0.1
 --- !u!135 &13576440
 SphereCollider:
   m_ObjectHideFlags: 1

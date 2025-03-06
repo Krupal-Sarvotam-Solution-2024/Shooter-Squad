@@ -18,7 +18,10 @@ public class SoundManage : MonoBehaviour
         backgroundmusic.volume = volume;
         for (int playerAudios = 0; playerAudios < WholePlayer.Count; playerAudios++)
         {
+
             WholePlayer[playerAudios].volume = volume;
+
+
         }
 
         for (int botAudios = 0; botAudios < AllBots.Count; botAudios++)

@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 11464288}
   m_Layer: 0
   m_Name: FireBallPinkOBJ
-  m_TagString: Untagged
+  m_TagString: Missile
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -60,8 +60,8 @@ MonoBehaviour:
   impactParticle: {fileID: 168108, guid: bfb3c07c76c2ded45934d9c1b3145128, type: 2}
   projectileParticle: {fileID: 121798, guid: 672a9f8d9b8441b47a4cc0a5c3d60b7c, type: 2}
   muzzleParticle: {fileID: 113646, guid: 512bd2deb75bf0140b908d937524f690, type: 2}
-  trailParticles: []
-  impactNormal: {x: 0, y: 0, z: 0}
+  colliderRadius: 0.1
+  collideOffset: 0.1
 --- !u!135 &13576440
 SphereCollider:
   m_ObjectHideFlags: 1

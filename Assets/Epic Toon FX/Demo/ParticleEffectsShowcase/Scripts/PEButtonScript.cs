@@ -3,6 +3,9 @@ using System.Collections;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
+namespace ETFXPEL
+{
+
 public enum ButtonTypes {
 	NotDefined,
 	Previous,
@@ -10,8 +13,9 @@ public enum ButtonTypes {
 }
 
 public class PEButtonScript : MonoBehaviour, IEventSystemHandler, IPointerEnterHandler, IPointerExitHandler {
-
+	#pragma warning disable 414
 	private Button myButton;
+	#pragma warning disable 414
 	public ButtonTypes ButtonType = ButtonTypes.NotDefined;
 
 	// Use this for initialization
@@ -35,4 +39,5 @@ public class PEButtonScript : MonoBehaviour, IEventSystemHandler, IPointerEnterH
 		// Button Click Actions
 		UICanvasManager.GlobalAccess.UIButtonClick(ButtonType);
 	}
+}
 }

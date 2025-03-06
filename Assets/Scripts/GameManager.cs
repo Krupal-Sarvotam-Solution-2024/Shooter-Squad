@@ -30,7 +30,8 @@ public class GameManager : MonoBehaviour
     [Space(10)]
     [Header("Game start anim")]
     public Text GameStartAnimText; // Game start count down text
-    public TextMeshProUGUI remaning_bot;
+    public TextMeshProUGUI[] remaning_bot;
+    public TextMeshProUGUI[] remaning_bot2;
     [Space(10)]
     [Header("Ground manager")]
     public List<GameObject> grounds; // All ground
@@ -59,6 +60,9 @@ public class GameManager : MonoBehaviour
     public GameObject damage_indicator;
     public GameObject ShootPartical;
     public Transform Holder;
+
+
+    public Vector3 safeZoneminmum, safeZonemaximum;
     // Start
     private void Start()
     {
@@ -67,9 +71,26 @@ public class GameManager : MonoBehaviour
         Time.timeScale = 1f; // Make game continue
         SoundLoad();
      
-
+        
     }
+    public TextMeshProUGUI timeText,timeText2;
+    public float remainingTime;
+    private void UpdateTimeDisplay()
+    {
+        if (!timeText) return;
 
+        int minutes = Mathf.FloorToInt(remainingTime / 60);
+        int seconds = Mathf.FloorToInt(remainingTime % 60);
+        timeText.text = string.Format("{0:00}:{1:00}", minutes, seconds);
+        timeText2.text = string.Format("{0:00}:{1:00}", minutes, seconds);
+        remainingTime -= Time.deltaTime;
+    }
+    IEnumerator GameCompleted()
+    {
+        yield return new WaitForSeconds(remainingTime);
+        gamecompletePnale.SetActive(true);
+        Time.timeScale = 0;
+    }
     public void SoundLoad()
     {
         // If statements for checking sound setting
@@ -101,7 +122,7 @@ public class GameManager : MonoBehaviour
         fpsTest.text = "FPS: " + Mathf.Ceil(fps).ToString();
         if (GamePlay == false || player.is_death)
             return;
-
+        UpdateTimeDisplay();
 
         if (redyforBrustShooting)
         {
@@ -169,6 +190,7 @@ public class GameManager : MonoBehaviour
         gamecompletePnale.SetActive(false);
         SetGround();
         StartCoroutine(StartGameAnim());
+        StartCoroutine(GameCompleted());
     }
 
     // Quit the game
@@ -182,10 +204,6 @@ public class GameManager : MonoBehaviour
     public void RestartGame()
     {
         Time.timeScale = 1f;
-       // currentGround.GetComponent<Ground>().Closegate();
-       
-
-        
         StartGame();
     }
 
@@ -266,14 +284,14 @@ public class GameManager : MonoBehaviour
 
 
         botcount--;
-        remaning_bot.text = botcount + " Remaning";
-        if (botcount <= 0)
+        
+        for (int i = 1; i < remaning_bot.Length; i++)
         {
-
-
-
-            gamecompletePnale.SetActive(true);
+            remaning_bot[i].text ="player_"+i+"  "+  allcharacter[i].GetComponent<Entity>().killcount.ToString();
+            remaning_bot2[i].text ="player_"+i+"  "+  allcharacter[i].GetComponent<Entity>().killcount.ToString();
         }
+        remaning_bot[0].text =  "You   " + allcharacter[0].GetComponent<Entity>().killcount.ToString();
+        remaning_bot2[0].text = "You   " + allcharacter[0].GetComponent<Entity>().killcount.ToString();
 
     }
     public GameObject[] allcharacter;
@@ -284,10 +302,13 @@ public class GameManager : MonoBehaviour
             item.transform.localScale = new Vector3(value, value, value);
         }
     }
+
+    public static bool testc;
     // Set ground, bots and player
     void SetGround()
     {
         // Select ground
+        remainingTime = 120;
         currentGround = null;
         for (int i = 0; i < Holder.childCount; i++)
         {
@@ -306,7 +327,10 @@ public class GameManager : MonoBehaviour
         // Declare ground variable
         Ground groundSctipt = currentGround.GetComponent<Ground>();
         botcount = groundSctipt.botCount;
-        remaning_bot.text = botcount + " Remaning";
+        //for (int i = 0; i < remaning_bot.Length; i++)
+        //{
+        //    remaning_bot[i].text = allcharacter[i].GetComponent<Entity>().killcount.ToString();
+        //}
         zome.transform.localScale = zome.startingsclae;
         zome.start = true;
         // Set the player 

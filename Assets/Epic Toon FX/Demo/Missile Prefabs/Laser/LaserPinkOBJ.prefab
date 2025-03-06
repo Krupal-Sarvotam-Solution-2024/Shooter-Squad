@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 11464288}
   m_Layer: 0
   m_Name: LaserPinkOBJ
-  m_TagString: Untagged
+  m_TagString: Missile
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -58,10 +58,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   impactParticle: {fileID: 130008, guid: f86f92fc4481c664091538209b37547e, type: 2}
-  projectileParticle: {fileID: 117484, guid: 172bb145d978fbb4da57d94b1e6b6776, type: 2}
+  projectileParticle: {fileID: 117484, guid: f004e75bad6ee914c8f6936455d1981b, type: 2}
   muzzleParticle: {fileID: 193478, guid: fee5a85360b1a204cb63eeb3985e8d99, type: 2}
-  trailParticles: []
-  impactNormal: {x: 0, y: 0, z: 0}
+  colliderRadius: 0.1
+  collideOffset: 0.1
 --- !u!135 &13576440
 SphereCollider:
   m_ObjectHideFlags: 1

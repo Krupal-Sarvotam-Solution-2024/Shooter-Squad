@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 11464288}
   m_Layer: 0
   m_Name: MagicSoftFireOBJ
-  m_TagString: Untagged
+  m_TagString: Missile
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -57,11 +57,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: acd27932048c3254597a02078fa2cb26, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  impactParticle: {fileID: 196622, guid: 34c006058d7d594449f3fb5c03a6d852, type: 2}
+  impactParticle: {fileID: 1887159375177322, guid: 3bc5000d25fb154448f96dd3c713e545,
+    type: 2}
   projectileParticle: {fileID: 108410, guid: 31f9fcfbbcecdd24caf0eb7857420dcd, type: 2}
   muzzleParticle: {fileID: 152130, guid: 9d8901a3b7665de42acf982d9b79d6c0, type: 2}
-  trailParticles: []
-  impactNormal: {x: 0, y: 0, z: 0}
+  colliderRadius: 0.1
+  collideOffset: 0.1
 --- !u!135 &13576440
 SphereCollider:
   m_ObjectHideFlags: 1

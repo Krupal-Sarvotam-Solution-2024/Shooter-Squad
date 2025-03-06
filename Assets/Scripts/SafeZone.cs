@@ -25,7 +25,7 @@ public class SafeZone : MonoBehaviour
 
         if (other.GetComponent<Entity>())
         {
-            other.GetComponent<Entity>().ReduceHeath(1000);
+            other.GetComponent<Entity>().ReduceHeath(1000,null);
         }
 
    

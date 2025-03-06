@@ -2,6 +2,9 @@
 using System.Collections;
 using System.Collections.Generic;
 
+namespace ETFXPEL
+{
+
 public class ParticleEffectsLibrary : MonoBehaviour {
 	public static ParticleEffectsLibrary GlobalAccess;
 	void Awake () {
@@ -36,7 +39,9 @@ public class ParticleEffectsLibrary : MonoBehaviour {
 	public GameObject[] ParticleEffectPrefabs;
 
 	// Storing for deleting if looping particle effect
+	#pragma warning disable 414
 	private string effectNameString = "";
+	#pragma warning disable 414
 	private List<Transform> currentActivePEList;
 
 	void Start () {
@@ -111,4 +116,5 @@ public class ParticleEffectsLibrary : MonoBehaviour {
 			Destroy(newParticleEffect, ParticleEffectLifetimes[CurrentParticleEffectIndex]);
 		}
 	}
+}
 }

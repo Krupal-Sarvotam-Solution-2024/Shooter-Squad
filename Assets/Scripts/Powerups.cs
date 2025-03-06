@@ -7,6 +7,8 @@ public class Powerups : MonoBehaviour
         shild,
         bomb,
         speed,
+        invisble,
+        passthrough,
         bigbomb
     }
     public GameManager manager;
@@ -16,9 +18,11 @@ public class Powerups : MonoBehaviour
     public void OnTriggerEnter(Collider other)
     {
 
+
         Entity enity = other.GetComponent<Entity>();
         if (powerups == allpowerusp.shild)
         {
+
             if (enity)
             {
                 enity.StartCoroutine(enity.shildAcitavte());
@@ -43,6 +47,24 @@ public class Powerups : MonoBehaviour
                 enity.StartCoroutine(enity.SpeedBost());
                 this.gameObject.SetActive(false);
             }
+        }else if(powerups == allpowerusp.passthrough)
+        {
+            if (enity)
+            {
+                enity.StartCoroutine(enity.Invisible());
+                this.gameObject.SetActive(false);
+            }
+            //need to pass the obstable
+        }
+        else if(powerups == allpowerusp.invisble) 
+        {
+
+            if (enity)
+            {
+                enity.StartCoroutine(enity.Hide());
+                this.gameObject.SetActive(false);
+            }
+
         }
     }
     public GameObject effectobject;
@@ -59,7 +81,7 @@ public class Powerups : MonoBehaviour
         {
             if (Vector3.Distance(manager.botAll[i].transform.position, transform.position) < damgeradious)
             {
-                manager.botAll[i].ReduceHeath(100);
+                manager.botAll[i].ReduceHeath(100,null);
             }
 
 

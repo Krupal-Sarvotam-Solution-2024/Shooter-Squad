@@ -65,11 +65,7 @@ public class Bullet : MonoBehaviour
             entity_holder.gameManager.Objectpool.ReturnToPool(entity_holder.my_wepon.bullets.name, this.gameObject);
         }
     }
-    public void BulletFire()
-    {
-        Debug.Log("Firingsss");
-        //   StartCoroutine(Fireing());
-    }
+   
     //public IEnumerator Fireing()
     //{
     //    Debug.Log("Firin11g");
@@ -80,12 +76,7 @@ public class Bullet : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         colider = GetComponent<Collider>();
     }
-    private void Update()
-    {
-
-
-    }
-    // Turning off bullet if no object collide
+  
 
     private void OnTriggerEnter(Collider collision)
     {
@@ -102,9 +93,9 @@ public class Bullet : MonoBehaviour
         {
             playerHitParicle.transform.position = pos;
 
-            hitaudio.PlayOneShot(playerhit);
+           // hitaudio.PlayOneShot(playerhit);
             StartCoroutine(GoParentAfterParticle(playerHitParicle));
-            collision.GetComponent<Entity>().ReduceHeath(damageAmount);
+            collision.GetComponent<Entity>().ReduceHeath(damageAmount,entity_holder);
             //player hit
         }
         else if (collision.gameObject != entity_holder)
@@ -112,14 +103,14 @@ public class Bullet : MonoBehaviour
             //wall hit
             Debug.Log("object hitting");
             wallHitParticle.transform.position = pos;
-            hitaudio.PlayOneShot(obsticlehit);
+           // hitaudio.PlayOneShot(obsticlehit);
             StartCoroutine(GoParentAfterParticle(wallHitParticle));
         }
 
 
 
 
-        Debug.Log("Deactivating bullets");
+        Debug.Log("Deactivating bullets" + transform.name + entity_holder.name + collision.gameObject.name);
 
 
     }
@@ -141,7 +132,7 @@ public class Bullet : MonoBehaviour
 
             hitaudio.PlayOneShot(playerhit);
             StartCoroutine(GoParentAfterParticle(playerHitParicle));
-            collision.GetComponent<Entity>().ReduceHeath(damageAmount);
+            collision.GetComponent<Entity>().ReduceHeath(damageAmount,entity_holder);
             //player hit
         }
         else if (collision.gameObject != entity_holder)
@@ -175,7 +166,7 @@ public class Bullet : MonoBehaviour
         projectile.gameObject.SetActive(false);
         colider.enabled = false;
 
-        hitaudio.Play();
+       // hitaudio.Play();
         yield return new WaitForSeconds(2f);
         entity_holder.gameManager.Objectpool.ReturnToPool(entity_holder.my_wepon.bullets.name, this.gameObject);
         // gameManager.Objectpool.ReturnToPool(Bullets.name, bulletObj);

@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 11464288}
   m_Layer: 0
   m_Name: NukePinkOBJ
-  m_TagString: Untagged
+  m_TagString: Missile
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -57,11 +57,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: acd27932048c3254597a02078fa2cb26, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  impactParticle: {fileID: 120316, guid: ba31194ef34f22e49a0a0b1f178dc13c, type: 2}
+  impactParticle: {fileID: 1503314963399906, guid: b179a4b6ccaf1ad459bbd10cfc2e1ca4,
+    type: 2}
   projectileParticle: {fileID: 120178, guid: b9990a2c3cb466040810b13396d4ee2f, type: 2}
   muzzleParticle: {fileID: 136200, guid: 9ca084bd9f039344faacb8e93f01f317, type: 2}
-  trailParticles: []
-  impactNormal: {x: 0, y: 0, z: 0}
+  colliderRadius: 0.1
+  collideOffset: 0.1
 --- !u!135 &13576440
 SphereCollider:
   m_ObjectHideFlags: 1

@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 11464288}
   m_Layer: 0
   m_Name: SoulOrangeOBJ
-  m_TagString: Untagged
+  m_TagString: Missile
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -60,8 +60,8 @@ MonoBehaviour:
   impactParticle: {fileID: 136094, guid: cbf6e26bfae3a4f48acb9bb79ce1e5da, type: 2}
   projectileParticle: {fileID: 111236, guid: 595bac301e43f584185281100d9a2eee, type: 2}
   muzzleParticle: {fileID: 173018, guid: fb1757c6a983acd4bbf3fcba42c5c7c4, type: 2}
-  trailParticles: []
-  impactNormal: {x: 0, y: 0, z: 0}
+  colliderRadius: 0.1
+  collideOffset: 0.1
 --- !u!135 &13576440
 SphereCollider:
   m_ObjectHideFlags: 1
