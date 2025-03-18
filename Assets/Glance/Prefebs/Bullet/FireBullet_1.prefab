@@ -38822,7 +38822,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 8300000, guid: 5cd691c7632755d499fbbb55bc1f0fac, type: 3}
   m_Resource: {fileID: 8300000, guid: 5cd691c7632755d499fbbb55bc1f0fac, type: 3}
-  m_PlayOnAwake: 1
+  m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1.2
   Loop: 0
@@ -48647,12 +48647,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   entity_holder: {fileID: 0}
   small_bullets: 1
+  objectPolling: {fileID: 0}
   wallHitParticle: {fileID: 6002456299628492213}
   playerHitParicle: {fileID: 6002456299628492213}
   projectile: {fileID: 2392599658701562709}
   flash: {fileID: 3381903453274448213}
   damageAmount: 15
   bulletSpeed: 8.5
-  hitaudio: {fileID: 0}
+  hitaudio: {fileID: 5812332135826143371}
   obsticlehit: {fileID: 8300000, guid: f38bc5da570bf284bb60850b24e67bb0, type: 3}
   playerhit: {fileID: 8300000, guid: f38bc5da570bf284bb60850b24e67bb0, type: 3}

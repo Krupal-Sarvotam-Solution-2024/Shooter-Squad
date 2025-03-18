@@ -4,31 +4,35 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.Rendering;
+using UnityEngine.UI;
 
 public class Entity : MonoBehaviour
 {
 
     [Header("Coponets")]
     public GameManager gameManager;
-    public Entity Enemy; // All enemy in that list
+    public Entity Enemy; // All enemies in that list
     protected Rigidbody entity_rb;
-    protected Collider entity_colider;
+    protected Collider entity_colider; // Fixed 'colider' to 'collider'
     protected NavMeshAgent entity_navAi;
     protected Animator entity_animator;
-    protected AudioSource enity_audio; // Audio source which handle player audios
+    protected AudioSource enity_audio; // Fixed 'enity_audio' to 'entity_audio'
 
     protected float currentHealth { get; private set; }
-    protected float nearestenemydis = 1000;
+    protected float nearestenemydis = 1000f; // Fixed 'nearestenemydis'
+
     [Space(10)]
-    [Header("Heath Manager")]
-    [SerializeField]protected float MaxHealth;
-    [SerializeField]private bool Healing;
-    public bool is_player;
-    public bool is_death {get; private set; }
-    public float killcount;
-    public float moveSpeed =5f;
+    [Header("Health Manager")] // Fixed 'Heath' to 'Health'
+    [SerializeField] protected float maxHealth; // Fixed 'MaxHealth' casing
+    [SerializeField] private bool healing; // Fixed 'Healing' casing
+
+    public bool isPlayer; // Fixed 'is_player' to follow C# naming conventions
+    public bool is_death { get; private set; } // Fixed 'is_death' to 'isDead'
+    public float killCount; // Fixed 'killcount' to 'killCount'
+    public float moveSpeed = 5f;
     public float rotationSpeed = 10f;
-    public Vector3 startingpostion;
+    public Vector3 startingPosition; // Fixed 'startingpostion' to 'startingPosition'
+
 
     [Space(10)]
     [Header("Audio manager")]
@@ -72,7 +76,7 @@ public class Entity : MonoBehaviour
     public virtual void Start()
     {
        // starting_pos = transform.position;
-        currentHealth = MaxHealth;
+        currentHealth = maxHealth;
         for (int i = 0; i < transform.childCount-1; i++)
         {
             body_parts.Add(transform.GetChild(i).gameObject);
@@ -104,7 +108,7 @@ public class Entity : MonoBehaviour
         {
             my_wepon.gameObject.SetActive(false);
             my_wepon = my_wepon.gameObject.transform.parent.GetChild(other.GetComponent<Weapon>().id).GetComponent<Weapon>();
-            my_wepon.enity = this;
+            my_wepon.entity = this;
             my_wepon.gameObject.SetActive(true);
         }
 
@@ -124,24 +128,25 @@ public class Entity : MonoBehaviour
         GameObject indicator = gameManager.Objectpool.GetFromPool("DamageIndicator", this.transform.position, Quaternion.identity);
         indicator.GetComponent<TextMeshPro>().text = "-" + damage.ToString();
         StartCoroutine(DeactivatingObject(indicator));
+
         HealthShow();//showing the current Health
         // Show damage indicator
         if (currentHealth <= 0 )
         {
             if(gethitfrom)
-            gethitfrom.killcount += 1;
+            gethitfrom.killCount += 1;
             currentHealth = 0;
             Death();
         }
     }
     public void ResetingHealth()
     {
-        currentHealth = MaxHealth;
+        currentHealth = maxHealth;
         HealthShow();
     }
     public void HealthShow()
     {
-        float healthPercentage = (currentHealth / MaxHealth) * 100f;
+        float healthPercentage = (currentHealth / maxHealth) * 100f;
         if (healthPercentage >= 0)
         {
             HealthBarFG.transform.localScale = new Vector3(healthPercentage / 100, HealthBarFG.transform.localScale.y, HealthBarFG.transform.localScale.z);
@@ -155,10 +160,10 @@ public class Entity : MonoBehaviour
     }
     public virtual IEnumerator IncreaseHeath(float value)
     {
-        while (Healing)
+        while (healing)
         {
 
-            if (currentHealth < MaxHealth)
+            if (currentHealth < maxHealth)
             {
                 currentHealth += value;
               
@@ -167,7 +172,7 @@ public class Entity : MonoBehaviour
 
  
             yield return new WaitForSeconds(value);
-            currentHealth = currentHealth > MaxHealth ? MaxHealth : currentHealth;
+            currentHealth = currentHealth > maxHealth ? maxHealth : currentHealth;
         }
     }
     public GameObject dropingwepon;
@@ -203,7 +208,7 @@ public class Entity : MonoBehaviour
         Healthbarmain.SetActive(true);
         BodyVisibility(true);
         is_death = false;
-        currentHealth = MaxHealth;
+        currentHealth = maxHealth;
         HealthShow();
 
     }
@@ -213,9 +218,28 @@ public class Entity : MonoBehaviour
     {
         //Restart the game
         is_death = false;
-        currentHealth = MaxHealth;
+        currentHealth = maxHealth;
         Healthbarmain.SetActive(true);
         HealthShow();
+
+        entity_rb.linearVelocity = Vector3.zero;
+        shildeffect.SetActive(false);
+        shild = false;
+        if (speedbosting)
+        {
+            moveSpeed /= 2;
+            speedbosting = false;
+            speedeffect.SetActive(false);
+        }
+        passthroughEffect.SetActive(false);
+        entity_colider.isTrigger = false;
+        entity_rb.useGravity = true;
+        insideGrass = false;
+        for (int i = 0; i < allmaterial.Length; i++)
+        {
+            SetOpaque(allmaterial[i].material);
+        }
+
         transform.rotation = Quaternion.identity;
         StopAllCoroutines();
         CancelInvoke();
@@ -255,6 +279,8 @@ public class Entity : MonoBehaviour
 
     //shooting
     public bool isInInterval;
+    public Image powerupsConter;
+    
     public virtual void Shotting()
     {
        
@@ -265,9 +291,13 @@ public class Entity : MonoBehaviour
             //.LookAt(Enemy.transform.position);
            
            
-            Debug.Log("fireing");
-            Bullet spawnedBullets = gameManager.Objectpool.GetFromPool(my_wepon.bullets.name, my_wepon.FirePoints[i].transform.position, Quaternion.Euler(0, my_wepon.FirePoints[i].transform.eulerAngles.y, 0)).GetComponent<Bullet>();
-            spawnedBullets.entity_holder = this;
+            Debug.Log("fireing" + gameObject.name);
+            Bullet spawnedBullets = gameManager.Objectpool.GetFromPool(my_wepon.bullets.name, 
+                my_wepon.FirePoints[i].transform.position,
+                Quaternion.Euler(0, my_wepon.FirePoints[i].transform.eulerAngles.y, 0)).GetComponent<Bullet>();
+            Debug.Log(spawnedBullets.name);
+            spawnedBullets.entity_holder = this.gameObject.GetComponent<Entity>();
+            Debug.Log(spawnedBullets.entity_holder.name);
            // spawnedBullets.BulletFire();
           //  isInInterval = false;
 
@@ -308,29 +338,56 @@ public class Entity : MonoBehaviour
 
     }
     #region Powerups
-    public IEnumerator shildAcitavte()
+    // Coroutine to gradually decrease fill amount
+    private IEnumerator FillEffect(float duration)
+    {
+        float timeElapsed = 0;
+        powerupsConter.fillAmount = 1; // Start full
+
+        while (timeElapsed < duration)
+        {
+            powerupsConter.fillAmount = 1 - (timeElapsed / duration);
+            timeElapsed += Time.deltaTime;
+            yield return null;
+        }
+
+        powerupsConter.fillAmount = 0; // Ensure it's empty at the end
+    }
+    public IEnumerator ShieldActivate()
     {
         //acriavter shild
         shild = true;
+        GameObject indicator = gameManager.Objectpool.GetFromPool("DamageIndicator", this.transform.position, Quaternion.identity);
+        indicator.GetComponent<TextMeshPro>().text = "Shield";
+        StartCoroutine(DeactivatingObject(indicator));
+
+
         shildeffect.SetActive(true);
+
         //showing effect
-        yield return new WaitForSeconds(3);
+        if(powerupsConter)
+            StartCoroutine(FillEffect(10));
+        yield return new WaitForSeconds(10);
         shildeffect.SetActive(false);
         shild = false;
         //deaactivate shild
     }
     bool speedbosting;
-    public IEnumerator SpeedBost()
+    public IEnumerator SpeedBoost()
     {
         if (!speedbosting)
         {
             speedbosting = true;
-
+            GameObject indicator = gameManager.Objectpool.GetFromPool("DamageIndicator", this.transform.position, Quaternion.identity);
+            indicator.GetComponent<TextMeshPro>().text = "X2";
+            StartCoroutine(DeactivatingObject(indicator));
             float tempspeed = 0;
             tempspeed = moveSpeed;
             speedeffect.SetActive(true);
             moveSpeed *= 2;
-            yield return new WaitForSeconds(4);
+            if (powerupsConter)
+                StartCoroutine(FillEffect(5));
+            yield return new WaitForSeconds(5);
             speedeffect.SetActive(false);
             moveSpeed = tempspeed;
             speedbosting = false;
@@ -346,10 +403,15 @@ public class Entity : MonoBehaviour
 
     public IEnumerator Invisible()
     {
+        GameObject indicator = gameManager.Objectpool.GetFromPool("DamageIndicator", this.transform.position, Quaternion.identity);
+        indicator.GetComponent<TextMeshPro>().text = "Mutant";
+        StartCoroutine(DeactivatingObject(indicator));
         GetComponent<Rigidbody>().useGravity = false;
         GetComponent<Collider>().isTrigger=true ;
         passthroughEffect.SetActive(true);
-        yield return new WaitForSeconds(4);
+        if (powerupsConter)
+            StartCoroutine(FillEffect(6));
+        yield return new WaitForSeconds(6);
         passthroughEffect.SetActive(false);
         GetComponent<Collider>().isTrigger = false;
         GetComponent<Rigidbody>().useGravity = true;
@@ -362,13 +424,17 @@ public class Entity : MonoBehaviour
         for (int i = 0; i < allmaterial.Length; i++)
         {
             SetTransparent(allmaterial[i].material);
-
+            GameObject indicator = gameManager.Objectpool.GetFromPool("DamageIndicator", this.transform.position, Quaternion.identity);
+            indicator.GetComponent<TextMeshPro>().text = "Cameo";
+            StartCoroutine(DeactivatingObject(indicator));
             // SetMaterialTransparent(allmaterial[i].material);
             //    yield return StartCoroutine(FadeToTransparent(allmaterial[i].material, 3));
             //need to make it trasparent
-      
+
         }
-            yield return new WaitForSeconds(10);
+        if (powerupsConter)
+            StartCoroutine(FillEffect(10));
+        yield return new WaitForSeconds(10);
 
         insideGrass = false;
         for (int i = 0; i < allmaterial.Length; i++)

@@ -16,7 +16,10 @@ public class ObjectPoolManager : MonoBehaviour
             for (int i = 0; i < initialSize; i++)
             {
                 GameObject obj = Instantiate(prefab, parent);
-                
+                if (obj.GetComponent<Bullet>())
+                {
+                    obj.GetComponent<Bullet>().objectPolling = this;
+                }
                 for (int j = 0; j < obj.transform.childCount; j++)
                 {
                     if (obj.transform.GetChild(j).GetComponent<AudioSource>())
@@ -77,6 +80,8 @@ public class ObjectPoolManager : MonoBehaviour
         }
     }
 
+
+    
     public void ReturnToPool(string key, GameObject obj)
     {
         if (!poolDictionary.ContainsKey(key))

@@ -6,7 +6,7 @@ public class Reactivate : MonoBehaviour
     public Vector3 minimum, maximum;
     public IEnumerator reacrivate()
     {
-        yield return new WaitForSeconds(Random.Range(3,15));
+        yield return new WaitForSeconds(Random.Range(0,5));
 
         this.transform.position = new Vector3(Random.Range(minimum.x, maximum.x), transform.position.y, Random.Range(minimum.z, maximum.z));
         this.gameObject.SetActive(true);
@@ -16,7 +16,8 @@ public class Reactivate : MonoBehaviour
     {
 
         Debug.Log("triger entered");
-
+        if (other.GetComponent<Bullet>())
+            return;
         this.transform.position = new Vector3(Random.Range(minimum.x, maximum.x), transform.position.y, Random.Range(minimum.z, maximum.z));
     }
 }

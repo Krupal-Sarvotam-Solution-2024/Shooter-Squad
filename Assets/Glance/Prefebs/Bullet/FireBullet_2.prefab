@@ -43779,13 +43779,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   entity_holder: {fileID: 0}
   small_bullets: 1
+  objectPolling: {fileID: 0}
   wallHitParticle: {fileID: 3789168704490484556}
   playerHitParicle: {fileID: 3789168704490484556}
   projectile: {fileID: 5340433900336053624}
   flash: {fileID: 7006458949934029994}
   damageAmount: 5
   bulletSpeed: 9.5
-  hitaudio: {fileID: 0}
+  hitaudio: {fileID: 935484190040516586}
   obsticlehit: {fileID: 8300000, guid: f38bc5da570bf284bb60850b24e67bb0, type: 3}
   playerhit: {fileID: 8300000, guid: f38bc5da570bf284bb60850b24e67bb0, type: 3}
 --- !u!1 &8561258385804729825

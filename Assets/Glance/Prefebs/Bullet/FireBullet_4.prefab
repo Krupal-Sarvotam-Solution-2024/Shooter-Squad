@@ -48429,8 +48429,8 @@ Transform:
   m_LocalScale: {x: 1.5, y: 1.5, z: 1.5}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 8943181574114928334}
   - {fileID: 6132167652770465186}
+  - {fileID: 8943181574114928334}
   - {fileID: 4516834015970232669}
   - {fileID: 5425560867014812178}
   m_Father: {fileID: 0}
@@ -48550,13 +48550,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   entity_holder: {fileID: 0}
   small_bullets: 1
+  objectPolling: {fileID: 0}
   wallHitParticle: {fileID: 7336575449475181090}
   playerHitParicle: {fileID: 3953937053379971168}
   projectile: {fileID: 5129437060725849691}
   flash: {fileID: 7846519325787320154}
   damageAmount: 10
   bulletSpeed: 8.5
-  hitaudio: {fileID: 0}
+  hitaudio: {fileID: 8893703040612082302}
   obsticlehit: {fileID: 8300000, guid: f38bc5da570bf284bb60850b24e67bb0, type: 3}
   playerhit: {fileID: 8300000, guid: f38bc5da570bf284bb60850b24e67bb0, type: 3}
 --- !u!1 &7716167896878237430

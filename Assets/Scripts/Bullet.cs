@@ -10,7 +10,7 @@ public class Bullet : MonoBehaviour
     public Entity entity_holder; // Shooter bot
     public bool small_bullets;
 
-
+    public ObjectPoolManager objectPolling;
     [Space(10)]
     [Header("Paricle systems")]
     [SerializeField] private ParticleSystem wallHitParticle; // Particle for playing when hit wall
@@ -33,14 +33,14 @@ public class Bullet : MonoBehaviour
     void OnEnable()
     {
         ended = false;
-
+        Debug.Log("activating"+gameObject.name);
         projectile.gameObject.SetActive(true);
         colider.enabled = true;
-
         for (int i = 0; i < transform.childCount - 2; i++)
         {
             transform.GetChild(i).gameObject.SetActive(true);
         }
+
         StartCoroutine(OffBullet());
     }
     IEnumerator OffBullet()
@@ -62,7 +62,7 @@ public class Bullet : MonoBehaviour
             rb.linearVelocity = direction * bulletSpeed;
             yield return new WaitForSeconds(2f);
 
-            entity_holder.gameManager.Objectpool.ReturnToPool(entity_holder.my_wepon.bullets.name, this.gameObject);
+           entity_holder.gameManager.Objectpool.ReturnToPool(entity_holder.my_wepon.bullets.name, this.gameObject);
         }
     }
    
@@ -83,7 +83,8 @@ public class Bullet : MonoBehaviour
         if (entity_holder == null ||
             collision.gameObject == entity_holder.gameObject ||
             collision.transform.GetComponent<Bullet>() ||
-            collision.gameObject.name == "Magic circle" || collision.GetComponent<Grass>())
+            collision.gameObject.name == "Magic circle" || collision.GetComponent<Grass>() || collision.gameObject.name == "Water"
+            || collision.GetComponent<Reactivate>())
             return;
 
         this.transform.GetComponent<Rigidbody>().linearVelocity = Vector3.zero;
@@ -120,7 +121,7 @@ public class Bullet : MonoBehaviour
         if (entity_holder == null ||
             collision.gameObject == entity_holder.gameObject ||
             collision.transform.GetComponent<Bullet>() ||
-            collision.gameObject.name == "Magic circle" || collision.GetComponent<Grass>())
+            collision.gameObject.name == "Magic circle" || collision.GetComponent<Grass>() || collision.gameObject.name == "Water")
             return;
 
         this.transform.GetComponent<Rigidbody>().linearVelocity = Vector3.zero;

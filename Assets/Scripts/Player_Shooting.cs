@@ -24,10 +24,7 @@ public class Player_Shooting : MonoBehaviour
     // Find that gun is in interval or not
     [SerializeField] private ParticleSystem ShootParticle;
     [SerializeField] private GameObject shootingdirection;
-    
-
-
-
+ 
     [Space(10)]
     [Header("Damage variables")]
     public int hitDamage = 5; // Bot damage amount

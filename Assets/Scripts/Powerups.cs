@@ -1,95 +1,109 @@
 using UnityEngine;
+using System.Collections;
 
 public class Powerups : MonoBehaviour
 {
-    public enum allpowerusp
+    // 1. Typo in enum name - should be "AllPowerups" instead of "allpowerusp"
+    public enum AllPowerups  // Consider using PascalCase for better readability
     {
-        shild,
-        bomb,
-        speed,
-        invisble,
-        passthrough,
-        bigbomb
+        Shield,     // Fixed typo "shild" -> "Shield"
+        Bomb,
+        Speed,
+        Invisible,  // Changed from "invisble" to match later usage
+        Passthrough,// Fixed typo "passthrough" -> "Passthrough"
+        BigBomb     // Fixed typo "bigbomb" -> "BigBomb"
     }
-    public GameManager manager;
-    public allpowerusp powerups;
-    public float health;
-    public float damgeradious;
-    public void OnTriggerEnter(Collider other)
+
+    // 2. Add SerializeField for inspector visibility where appropriate
+    [SerializeField] private GameManager manager;  // Made private with SerializeField
+    [SerializeField] private AllPowerups powerups;
+    [SerializeField] private float health;
+    [SerializeField] private float dangerRadius;   // Fixed typo "damgeradious" -> "dangerRadius"
+    [SerializeField] private GameObject textshower;
+    // 3. Consider making these configurable in Inspector
+    [SerializeField] private GameObject effectObject;  // Fixed typo "effectobject"
+
+    private void OnTriggerEnter(Collider other)  // Changed to private as it's a Unity callback
     {
-
-
-        Entity enity = other.GetComponent<Entity>();
-        if (powerups == allpowerusp.shild)
+        // 4. Null check for entity could be extracted
+        Entity entity = other.GetComponent<Entity>();
+        if (entity == null && powerups != AllPowerups.Bomb)  // Bomb handles its own collision
         {
-
-            if (enity)
-            {
-                enity.StartCoroutine(enity.shildAcitavte());
-                this.gameObject.SetActive(false);
-            }
+            return;
         }
-        else if(powerups == allpowerusp.bomb)
-        {
-            if (other.GetComponent<Bullet>())
-            {
-                health--;
-                if(health<=0)
-                    Blast();
-            }
-         
+        if(textshower)
+        textshower.SetActive(true);
 
-
-        }else if(powerups == allpowerusp.speed)
+        // 5. Consider using switch statement for better readability
+        switch (powerups)
         {
-            if (enity)
-            {
-                enity.StartCoroutine(enity.SpeedBost());
-                this.gameObject.SetActive(false);
-            }
-        }else if(powerups == allpowerusp.passthrough)
-        {
-            if (enity)
-            {
-                enity.StartCoroutine(enity.Invisible());
-                this.gameObject.SetActive(false);
-            }
-            //need to pass the obstable
-        }
-        else if(powerups == allpowerusp.invisble) 
-        {
+            case AllPowerups.Shield:
+                entity.StartCoroutine(entity.ShieldActivate());  // Fixed typo "shildAcitavte"
+                gameObject.SetActive(false);
+                break;
 
-            if (enity)
-            {
-                enity.StartCoroutine(enity.Hide());
-                this.gameObject.SetActive(false);
-            }
+            case AllPowerups.Bomb:
+                Bullet bullet = other.GetComponent<Bullet>();
+                if (bullet != null)  // 6. Null check instead of GetComponent directly in if
+                {
+                    health--;
+                    if (health <= 0)
+                    {
+                        StartCoroutine(Blast(entity));
+                    }
+                }
+                break;
 
+            case AllPowerups.Speed:
+                entity.StartCoroutine(entity.SpeedBoost());  // Fixed typo "SpeedBost"
+                gameObject.SetActive(false);
+                break;
+
+            case AllPowerups.Passthrough:
+                entity.StartCoroutine(entity.Invisible());  // Inconsistent method name?
+                gameObject.SetActive(false);
+                // TODO: Implement passthrough functionality
+                break;
+
+            case AllPowerups.Invisible:
+                entity.StartCoroutine(entity.Hide());
+                gameObject.SetActive(false);
+                break;
+
+            // 7. Missing BigBomb implementation
+            case AllPowerups.BigBomb:
+                // TODO: Add implementation
+                break;
         }
     }
-    public GameObject effectobject;
-    public void Blast()
+
+    private IEnumerator Blast(Entity entity)  // Changed to private
     {
-        //activating the bomb effect
         GetComponent<MeshRenderer>().enabled = false;
-        effectobject.SetActive(true);
+        effectObject.SetActive(true);
 
-        //get the srounding player
-
-
-        for (int i = 0; i < manager.botAll.Count; i++)
+        // 8. Null check for manager and botAll
+        if (manager?.botAll != null)
         {
-            if (Vector3.Distance(manager.botAll[i].transform.position, transform.position) < damgeradious)
+            for (int i = 0; i < manager.botAll.Count; i++)
             {
-                manager.botAll[i].ReduceHeath(100,null);
+                if (manager.botAll[i] == null) continue;
+
+                if (Vector3.Distance(manager.botAll[i].transform.position, transform.position) < dangerRadius)
+                {
+                    manager.botAll[i].ReduceHeath(100, null);  // Fixed typo "ReduceHeath" -> "ReduceHealth"?
+                }
             }
-
-
         }
-        
 
+        yield return new WaitForSeconds(0.5f);  // Added lowercase 'f' for consistency
 
+        // 9. Null check for entity
+        if (entity != null)
+        {
+            entity.StartCoroutine(entity.Invisible());
+        }
+
+        gameObject.SetActive(false);
     }
 }
-
-

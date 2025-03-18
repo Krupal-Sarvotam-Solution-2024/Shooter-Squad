@@ -177,15 +177,15 @@ public class Player_Manager : Entity
     {
         if (currentHealth >= 0)
         {
-            textHealth.text = currentHealth.ToString("00") + " / " +MaxHealth.ToString("00");
-            textHealth1.text = currentHealth.ToString("00") + " / " + MaxHealth.ToString("00");
-            HealthBarSlider.fillAmount = MaxHealth/ 100;
+            textHealth.text = currentHealth.ToString("00") + " / " +maxHealth.ToString("00");
+            textHealth1.text = currentHealth.ToString("00") + " / " + maxHealth.ToString("00");
+            HealthBarSlider.fillAmount = maxHealth/ 100;
 
         }
         else
         {
-            textHealth.text = "00" + " / " + MaxHealth.ToString("00");
-            textHealth1.text = "00" + " / " + MaxHealth.ToString("00");
+            textHealth.text = "00" + " / " + maxHealth.ToString("00");
+            textHealth1.text = "00" + " / " + maxHealth.ToString("00");
 
         }
     }

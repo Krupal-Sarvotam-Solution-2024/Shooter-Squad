@@ -288,7 +288,7 @@ public class Bot_Manager : Entity
     public void OnAnimationEventTriggered() // Method name must match the Animation Event
     {
         Debug.Log("Event Trigered from playermanager1 time");
-        base.Shotting();
+        Shotting();
 
         // Your logic (e.g., shaking the health bar)
     }

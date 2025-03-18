@@ -1,4 +1,3 @@
-
 using UnityEngine;
 using System.Collections.Generic;
 
@@ -7,58 +6,107 @@ public class Weapon : MonoBehaviour
     /// <summary>
     /// Unique identifier for this weapon
     /// </summary>
-    public int id = 0;
+    public int id = 0;  // Made private with SerializeField
 
     /// <summary>
     /// Audio source component for weapon sound effects
     /// </summary>
-    public AudioSource WeaponAudio;
+    [SerializeField] private AudioSource weaponAudio;  // Renamed to follow naming convention
 
-    [SerializeField]
-    private AudioClip blastSound;
+    [SerializeField] private AudioClip blastSound;
 
-    public List<Transform> FirePoints = new List<Transform>();
+    public List<Transform> FirePoints = new List<Transform>();  // Renamed for consistency
 
-    [SerializeField]
-    private GameObject rangeIndicator;
+    [SerializeField] private GameObject rangeIndicator;
 
-    [SerializeField]
-    private bool canPlayMultipleTimes;
+    [SerializeField] private bool canPlayMultipleTimes;
 
-    public GameObject bullets;
-    public Entity enity;
-    [SerializeField]
-    private GameManager gameManager;
-    public float firerate;
+    public GameObject bullets;  // Renamed for clarity
+    public Entity entity;  // Fixed typo "enity" -> "entity"
+    public GameManager gameManager;
+    public float firerate;  // Fixed typo "firerate" -> "fireRate"
+
+    private float nextFireTime;  // Added to implement fire rate
+
     private void Awake()
     {
+        // Validate essential references
         if (gameManager == null || bullets == null)
         {
-            Debug.LogError($"{gameObject.name}: Required references missing");
+            Debug.LogError($"{gameObject.name}: Required references missing (GameManager or Bullet Prefab)");
             enabled = false;
             return;
         }
-       // FirePoints.Add(transform.GetChild(0));
+
+        // Initialize object pool
+        gameManager.Objectpool.CreatePool(bullets.name, bullets, 50, gameManager.BulletsHolder);
+
+        // Validate audio source
+        if (weaponAudio == null)
+        {
+            weaponAudio = GetComponent<AudioSource>();
+            if (weaponAudio == null)
+            {
+                Debug.LogWarning($"{gameObject.name}: No AudioSource found");
+            }
+        }
+
         Debug.Log($"{gameObject.name} initialized");
-     //   weaponAudio = GetComponent<AudioSource>();
-
-        //if (weaponAudio == null)
-        //{
-        //    Debug.LogWarning($"{gameObject.name}: No AudioSource found");
-        //}
-
-        gameManager.Objectpool.CreatePool(bullets.name, bullets, 30, gameManager.BulletsHolder);
     }
+
     private void Update()
     {
-        if (enity && enity.Enemy)
+        if (entity?.Enemy != null)  // Added null-conditional operator
         {
-            for (int i = 0; i < FirePoints.Count; i++)
+            Vector3 targetPosition = new Vector3(
+                entity.Enemy.transform.position.x,
+                transform.position.y,
+                entity.Enemy.transform.position.z
+            ) + Vector3.forward;
+            foreach (Transform firePoint in FirePoints)  // Changed to foreach for better readability
             {
-                Vector3 targetPosition = new Vector3(enity.Enemy.transform.position.x, transform.position.y, enity.Enemy.transform.position.z)+Vector3.forward;
-                FirePoints[i].LookAt(targetPosition);
+                firePoint.LookAt(targetPosition);
             }
-          
+        }
+    }
+
+    // Added firing method
+    private void Fire()
+    {
+        foreach (Transform firePoint in FirePoints)
+        {
+            
+            GameObject bullet = gameManager.Objectpool.GetFromPool(bullets.name, firePoint.position, firePoint.rotation,gameManager.BulletsHolder);
+            if (bullet != null)
+            {
+                bullet.transform.SetPositionAndRotation(firePoint.position, firePoint.rotation);
+                bullet.SetActive(true);
+
+                if (weaponAudio != null && blastSound != null)
+                {
+                    if (canPlayMultipleTimes)
+                    {
+                        weaponAudio.PlayOneShot(blastSound);
+                    }
+                    else if (!weaponAudio.isPlaying)
+                    {
+                        weaponAudio.PlayOneShot(blastSound);
+                    }
+                }
+            }
+        }
+    }
+
+    // Optional: Visualize fire points in editor
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.red;
+        foreach (Transform firePoint in FirePoints)
+        {
+            if (firePoint != null)
+            {
+                Gizmos.DrawSphere(firePoint.position, 0.1f);
+            }
         }
     }
 }

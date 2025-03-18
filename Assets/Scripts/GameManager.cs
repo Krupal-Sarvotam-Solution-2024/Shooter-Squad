@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System.Linq;
+using DG.Tweening;
 
 public class GameManager : MonoBehaviour
 {
@@ -87,6 +89,7 @@ public class GameManager : MonoBehaviour
     }
     IEnumerator GameCompleted()
     {
+        remainingTime = 120;
         yield return new WaitForSeconds(remainingTime);
         gamecompletePnale.SetActive(true);
         Time.timeScale = 0;
@@ -203,6 +206,7 @@ public class GameManager : MonoBehaviour
     // Restart current game
     public void RestartGame()
     {
+        StopAllCoroutines();
         Time.timeScale = 1f;
         StartGame();
     }
@@ -281,18 +285,42 @@ public class GameManager : MonoBehaviour
     // Counting bot for game end
     public void BotCount()
     {
-
-
         botcount--;
-        
-        for (int i = 1; i < remaning_bot.Length; i++)
-        {
-            remaning_bot[i].text ="player_"+i+"  "+  allcharacter[i].GetComponent<Entity>().killcount.ToString();
-            remaning_bot2[i].text ="player_"+i+"  "+  allcharacter[i].GetComponent<Entity>().killcount.ToString();
-        }
-        remaning_bot[0].text =  "You   " + allcharacter[0].GetComponent<Entity>().killcount.ToString();
-        remaning_bot2[0].text = "You   " + allcharacter[0].GetComponent<Entity>().killcount.ToString();
 
+        // Sort characters based on kill count in descending order
+        allcharacter = allcharacter.OrderByDescending(c => c.GetComponent<Entity>().killCount).ToArray();
+
+        // Update UI text fields with animation
+        for (int i = 0; i < remaning_bot.Length; i++)
+        {
+            if (i < allcharacter.Length)
+            {
+                string playerName = allcharacter[i].name;
+                string killCount = allcharacter[i].GetComponent<Entity>().killCount.ToString();
+                string newText = $"{playerName}  {killCount}";
+
+                // Animate text change
+                AnimateTextChange(remaning_bot[i], newText);
+                AnimateTextChange(remaning_bot2[i], newText);
+               // remaning_bot2[i].transform.localScale = remaning_bot[i].transform.localScale;
+              //  AnimateTextChange(remaning_bot2[i], newText);
+            }
+        }
+    }
+
+    private void AnimateTextChange(TextMeshProUGUI uiText, string newText)
+    {
+        // Fade out old text
+        uiText.DOFade(0, 0.2f).OnComplete(() =>
+        {
+            uiText.text = newText; // Change text
+            uiText.DOFade(1, 0.2f); // Fade in new text
+        });
+
+        uiText.transform.DOScale(1.2f, 0.2f).SetLoops(2, LoopType.Yoyo).OnComplete(() =>
+        {
+            uiText.transform.localScale = Vector3.one; // Ensure final scale is (1,1,1)
+        });
     }
     public GameObject[] allcharacter;
     public void playersize(float value)

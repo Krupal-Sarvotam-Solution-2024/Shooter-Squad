@@ -18,7 +18,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &6490249457213601212
 Transform:
   m_ObjectHideFlags: 0
@@ -9908,13 +9908,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   entity_holder: {fileID: 0}
   small_bullets: 1
+  objectPolling: {fileID: 0}
   wallHitParticle: {fileID: 6206396136672361648}
   playerHitParicle: {fileID: 6206396136672361648}
   projectile: {fileID: 7577851423661690242}
   flash: {fileID: 531555115561705030}
   damageAmount: 5
   bulletSpeed: 9.5
-  hitaudio: {fileID: 0}
+  hitaudio: {fileID: 1594413583415235388}
   obsticlehit: {fileID: 8300000, guid: f38bc5da570bf284bb60850b24e67bb0, type: 3}
   playerhit: {fileID: 8300000, guid: f38bc5da570bf284bb60850b24e67bb0, type: 3}
 --- !u!1 &2464012151530282871
