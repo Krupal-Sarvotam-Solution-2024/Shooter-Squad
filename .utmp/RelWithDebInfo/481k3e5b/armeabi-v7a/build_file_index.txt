@@ -1,0 +1,2 @@
+D:\Projects Giri\Shooter-Squad\Library\Bee\Android\Prj\Mono2x\Gradle\unityLibrary\src\main\cpp\CMakeLists.txt
+D:\Projects Giri\Shooter-Squad\Library\Bee\Android\Prj\Mono2x\Gradle\unityLibrary\src\main\cpp\GameActivity\CMakeLists.txt
