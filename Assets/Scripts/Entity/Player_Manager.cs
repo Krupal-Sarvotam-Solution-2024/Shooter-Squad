@@ -47,7 +47,7 @@ public class Player_Manager : Entity
     [Space(10)]
     [Header("Audio managing system")]
     public AudioSource playerAudio; // Audio source which handle player audios
-    public AudioClip runSurface, runRamp, playerDeath; // All audio clips
+    public AudioClip runSurface, runRamp/*, playerDeath*/; // All audio clips
     public bool isSoundPlaying;
 
 

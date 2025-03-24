@@ -30,8 +30,8 @@ public class Bot_Manager : Entity
 
 
     [Header("shild")]
-    public GameObject shildeffect;
-    public bool shild;
+    //public GameObject shildeffect;
+    //public bool shild;
     public float acceleration;
     private Vector3 movementDirection;
     public float horizotalinput = 0;
