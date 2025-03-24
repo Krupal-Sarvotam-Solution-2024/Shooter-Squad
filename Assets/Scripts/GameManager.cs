@@ -47,6 +47,8 @@ public class GameManager : MonoBehaviour
     public Image SoundButtonImage; // Sound button image
     public Sprite SoundOn, SoundOff; // Sound on and off sprite
     public SoundManage SoundManage; // Sound manager
+    public GameObject gameWinpanel;
+    public GameObject gameLosspanel;
 
     [Space(10)]
     [Header("Blood Particle Effrcts")]
@@ -91,7 +93,24 @@ public class GameManager : MonoBehaviour
     {
         remainingTime = 120;
         yield return new WaitForSeconds(remainingTime);
+
+        //Entity higestscroe = it;
+        //foreach (var item in allcharacter)
+        //{ 
+
+        //}
+        //      if (allcharacter[0].)
         gamecompletePnale.SetActive(true);
+        if (allcharacter[0].gameObject.name.Contains("You"))
+        {
+            gameWinpanel.SetActive(true);
+            //winner
+        }
+        else
+        {
+            gameLosspanel.SetActive(true);
+            //loser
+        }
         Time.timeScale = 0;
     }
     public void SoundLoad()
@@ -251,7 +270,7 @@ public class GameManager : MonoBehaviour
         yield return new WaitForSeconds(1);
         Time.timeScale = 1f;
         GameStartAnimText.gameObject.SetActive(false);
-       // StartCoroutine(Powerupsspwn());
+        //StartCoroutine(Powerupsspwn());
         //  player.player_Movement.playerRigidbody.isKinematic = false;
         //Camera.main.gameObject.GetComponent<Camera_Follower>().shouldFollow = true;
         //Camera.main.gameObject.GetComponent<Camera_Follower>().isArriveOrignalPos = false;
