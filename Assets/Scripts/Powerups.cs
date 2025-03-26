@@ -49,7 +49,11 @@ public class Powerups : MonoBehaviour
                     health--;
                     if (health <= 0)
                     {
+                        if (entity) 
                         StartCoroutine(Blast(entity));
+                        else
+                            StartCoroutine(Blast());
+
                     }
                 }
                 break;
@@ -77,7 +81,7 @@ public class Powerups : MonoBehaviour
         }
     }
 
-    private IEnumerator Blast(Entity entity)  // Changed to private
+    private IEnumerator Blast(Entity entity = null)  // Changed to private
     {
         GetComponent<MeshRenderer>().enabled = false;
         effectObject.SetActive(true);
@@ -103,6 +107,32 @@ public class Powerups : MonoBehaviour
         {
             entity.StartCoroutine(entity.Invisible());
         }
+
+        gameObject.SetActive(false);
+    }
+    private IEnumerator Blast()  // Changed to private
+    {
+        GetComponent<MeshRenderer>().enabled = false;
+        if(effectObject)
+        effectObject.SetActive(true);
+
+        // 8. Null check for manager and botAll
+        if (manager?.botAll != null)
+        {
+            for (int i = 0; i < manager.botAll.Count; i++)
+            {
+                if (manager.botAll[i] == null) continue;
+
+                if (Vector3.Distance(manager.botAll[i].transform.position, transform.position) < dangerRadius)
+                {
+                    manager.botAll[i].ReduceHeath(100, null);  // Fixed typo "ReduceHeath" -> "ReduceHealth"?
+                }
+            }
+        }
+
+        yield return new WaitForSeconds(0.5f);  // Added lowercase 'f' for consistency
+
+     
 
         gameObject.SetActive(false);
     }

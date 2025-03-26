@@ -92,6 +92,7 @@ public class GameManager : MonoBehaviour
     IEnumerator GameCompleted()
     {
         remainingTime = 120;
+
         yield return new WaitForSeconds(remainingTime);
 
         //Entity higestscroe = it;
@@ -110,6 +111,25 @@ public class GameManager : MonoBehaviour
         {
             gameLosspanel.SetActive(true);
             //loser
+        }
+        for (int i = 0; i < allcharacter.Length; i++)
+        {
+            allcharacter[i].GetComponent<Entity>().killCount = 0;
+           
+            if (allcharacter[i].name.Contains("You"))
+            {
+                allcharacter[i].GetComponent<Entity>().powerupsConter.fillAmount = 0;
+            }
+        }
+        BotCount();
+        for (int i = 0; i < allcharacter.Length; i++)
+        {
+            allcharacter[i].GetComponent<Entity>().killCount = 0;
+
+            if (allcharacter[i].name.Contains("You"))
+            {
+                allcharacter[i].GetComponent<Entity>().powerupsConter.fillAmount = 0;
+            }
         }
         Time.timeScale = 0;
     }
@@ -206,6 +226,8 @@ public class GameManager : MonoBehaviour
     // Start the game
     public void StartGame()
     {
+
+
         Application.targetFrameRate = -60;
         panelPause.SetActive(false);
         panelStart.SetActive(false);
@@ -213,6 +235,8 @@ public class GameManager : MonoBehaviour
         SetGround();
         StartCoroutine(StartGameAnim());
         StartCoroutine(GameCompleted());
+
+       
     }
 
     // Quit the game
@@ -225,8 +249,10 @@ public class GameManager : MonoBehaviour
     // Restart current game
     public void RestartGame()
     {
-        StopAllCoroutines();
         Time.timeScale = 1f;
+      
+
+        StopAllCoroutines();
         StartGame();
     }
 

@@ -42,7 +42,7 @@ rule CXX_SHARED_LIBRARY_LINKER__game_RelWithDebInfo
 # Rule for re-running cmake.
 
 rule RERUN_CMAKE
-  command = "C:\Program Files\Unity\Hub\Editor\6000.0.31f1\Editor\Data\PlaybackEngines\AndroidPlayer\SDK\cmake\3.22.1\bin\cmake.exe" --regenerate-during-build -S"C:\Users\koush\OneDrive\Desktop\New folder (3)\Sarvatha soltion\New folder\Shooter-Squad\Library\Bee\Android\Prj\Mono2x\Gradle\unityLibrary\src\main\cpp" -B"C:\Users\koush\OneDrive\Desktop\New folder (3)\Sarvatha soltion\New folder\Shooter-Squad\.utmp\RelWithDebInfo\5j51732b\armeabi-v7a"
+  command = "C:\Program Files\Unity\Hub\Editor\6000.0.31f1\Editor\Data\PlaybackEngines\AndroidPlayer\SDK\cmake\3.22.1\bin\cmake.exe" --regenerate-during-build -S"C:\Users\koush\OneDrive\Desktop\New folder (3)\Sarvatha soltion\New folder\Shooter-Squad\Library\Bee\Android\Prj\IL2CPP\Gradle\unityLibrary\src\main\cpp" -B"C:\Users\koush\OneDrive\Desktop\New folder (3)\Sarvatha soltion\New folder\Shooter-Squad\.utmp\RelWithDebInfo\5j51732b\armeabi-v7a"
   description = Re-running CMake...
   generator = 1
 

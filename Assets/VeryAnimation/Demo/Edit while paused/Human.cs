@@ -28,12 +28,12 @@ namespace VeryAnimation
             gameObject.SetActive(true);
         }
 
-        public void OpenDoor()
-        {
-            if (door == null) return;
-            var animator = door.GetComponent<Animator>();
-            if (animator == null) return;
-            animator.SetTrigger("Open");
-        }
+        //public void OpenDoor()
+        //{
+        //    if (door == null) return;
+        //    var animator = door.GetComponent<Animator>();
+        //    if (animator == null) return;
+        //    animator.SetTrigger("Open");
+        //}
     }
 }

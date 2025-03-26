@@ -83,7 +83,8 @@ public class Bullet : MonoBehaviour
         if (entity_holder == null ||
             collision.gameObject == entity_holder.gameObject ||
             collision.transform.GetComponent<Bullet>() ||
-            collision.gameObject.name == "Magic circle" || collision.GetComponent<Grass>() || collision.gameObject.name == "Water"
+            collision.gameObject.name == "Magic circle" || 
+            collision.GetComponent<Grass>() || collision.gameObject.name.Contains("water")
             || collision.GetComponent<Reactivate>())
             return;
 
@@ -121,7 +122,8 @@ public class Bullet : MonoBehaviour
         if (entity_holder == null ||
             collision.gameObject == entity_holder.gameObject ||
             collision.transform.GetComponent<Bullet>() ||
-            collision.gameObject.name == "Magic circle" || collision.GetComponent<Grass>() || collision.gameObject.name == "Water")
+            collision.gameObject.name == "Magic circle" || collision.GetComponent<Grass>() ||
+            collision.gameObject.name.Contains("water"))
             return;
 
         this.transform.GetComponent<Rigidbody>().linearVelocity = Vector3.zero;

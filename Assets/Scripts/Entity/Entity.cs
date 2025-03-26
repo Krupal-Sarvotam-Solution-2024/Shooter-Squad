@@ -384,7 +384,7 @@ public class Entity : MonoBehaviour
             float tempspeed = 0;
             tempspeed = moveSpeed;
             speedeffect.SetActive(true);
-            moveSpeed *= 2;
+            moveSpeed *= 1.5f;
             if (powerupsConter)
                 StartCoroutine(FillEffect(5));
             yield return new WaitForSeconds(5);

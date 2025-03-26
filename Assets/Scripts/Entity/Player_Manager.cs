@@ -210,9 +210,11 @@ public class Player_Manager : Entity
         //    gameManager.botAll[i].StopFollowing();
         //}
         insideGrass = false;
+
         yield return new WaitForSeconds(3);
+        transform.position = startingPos;
         ResetingHealth();
-        gameManager.RestartGame();
+      //  gameManager.RestartGame();
 
 
     }

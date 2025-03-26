@@ -1,10 +1,10 @@
 # ninja log v5
-66	2033	7624472664483011	GameActivity/CMakeFiles/game.dir/UGAEntry.cpp.o	4c53ce2ce6971613
-16	2051	7624472664705755	GameActivity/CMakeFiles/game.dir/UGAConfiguration.cpp.o	4f76183b9830f000
-87	2128	7624472665498502	GameActivity/CMakeFiles/game.dir/UGAInputKeyEvent.cpp.o	e1fc75484e639ae7
-111	2306	7624472667284383	GameActivity/CMakeFiles/game.dir/UGAInputMotionEvent.cpp.o	f16280bf8894862c
-137	2313	7624472667456310	GameActivity/CMakeFiles/game.dir/UGASoftKeyboard.cpp.o	9dacd1751bb8fa3f
-34	2374	7624472668171770	GameActivity/CMakeFiles/game.dir/UGADebug.cpp.o	da2b158b2b909cba
-49	2628	7624472670723493	GameActivity/CMakeFiles/game.dir/UGAInput.cpp.o	a908c69eebc801e5
-1	2755	7624472672009622	GameActivity/CMakeFiles/game.dir/UGAApplication.cpp.o	c8ac2da639a4e941
-2755	2967	7624472674154970	C:/Users/koush/OneDrive/Desktop/New folder (3)/Sarvatha soltion/New folder/Shooter-Squad/Library/Bee/Android/Prj/Mono2x/Gradle/unityLibrary/build/intermediates/cxx/RelWithDebInfo/5j51732b/obj/armeabi-v7a/libgame.so	d1fce27137d3be6a
+1	1914	7645879789805089	GameActivity/CMakeFiles/game.dir/UGAConfiguration.cpp.o	29202717fca8c83f
+37	1925	7645879789815093	GameActivity/CMakeFiles/game.dir/UGAInputKeyEvent.cpp.o	9ce5856c95128202
+52	1934	7645879789997101	GameActivity/CMakeFiles/game.dir/UGAEntry.cpp.o	7d3e368d69797c40
+96	2064	7645879791381339	GameActivity/CMakeFiles/game.dir/UGAInputMotionEvent.cpp.o	3790815e7ead1edc
+121	2188	7645879792606866	GameActivity/CMakeFiles/game.dir/UGASoftKeyboard.cpp.o	4e6bc61172c52ee9
+26	2279	7645879793527580	GameActivity/CMakeFiles/game.dir/UGADebug.cpp.o	c37f93b915e7b356
+69	2499	7645879795829410	GameActivity/CMakeFiles/game.dir/UGAInput.cpp.o	759bd944d140f892
+14	2625	7645879797108732	GameActivity/CMakeFiles/game.dir/UGAApplication.cpp.o	85c46bddf5e17a64
+2625	2797	7645879798864949	C:/Users/koush/OneDrive/Desktop/New folder (3)/Sarvatha soltion/New folder/Shooter-Squad/Library/Bee/Android/Prj/IL2CPP/Gradle/unityLibrary/build/intermediates/cxx/RelWithDebInfo/5j51732b/obj/armeabi-v7a/libgame.so	16627f5744a8232d
