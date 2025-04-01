@@ -110,6 +110,7 @@ public class Entity : MonoBehaviour
             my_wepon = my_wepon.gameObject.transform.parent.GetChild(other.GetComponent<Weapon>().id).GetComponent<Weapon>();
             my_wepon.entity = this;
             my_wepon.gameObject.SetActive(true);
+            entity_animator.SetInteger("WeponID", other.GetComponent<Weapon>().id);
         }
 
         if (other.GetComponent<Powerups>() && other.GetComponent<Reactivate>()|| other.GetComponent<Weapon>() && other.GetComponent<Reactivate>())
@@ -122,7 +123,7 @@ public class Entity : MonoBehaviour
     #endregion
     public void ReduceHeath(float damage,Entity gethitfrom)
     {
-        if (shild)
+        if (shild && damage <100)
             return;
         currentHealth -= damage;
         GameObject indicator = gameManager.Objectpool.GetFromPool("DamageIndicator", this.transform.position, Quaternion.identity);
@@ -203,7 +204,7 @@ public class Entity : MonoBehaviour
         dropingwepon.transform.GetChild(my_wepon.id).gameObject.SetActive(false);
         transform.position =starting_pos;
         if (entity_rb) entity_rb.isKinematic = false;
-        if (entity_colider) entity_colider.enabled = true;
+       if (entity_colider) entity_colider.enabled = true;
         if (entity_navAi) entity_navAi.enabled = true;
         Healthbarmain.SetActive(true);
         BodyVisibility(true);
@@ -246,9 +247,9 @@ public class Entity : MonoBehaviour
         BodyVisibility(true);
         my_wepon.gameObject.SetActive(true);
         this.gameObject.SetActive(true);
-        if(entity_rb)entity_rb.isKinematic = false;
-        if(entity_colider)entity_colider.enabled = true;
-        if(entity_navAi)entity_navAi.enabled = true;
+        if (entity_rb) entity_rb.isKinematic = false;
+        if (entity_colider) entity_colider.enabled = true;
+        if (entity_navAi) entity_navAi.enabled = true;
         this.transform.position = starting_pos;
         transform.rotation = Quaternion.identity;//making 000
         StartCoroutine(IncreaseHeath(1));

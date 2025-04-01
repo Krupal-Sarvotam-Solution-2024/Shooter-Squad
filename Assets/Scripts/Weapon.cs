@@ -65,7 +65,7 @@ public class Weapon : MonoBehaviour
             ) + Vector3.forward;
             foreach (Transform firePoint in FirePoints)  // Changed to foreach for better readability
             {
-                firePoint.LookAt(targetPosition);
+             //   firePoint.LookAt(targetPosition);
             }
         }
     }

@@ -85,8 +85,8 @@ public class GameManager : MonoBehaviour
 
         int minutes = Mathf.FloorToInt(remainingTime / 60);
         int seconds = Mathf.FloorToInt(remainingTime % 60);
-        timeText.text = string.Format("{0:00}:{1:00}", minutes, seconds);
-        timeText2.text = string.Format("{0:00}:{1:00}", minutes, seconds);
+        timeText.text = string.Format("{0:00} : {1:00}", minutes, seconds);
+        timeText2.text = string.Format("{0:00} : {1:00}", minutes, seconds);
         remainingTime -= Time.deltaTime;
     }
     IEnumerator GameCompleted()
@@ -159,9 +159,9 @@ public class GameManager : MonoBehaviour
     private void Update()
     {
 
-        deltaTime += (Time.unscaledDeltaTime - deltaTime) * 0.1f;
-        float fps = 1.0f / deltaTime;
-        fpsTest.text = "FPS: " + Mathf.Ceil(fps).ToString();
+       // deltaTime += (Time.unscaledDeltaTime - deltaTime) * 0.1f;
+       // float fps = 1.0f / deltaTime;
+       // fpsTest.text = "FPS: " + Mathf.Ceil(fps).ToString();
         if (GamePlay == false || player.is_death)
             return;
         UpdateTimeDisplay();
@@ -397,18 +397,18 @@ public class GameManager : MonoBehaviour
         currentGround = grounds[activeGround];
         currentGround.SetActive(true);
 
-        // Declare ground variable
+        //// Declare ground variable
         Ground groundSctipt = currentGround.GetComponent<Ground>();
         botcount = groundSctipt.botCount;
-        //for (int i = 0; i < remaning_bot.Length; i++)
-        //{
-        //    remaning_bot[i].text = allcharacter[i].GetComponent<Entity>().killcount.ToString();
-        //}
+        for (int i = 0; i < remaning_bot.Length; i++)
+        {
+            remaning_bot[i].text = allcharacter[i].GetComponent<Entity>().killCount.ToString();
+        }
         zome.transform.localScale = zome.startingsclae;
         zome.start = true;
         // Set the player 
         player.ResetingGame();
-        player.gameObject.transform.position =new Vector3(groundSctipt.playerSpawnPos.transform.position.x, groundSctipt.playerSpawnPos.transform.position.y+.6f, groundSctipt.playerSpawnPos.transform.position.z);
+        player.gameObject.transform.position = new Vector3(groundSctipt.playerSpawnPos.transform.position.x, groundSctipt.playerSpawnPos.transform.position.y + .6f, groundSctipt.playerSpawnPos.transform.position.z);
         player.ReassignValue();
 
         // Set the bot
@@ -419,9 +419,9 @@ public class GameManager : MonoBehaviour
             botAll[i].transform.position = groundSctipt.allSpawnPoint[i].position;
             botAll[i].starting_pos = groundSctipt.botRandomMove[i].parent.position;
             botAll[i].ResetingGame();
-           // botAll[i].RandomMovePos = groundSctipt.botRandomMove[i];
+            //// botAll[i].RandomMovePos = groundSctipt.botRandomMove[i];
 
-       
+
 
             botAll[i].gameObject.SetActive(true);
         }
