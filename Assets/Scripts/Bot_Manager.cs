@@ -50,7 +50,7 @@ public class Bot_Manager : Entity
       //  HealthBar.transform.LookAt(Camera.main.transform.position); // Healthbar saw camera continusoly
 
         // Return if game play is off ot bot is death
-        if (gameManager.GamePlay == false || is_death == true)
+        if (gameManager.GamePlay == false || isDead == true)
         {
           
             return;
@@ -73,7 +73,7 @@ public class Bot_Manager : Entity
     }
     void FixedUpdate()
     {
-        if (!gameManager.GamePlay || is_death)
+        if (!gameManager.GamePlay || isDead)
         {
             movementDirection = Vector3.zero;
             return;
@@ -94,7 +94,7 @@ public class Bot_Manager : Entity
         if(Physics.SphereCast(transform.position,1f,transform.forward,out hit))
         {
           
-            if (hit.transform.name.Contains("Wall"))
+            if (hit.transform.name.Contains("Wall") || hit.transform.name.Contains("water") || hit.transform.name.Contains("player"))
             {
 
                 // Generate random movement input values between -1 and 1
@@ -109,14 +109,14 @@ public class Bot_Manager : Entity
             }
         }
 
-        if(transform.position.x < minimum.x || transform.position.z< minimum.z || transform.position.x>maximum.x || transform.position.z > maximum.z)
-        {
+        //if(transform.position.x < minimum.x || transform.position.z< minimum.z || transform.position.x>maximum.x || transform.position.z > maximum.z)
+        //{
             if (!interval)
             {
                 interval = true;
                 StartCoroutine(changeDirection());
             }
-        }
+      //  }
     }
     IEnumerator changeDirection()
     {
@@ -191,7 +191,7 @@ public class Bot_Manager : Entity
     void AutoTarget()
     {
 
-        if (gameManager.GamePlay == false || is_death)
+        if (gameManager.GamePlay == false || isDead)
             return;
         if (gameManager.botAll.Count > 0)
         {
@@ -206,12 +206,12 @@ public class Bot_Manager : Entity
             {
 
 
-                if (Vector3.Distance(this.gameObject.transform.position, item.transform.position) < nearestenemydis &&
+                if (Vector3.Distance(this.gameObject.transform.position, item.transform.position) < nearestEnemyDistance &&
                     item.gameObject.activeInHierarchy &&
-                    !item.GetComponent<Entity>().is_death &&
+                    !item.GetComponent<Entity>().isDead &&
                     item != this && !item.insideGrass)
                 {
-                    nearestenemydis = Vector3.Distance(this.gameObject.transform.position, item.transform.position);
+                    nearestEnemyDistance = Vector3.Distance(this.gameObject.transform.position, item.transform.position);
                     Enemy = item;
                 }
             }
@@ -233,7 +233,7 @@ public class Bot_Manager : Entity
     // On Collide with any object
     void OnCollisionEnter(Collision collision)
     {
-        if (gameManager.GamePlay == false || is_death == true)
+        if (gameManager.GamePlay == false || isDead == true)
         {
             return;
         }
@@ -340,7 +340,7 @@ public class Bot_Manager : Entity
     {
         if (gameManager.GamePlay == false ||
           isInInterval == true ||
-          is_death == true )
+          isDead == true )
         {
             return;
         }
@@ -413,7 +413,7 @@ public class Bot_Manager : Entity
 
         death_partclesystem.SetActive(true);
         death_partclesystem.GetComponent<ParticleSystem>().Play();
-        enity_audio.PlayOneShot(playerDeath);
+        entity_audio.PlayOneShot(playerDeath);
 
 
         yield return new WaitForSeconds(2);

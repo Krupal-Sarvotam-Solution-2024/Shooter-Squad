@@ -162,7 +162,7 @@ public class GameManager : MonoBehaviour
        // deltaTime += (Time.unscaledDeltaTime - deltaTime) * 0.1f;
        // float fps = 1.0f / deltaTime;
        // fpsTest.text = "FPS: " + Mathf.Ceil(fps).ToString();
-        if (GamePlay == false || player.is_death)
+        if (GamePlay == false || player.isDead)
             return;
         UpdateTimeDisplay();
 

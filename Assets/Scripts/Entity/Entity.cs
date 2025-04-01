@@ -13,13 +13,13 @@ public class Entity : MonoBehaviour
     public GameManager gameManager;
     public Entity Enemy; // All enemies in that list
     protected Rigidbody entity_rb;
-    protected Collider entity_colider; // Fixed 'colider' to 'collider'
+    protected Collider entity_collider; // Fixed 'colider' to 'collider'
     protected NavMeshAgent entity_navAi;
     protected Animator entity_animator;
-    protected AudioSource enity_audio; // Fixed 'enity_audio' to 'entity_audio'
+    protected AudioSource entity_audio; // Fixed 'enity_audio' to 'entity_audio'
 
     protected float currentHealth { get; private set; }
-    protected float nearestenemydis = 1000f; // Fixed 'nearestenemydis'
+    protected float nearestEnemyDistance = 1000f; // Fixed 'nearestenemydis'
 
     [Space(10)]
     [Header("Health Manager")] // Fixed 'Heath' to 'Health'
@@ -27,7 +27,7 @@ public class Entity : MonoBehaviour
     [SerializeField] private bool healing; // Fixed 'Healing' casing
 
     public bool isPlayer; // Fixed 'is_player' to follow C# naming conventions
-    public bool is_death { get; private set; } // Fixed 'is_death' to 'isDead'
+    public bool isDead { get; private set; } // Fixed 'is_death' to 'isDead'
     public float killCount; // Fixed 'killcount' to 'killCount'
     public float moveSpeed = 5f;
     public float rotationSpeed = 10f;
@@ -54,6 +54,7 @@ public class Entity : MonoBehaviour
     //shooting
     
     public Weapon my_wepon;
+    public Weapon secondaryWeapon;
     public bool insideGrass;
     public Grass EnteredGrass;
     public Color insidegrass, outsidegrass;
@@ -66,10 +67,10 @@ public class Entity : MonoBehaviour
     public virtual void Awake()
     {
         
-        enity_audio = GetComponent<AudioSource>();
+        entity_audio = GetComponent<AudioSource>();
         entity_rb = GetComponent<Rigidbody>();
         entity_navAi = GetComponent<NavMeshAgent>();
-        entity_colider = GetComponent<Collider>();
+        entity_collider = GetComponent<Collider>();
         entity_animator = GetComponent<Animator>();
 
     }
@@ -95,7 +96,19 @@ public class Entity : MonoBehaviour
     {
 
     }
+    public void WeponSwitch()
+    {
+        if (secondaryWeapon == null)
+            return;
 
+        Weapon temp = my_wepon;
+        my_wepon = secondaryWeapon;
+        secondaryWeapon = temp;
+
+        secondaryWeapon.gameObject.SetActive(false);
+        my_wepon.gameObject.SetActive(true);
+        entity_animator.SetInteger("WeponID", my_wepon.id);
+    }
     public virtual void OnTriggerEnter(Collider other)
     {
         if (gameManager.GamePlay == false)
@@ -106,11 +119,20 @@ public class Entity : MonoBehaviour
 
         if (other.GetComponent<Weapon>())
         {
-            my_wepon.gameObject.SetActive(false);
-            my_wepon = my_wepon.gameObject.transform.parent.GetChild(other.GetComponent<Weapon>().id).GetComponent<Weapon>();
-            my_wepon.entity = this;
-            my_wepon.gameObject.SetActive(true);
-            entity_animator.SetInteger("WeponID", other.GetComponent<Weapon>().id);
+            if (secondaryWeapon  && other.GetComponent<Weapon>().id != secondaryWeapon.id)
+            {
+
+                my_wepon.gameObject.SetActive(false);
+                my_wepon = my_wepon.gameObject.transform.parent.GetChild(other.GetComponent<Weapon>().id).GetComponent<Weapon>();
+                my_wepon.entity = this;
+                my_wepon.gameObject.SetActive(true);
+                entity_animator.SetInteger("WeponID", other.GetComponent<Weapon>().id);
+            }
+            else
+            {
+                secondaryWeapon = my_wepon.gameObject.transform.parent.GetChild(other.GetComponent<Weapon>().id).GetComponent<Weapon>();
+                secondaryWeapon.entity = this;
+            }
         }
 
         if (other.GetComponent<Powerups>() && other.GetComponent<Reactivate>()|| other.GetComponent<Weapon>() && other.GetComponent<Reactivate>())
@@ -185,9 +207,9 @@ public class Entity : MonoBehaviour
         Enemy = null;
         Debug.Log("dead");
         Healthbarmain.SetActive(false);
-        is_death = true;
+        isDead = true;
         if (entity_rb) entity_rb.isKinematic = true;
-        if (entity_colider) entity_colider.enabled = false;
+        if (entity_collider) entity_collider.enabled = false;
         if (entity_navAi) entity_navAi.enabled = false;
         BodyVisibility(false);
         dropingwepon.gameObject.SetActive(true);
@@ -204,11 +226,11 @@ public class Entity : MonoBehaviour
         dropingwepon.transform.GetChild(my_wepon.id).gameObject.SetActive(false);
         transform.position =starting_pos;
         if (entity_rb) entity_rb.isKinematic = false;
-       if (entity_colider) entity_colider.enabled = true;
+       if (entity_collider) entity_collider.enabled = true;
         if (entity_navAi) entity_navAi.enabled = true;
         Healthbarmain.SetActive(true);
         BodyVisibility(true);
-        is_death = false;
+        isDead = false;
         currentHealth = maxHealth;
         HealthShow();
 
@@ -218,7 +240,7 @@ public class Entity : MonoBehaviour
     public virtual void ResetingGame()
     {
         //Restart the game
-        is_death = false;
+        isDead = false;
         currentHealth = maxHealth;
         Healthbarmain.SetActive(true);
         HealthShow();
@@ -233,7 +255,7 @@ public class Entity : MonoBehaviour
             speedeffect.SetActive(false);
         }
         passthroughEffect.SetActive(false);
-        entity_colider.isTrigger = false;
+        entity_collider.isTrigger = false;
         entity_rb.useGravity = true;
         insideGrass = false;
         for (int i = 0; i < allmaterial.Length; i++)
@@ -248,7 +270,7 @@ public class Entity : MonoBehaviour
         my_wepon.gameObject.SetActive(true);
         this.gameObject.SetActive(true);
         if (entity_rb) entity_rb.isKinematic = false;
-        if (entity_colider) entity_colider.enabled = true;
+        if (entity_collider) entity_collider.enabled = true;
         if (entity_navAi) entity_navAi.enabled = true;
         this.transform.position = starting_pos;
         transform.rotation = Quaternion.identity;//making 000
@@ -490,13 +512,13 @@ public class Entity : MonoBehaviour
         Enemy = null;
         foreach (var item in gameManager.botAll)
         {
-            if(!item.is_death && item != this && item.gameObject.activeInHierarchy )
+            if(!item.isDead && item != this && item.gameObject.activeInHierarchy )
             {
                 float distace = Vector3.Distance(this.transform.position, item.transform.position);
             
-                if (distace < nearestenemydis && distace < shooting_radious && !item.insideGrass)
+                if (distace < nearestEnemyDistance && distace < shooting_radious && !item.insideGrass)
                 {
-                    nearestenemydis = distace;
+                    nearestEnemyDistance = distace;
                     Enemy = item;
                 }
 
@@ -505,7 +527,7 @@ public class Entity : MonoBehaviour
         }
         if(Enemy == null)
         {
-            nearestenemydis = shooting_radious;
+            nearestEnemyDistance = shooting_radious;
           
         }
     }

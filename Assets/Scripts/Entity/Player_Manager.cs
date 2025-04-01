@@ -75,7 +75,7 @@ public class Player_Manager : Entity
     {
        
         // HealthBar.transform.LookAt(Camera.main.transform.position);
-        if (gameManager.GamePlay == false || is_death)
+        if (gameManager.GamePlay == false || isDead)
         {
             return;
         }
@@ -107,11 +107,11 @@ public class Player_Manager : Entity
         {
             Vector3 targetPosition = new Vector3(Enemy.transform.position.x, transform.position.y, Enemy.transform.position.z);
             transform.LookAt(targetPosition);
-            player_Shooting.Shoot();
+            //player_Shooting.Shoot();
             transform.eulerAngles = new Vector3(0, transform.eulerAngles.y, 0);
             isTargeting = true;
 
-            nearestenemydis = enemyDistance;
+            nearestEnemyDistance = enemyDistance;
         }
         
     }
@@ -123,7 +123,7 @@ public class Player_Manager : Entity
     void AutoTarget()
     {
 
-        if (gameManager.GamePlay == false || is_death)
+        if (gameManager.GamePlay == false || isDead)
             return;
 
         GetNeartestEnemy();

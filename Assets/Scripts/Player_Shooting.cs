@@ -42,7 +42,7 @@ public class Player_Shooting : MonoBehaviour
     // Update
     void Update()
     {
-        if (GameManager.GamePlay == false || PlayerManager.is_death)
+        if (GameManager.GamePlay == false || PlayerManager.isDead)
         {
             return;
         }
@@ -87,7 +87,7 @@ public class Player_Shooting : MonoBehaviour
     {
         if (GameManager.GamePlay == false ||
             PlayerManager.isInInterval ||
-            PlayerManager.is_death == true || 
+            PlayerManager.isDead == true || 
             PlayerManager.gameManager.redyforBrustShooting)
         {
            return;
