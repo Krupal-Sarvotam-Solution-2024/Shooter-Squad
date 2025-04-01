@@ -109,14 +109,14 @@ public class Bot_Manager : Entity
             }
         }
 
-        if(transform.position.x < minimum.x || transform.position.z< minimum.z || transform.position.x>maximum.x || transform.position.z > maximum.z)
-        {
+        //if(transform.position.x < minimum.x || transform.position.z< minimum.z || transform.position.x>maximum.x || transform.position.z > maximum.z)
+        //{
             if (!interval)
             {
                 interval = true;
                 StartCoroutine(changeDirection());
             }
-        }
+        //}
     }
     IEnumerator changeDirection()
     {
