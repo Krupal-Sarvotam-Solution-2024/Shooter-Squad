@@ -65,8 +65,17 @@ public class GameManager : MonoBehaviour
     public GameObject ShootPartical;
     public Transform Holder;
 
-
+    [SerializeField] private TextMeshProUGUI fpsTest;
+    private float deltaTime = 0.0f;
+    public GameObject gamecompletePnale;
+    public int botcount;
+    public TextMeshProUGUI timeText, timeText2;
+    public float remainingTime;
     public Vector3 safeZoneminmum, safeZonemaximum;
+    public GameObject playercontroller;
+    public GameObject[] allcharacter;
+    public Button[] weponSwitchButton1;
+    public Image MainfiregameIcon;
     // Start
     private void Start()
     {
@@ -77,8 +86,7 @@ public class GameManager : MonoBehaviour
      
         
     }
-    public TextMeshProUGUI timeText,timeText2;
-    public float remainingTime;
+ 
     private void UpdateTimeDisplay()
     {
         if (!timeText) return;
@@ -91,16 +99,20 @@ public class GameManager : MonoBehaviour
     }
     IEnumerator GameCompleted()
     {
-        remainingTime = 120;
+        remainingTime = 300;
 
         yield return new WaitForSeconds(remainingTime);
-
+        GameCompepted();
         //Entity higestscroe = it;
         //foreach (var item in allcharacter)
         //{ 
 
         //}
         //      if (allcharacter[0].)
+       
+    }
+    public void GameCompepted()
+    {
         gamecompletePnale.SetActive(true);
         if (allcharacter[0].gameObject.name.Contains("You"))
         {
@@ -115,7 +127,7 @@ public class GameManager : MonoBehaviour
         for (int i = 0; i < allcharacter.Length; i++)
         {
             allcharacter[i].GetComponent<Entity>().killCount = 0;
-           
+
             if (allcharacter[i].name.Contains("You"))
             {
                 allcharacter[i].GetComponent<Entity>().powerupsConter.fillAmount = 0;
@@ -152,8 +164,6 @@ public class GameManager : MonoBehaviour
 
         }
     }
-    [SerializeField] private TextMeshProUGUI fpsTest;
-    private float deltaTime = 0.0f;
 
     // Update
     private void Update()
@@ -325,13 +335,17 @@ public class GameManager : MonoBehaviour
 
 
     }
-    public GameObject gamecompletePnale;
-    public int botcount;
+
     // Counting bot for game end
     public void BotCount()
     {
         botcount--;
-
+        if(botcount == 0)
+        {
+            botcount = -1;
+            StopAllCoroutines();
+            GameCompepted();
+        }
         // Sort characters based on kill count in descending order
         allcharacter = allcharacter.OrderByDescending(c => c.GetComponent<Entity>().killCount).ToArray();
 
@@ -367,7 +381,7 @@ public class GameManager : MonoBehaviour
             uiText.transform.localScale = Vector3.one; // Ensure final scale is (1,1,1)
         });
     }
-    public GameObject[] allcharacter;
+   
     public void playersize(float value)
     {
         foreach (var item in allcharacter)
@@ -426,9 +440,14 @@ public class GameManager : MonoBehaviour
             botAll[i].gameObject.SetActive(true);
         }
 
+        for (int i = 0; i < weponSwitchButton1.Length; i++)
+        {
+            weponSwitchButton1[i].transform.GetChild(0).GetComponent<Image>().sprite = emtygun;
+        }
+        MainfiregameIcon.sprite = player.allCollectedWepon[0].icon;
         player.gameObject.SetActive(true);
     }
-
+    public Sprite emtygun;
     // Show blood particles effect
     public void ShowBlood(Vector3 posPlay)
     {

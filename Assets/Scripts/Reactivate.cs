@@ -22,8 +22,8 @@ public class Reactivate : MonoBehaviour
 
         if (insdesafezoon)
         {
-            Debug.Log("triger entered");
-            if (other.GetComponent<Bullet>())
+          
+            if (other.GetComponent<Bullet>() || other.GetComponent<Entity>())
                 return;
         }
         this.transform.position = new Vector3(Random.Range(minimum.x, maximum.x), transform.position.y, Random.Range(minimum.z, maximum.z));

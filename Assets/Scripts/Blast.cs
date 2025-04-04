@@ -20,10 +20,11 @@ public class Blast : MonoBehaviour
     }
     private void OnTriggerStay(Collider collision)
     {
-            Debug.Log("trigering");
-        if (collision.GetComponent<Player_Manager>())
+
+        Entity entiy = collision.GetComponent<Entity>();
+        if (entiy)
         {
-            collision.GetComponent<Player_Manager>().ReduceHeath(damangeamount,null);
+            entiy.ReduceHeath(damangeamount,null);
         }      
     }
 

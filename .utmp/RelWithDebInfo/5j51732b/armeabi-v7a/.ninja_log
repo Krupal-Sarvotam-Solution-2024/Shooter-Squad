@@ -1,10 +1,19 @@
 # ninja log v5
+121	2188	7645879792606866	GameActivity/CMakeFiles/game.dir/UGASoftKeyboard.cpp.o	4e6bc61172c52ee9
 1	1914	7645879789805089	GameActivity/CMakeFiles/game.dir/UGAConfiguration.cpp.o	29202717fca8c83f
 37	1925	7645879789815093	GameActivity/CMakeFiles/game.dir/UGAInputKeyEvent.cpp.o	9ce5856c95128202
 52	1934	7645879789997101	GameActivity/CMakeFiles/game.dir/UGAEntry.cpp.o	7d3e368d69797c40
-96	2064	7645879791381339	GameActivity/CMakeFiles/game.dir/UGAInputMotionEvent.cpp.o	3790815e7ead1edc
-121	2188	7645879792606866	GameActivity/CMakeFiles/game.dir/UGASoftKeyboard.cpp.o	4e6bc61172c52ee9
 26	2279	7645879793527580	GameActivity/CMakeFiles/game.dir/UGADebug.cpp.o	c37f93b915e7b356
+96	2064	7645879791381339	GameActivity/CMakeFiles/game.dir/UGAInputMotionEvent.cpp.o	3790815e7ead1edc
 69	2499	7645879795829410	GameActivity/CMakeFiles/game.dir/UGAInput.cpp.o	759bd944d140f892
 14	2625	7645879797108732	GameActivity/CMakeFiles/game.dir/UGAApplication.cpp.o	85c46bddf5e17a64
 2625	2797	7645879798864949	C:/Users/koush/OneDrive/Desktop/New folder (3)/Sarvatha soltion/New folder/Shooter-Squad/Library/Bee/Android/Prj/IL2CPP/Gradle/unityLibrary/build/intermediates/cxx/RelWithDebInfo/5j51732b/obj/armeabi-v7a/libgame.so	16627f5744a8232d
+69	3298	7652862054037063	GameActivity/CMakeFiles/game.dir/UGAEntry.cpp.o	7d3e368d69797c40
+181	3365	7652862054739039	GameActivity/CMakeFiles/game.dir/UGAInputKeyEvent.cpp.o	9ce5856c95128202
+112	3416	7652862055630598	GameActivity/CMakeFiles/game.dir/UGAConfiguration.cpp.o	29202717fca8c83f
+372	3513	7652862056814622	GameActivity/CMakeFiles/game.dir/UGAInputMotionEvent.cpp.o	3790815e7ead1edc
+598	4144	7652862063087442	GameActivity/CMakeFiles/game.dir/UGASoftKeyboard.cpp.o	4e6bc61172c52ee9
+36	4154	7652862063229266	GameActivity/CMakeFiles/game.dir/UGADebug.cpp.o	c37f93b915e7b356
+3	4497	7652862066770104	GameActivity/CMakeFiles/game.dir/UGAApplication.cpp.o	85c46bddf5e17a64
+526	4685	7652862068733745	GameActivity/CMakeFiles/game.dir/UGAInput.cpp.o	759bd944d140f892
+4685	5146	7652862073182706	C:/Users/koush/OneDrive/Desktop/New folder (3)/Sarvatha soltion/New folder/Shooter-Squad/Library/Bee/Android/Prj/IL2CPP/Gradle/unityLibrary/build/intermediates/cxx/RelWithDebInfo/5j51732b/obj/armeabi-v7a/libgame.so	16627f5744a8232d

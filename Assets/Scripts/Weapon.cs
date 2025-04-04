@@ -1,13 +1,16 @@
 using UnityEngine;
 using System.Collections.Generic;
+using UnityEngine.UI;
 
 public class Weapon : MonoBehaviour
 {
     /// <summary>
     /// Unique identifier for this weapon
     /// </summary>
+    /// 
+    public Sprite icon;
     public int id = 0;  // Made private with SerializeField
-
+    public Image filler;
     /// <summary>
     /// Audio source component for weapon sound effects
     /// </summary>
@@ -51,7 +54,7 @@ public class Weapon : MonoBehaviour
             }
         }
 
-        Debug.Log($"{gameObject.name} initialized");
+      
     }
 
     private void Update()

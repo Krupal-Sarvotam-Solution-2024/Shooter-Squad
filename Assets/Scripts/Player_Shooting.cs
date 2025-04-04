@@ -37,6 +37,7 @@ public class Player_Shooting : MonoBehaviour
     void Start()
     {
         PlayerManager = GetComponent<Player_Manager>();
+        Shottingjoystick.entity = this;
     }
 
     // Update
@@ -104,7 +105,7 @@ public class Player_Shooting : MonoBehaviour
         //    PlayerManager.player_Movement.playerAnimator.SetBool("SmallBullets", false);
         //}
         //PlayerManager.player_Movement.playerAnimator["YourAnimationName"].speed = 2.0f;
-        PlayerManager.player_Movement.playerAnimator.SetFloat("Shooting Speed", PlayerManager.my_wepon.firerate*10);
+        PlayerManager.player_Movement.playerAnimator.SetFloat("Shooting Speed", PlayerManager.allCollectedWepon[0].firerate*10);
        // PlayerManager.player_Movement.playerAnimator.speed = PlayerManager.my_wepon.firerate;
        // stading_driection = transform.eulerAngles.y;
 

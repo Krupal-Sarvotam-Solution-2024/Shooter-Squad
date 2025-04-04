@@ -94,7 +94,7 @@ public class Bot_Manager : Entity
         if(Physics.SphereCast(transform.position,1f,transform.forward,out hit))
         {
           
-            if (hit.transform.name.Contains("Wall") || hit.transform.name.Contains("water") || hit.transform.name.Contains("player"))
+            if (hit.transform.name.Contains("Wall") || hit.transform.name.Contains("water")|| hit.transform.name.Contains("Player"))
             {
 
                 // Generate random movement input values between -1 and 1
@@ -116,7 +116,7 @@ public class Bot_Manager : Entity
                 interval = true;
                 StartCoroutine(changeDirection());
             }
-      //  }
+        //}
     }
     IEnumerator changeDirection()
     {
@@ -350,7 +350,7 @@ public class Bot_Manager : Entity
        // base.Shotting();
 
         entity_animator.SetBool("Shoot", true);
-        entity_animator.SetFloat("Shooting Speed", my_wepon.firerate *10);
+        entity_animator.SetFloat("Shooting Speed", allCollectedWepon[0].firerate *10);
         Invoke("ResetShooting", .1f);
         // Adjust timing based on animation length
     }

@@ -33,7 +33,7 @@ public class Bullet : MonoBehaviour
     void OnEnable()
     {
         ended = false;
-        Debug.Log("activating"+gameObject.name);
+       
         projectile.gameObject.SetActive(true);
         colider.enabled = true;
         for (int i = 0; i < transform.childCount - 2; i++)
@@ -62,7 +62,7 @@ public class Bullet : MonoBehaviour
             rb.linearVelocity = direction * bulletSpeed;
             yield return new WaitForSeconds(2f);
 
-           entity_holder.gameManager.Objectpool.ReturnToPool(entity_holder.my_wepon.bullets.name, this.gameObject);
+           entity_holder.gameManager.Objectpool.ReturnToPool(entity_holder.allCollectedWepon[0].bullets.name, this.gameObject);
         }
     }
    
@@ -171,7 +171,7 @@ public class Bullet : MonoBehaviour
 
        // hitaudio.Play();
         yield return new WaitForSeconds(2f);
-        entity_holder.gameManager.Objectpool.ReturnToPool(entity_holder.my_wepon.bullets.name, this.gameObject);
+        entity_holder.gameManager.Objectpool.ReturnToPool(entity_holder.allCollectedWepon[0].bullets.name, this.gameObject);
         // gameManager.Objectpool.ReturnToPool(Bullets.name, bulletObj);
     }
 }

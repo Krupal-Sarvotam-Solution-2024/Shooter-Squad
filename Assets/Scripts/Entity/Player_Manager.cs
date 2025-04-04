@@ -92,7 +92,7 @@ public class Player_Manager : Entity
         //    item.gameObject.SetActive(false);
         //}
         //my_wepon = allWepons[weponid];
-        my_wepon.gameObject.SetActive(true);
+        allCollectedWepon[0].gameObject.SetActive(true);
         weponid++;
         if (weponid > 14)
             weponid = 0;
@@ -196,6 +196,9 @@ public class Player_Manager : Entity
         base.Death();
         Debug.Log("PlayerDeath");
         StartCoroutine(PlayerDeath());
+       
+       
+        
     }
 
 
@@ -230,6 +233,7 @@ public class Player_Manager : Entity
     public override void ResetingGame()
     {
         base.ResetingGame();
+        Camera.main.gameObject.GetComponent<Camera_Follower>().player = this.transform;
         player_Movement.AnimationController(AnimState.Idle);
         playerScore = 0;
         HealthTextUpdate();

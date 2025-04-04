@@ -17,7 +17,7 @@ public class Entity : MonoBehaviour
     protected NavMeshAgent entity_navAi;
     protected Animator entity_animator;
     protected AudioSource entity_audio; // Fixed 'enity_audio' to 'entity_audio'
-
+    protected Weapon startingwepon;
     protected float currentHealth { get; private set; }
     protected float nearestEnemyDistance = 1000f; // Fixed 'nearestenemydis'
 
@@ -53,8 +53,13 @@ public class Entity : MonoBehaviour
     public bool isTargeting; // Check that is finding target or not
     //shooting
     
-    public Weapon my_wepon;
+
     public Weapon secondaryWeapon;
+    public Weapon ThirdWepon;
+    public Weapon FourthWepon;
+
+    public List<Weapon> allCollectedWepon;
+
     public bool insideGrass;
     public Grass EnteredGrass;
     public Color insidegrass, outsidegrass;
@@ -67,12 +72,12 @@ public class Entity : MonoBehaviour
     public virtual void Awake()
     {
         
+        startingwepon = allCollectedWepon[0];
         entity_audio = GetComponent<AudioSource>();
         entity_rb = GetComponent<Rigidbody>();
         entity_navAi = GetComponent<NavMeshAgent>();
         entity_collider = GetComponent<Collider>();
         entity_animator = GetComponent<Animator>();
-
     }
     public virtual void Start()
     {
@@ -85,30 +90,81 @@ public class Entity : MonoBehaviour
      
         gameManager.SoundLoad();
     }
+    float time;
     public  virtual void Update()
     {
 
-      
+        if (Weponcolleing)
+        {
+            if (collectingwepon)
+            {
+                int id = Weponcolleing.id;
+                bool canabletocollect = true;
+                for (int i = 0; i < allCollectedWepon.Count; i++)
+                {
+                    if(allCollectedWepon[i].id == id)
+                    {
+                        canabletocollect = false;
+                        break;
+                       
+                    }
+                }
+                if (canabletocollect)
+                {
+                 
+                    Weponcolleing.filler.fillAmount += Time.deltaTime /5;
+                    if (Weponcolleing.filler.fillAmount == 1 )
+                    {
+                        Weponcolleing.filler.fillAmount = 2;
+                        allCollectedWepon.Add(allCollectedWepon[0].gameObject.transform.parent.GetChild(id).GetComponent<Weapon>());
+                        gameManager.weponSwitchButton1[allCollectedWepon.Count - 2].transform.GetChild(0).GetComponent<Image>().sprite = Weponcolleing.icon;
+                        gameManager.weponSwitchButton1[allCollectedWepon.Count - 2].onClick.AddListener(()=>WeponSwitch(id, allCollectedWepon.Count - 2));
+                        StartCoroutine(Weponcolleing.GetComponent<Reactivate>().reacrivate());
+                        Weponcolleing.filler.fillAmount = 0;
+                        Weponcolleing.gameObject.SetActive(false);
+                        Weponcolleing = null;
+                    }
+                }
+            }
+            else
+            {
+                Weponcolleing.filler.fillAmount = 0;
+                Weponcolleing = null;
+            }
+        }
 
     }
-
+    int lastweponid;
     public virtual void FixedUpdate()
     {
 
     }
-    public void WeponSwitch()
+    public void WeponSwitch(int id,int countno)
     {
-        if (secondaryWeapon == null)
-            return;
+  
+     
+        Debug.Log("wepon Switching " + countno + 1);
+        Weapon temp = allCollectedWepon[0];
+        allCollectedWepon[0] = allCollectedWepon[countno+1];
+        allCollectedWepon[countno+1] = temp;
+        //gameManager.weponSwitchButton1[id].transform.GetChild(0).GetComponent<Image>().sprite = temp.icon;
+        //allCollectedWepon[id] = temp;
 
-        Weapon temp = my_wepon;
-        my_wepon = secondaryWeapon;
-        secondaryWeapon = temp;
+        gameManager.MainfiregameIcon.sprite = allCollectedWepon[0].icon;
+        gameManager.weponSwitchButton1[countno].transform.GetChild(0).GetComponent<Image>().sprite =
+            allCollectedWepon[countno+1].icon;
 
-        secondaryWeapon.gameObject.SetActive(false);
-        my_wepon.gameObject.SetActive(true);
-        entity_animator.SetInteger("WeponID", my_wepon.id);
+        gameManager.weponSwitchButton1[countno].onClick.RemoveAllListeners();
+        gameManager.weponSwitchButton1[countno].onClick.AddListener(() =>
+        WeponSwitch(id, countno));
+        allCollectedWepon[0].gameObject.SetActive(true);
+        allCollectedWepon[countno+1].gameObject.SetActive(false);
+  
+        entity_animator.SetInteger("WeponID", allCollectedWepon[0].id);
     }
+    bool collectingwepon;
+    Weapon Weponcolleing;
+    bool insidecollider;
     public virtual void OnTriggerEnter(Collider other)
     {
         if (gameManager.GamePlay == false)
@@ -117,31 +173,41 @@ public class Entity : MonoBehaviour
         }
     
 
-        if (other.GetComponent<Weapon>())
+        if (other.GetComponent<Weapon>() && FourthWepon == null)
         {
-            if (secondaryWeapon  && other.GetComponent<Weapon>().id != secondaryWeapon.id)
-            {
+            collectingwepon = true;
+            Weponcolleing = other.GetComponent<Weapon>();
 
-                my_wepon.gameObject.SetActive(false);
-                my_wepon = my_wepon.gameObject.transform.parent.GetChild(other.GetComponent<Weapon>().id).GetComponent<Weapon>();
-                my_wepon.entity = this;
-                my_wepon.gameObject.SetActive(true);
-                entity_animator.SetInteger("WeponID", other.GetComponent<Weapon>().id);
-            }
-            else
-            {
-                secondaryWeapon = my_wepon.gameObject.transform.parent.GetChild(other.GetComponent<Weapon>().id).GetComponent<Weapon>();
-                secondaryWeapon.entity = this;
-            }
+          
         }
-
+        else
         if (other.GetComponent<Powerups>() && other.GetComponent<Reactivate>()|| other.GetComponent<Weapon>() && other.GetComponent<Reactivate>())
         {
             StartCoroutine(other.GetComponent<Reactivate>().reacrivate());
         }
+        else
+        {
+            
+        }
+        insidecollider = true;
+
         //trigering powerups
 
     }
+    public virtual void OnTriggerExit(Collider other)
+    {
+        if (other.GetComponent<Weapon>())
+        {
+            collectingwepon = false;
+
+        }
+        else
+        {
+            
+        }
+        insidecollider = false;
+    }
+
     #endregion
     public void ReduceHeath(float damage,Entity gethitfrom)
     {
@@ -199,31 +265,52 @@ public class Entity : MonoBehaviour
         }
     }
     public GameObject dropingwepon;
+ 
     public virtual void Death()
     {
-
-        //   Enemy.ki++;
         gameManager.BotCount();
+        //   Enemy.ki++;
         Enemy = null;
         Debug.Log("dead");
         Healthbarmain.SetActive(false);
         isDead = true;
+        if (gameManager.player.isDead == true)
+        {
+            int no = 0;
+
+            for (int i = 0; i < gameManager.allcharacter.Length; i++)
+            {
+                if (!gameManager.allcharacter[i].GetComponent<Entity>().isDead && gameManager.allcharacter[i].activeInHierarchy)
+                {
+                    no = i;
+                    break;
+                }
+            }
+            //while (gameManager.allcharacter[no].activeInHierarchy == false)
+            //{
+            //    no = Random.Range(0, gameManager.allcharacter.Length);
+            //}
+
+            gameManager.playercontroller.gameObject.SetActive(false);
+            Camera.main.GetComponent<Camera_Follower>().player = gameManager.allcharacter[no].transform;
+        }
         if (entity_rb) entity_rb.isKinematic = true;
         if (entity_collider) entity_collider.enabled = false;
         if (entity_navAi) entity_navAi.enabled = false;
         BodyVisibility(false);
         dropingwepon.gameObject.SetActive(true);
-        dropingwepon.transform.GetChild(my_wepon.id).gameObject.SetActive(true);
-
+        dropingwepon.transform.GetChild(allCollectedWepon[0].id).gameObject.SetActive(true);
+       
+        //camera need to set on any one bot
         //gameManager.BotCount();
         //  StartCoroutine(DeathPartical());
-        StartCoroutine(Respawn());
+        // StartCoroutine(Respawn());
     }
 
     IEnumerator Respawn()
     {
         yield return new WaitForSeconds(3);
-        dropingwepon.transform.GetChild(my_wepon.id).gameObject.SetActive(false);
+        dropingwepon.transform.GetChild(allCollectedWepon[0].id).gameObject.SetActive(false);
         transform.position =starting_pos;
         if (entity_rb) entity_rb.isKinematic = false;
        if (entity_collider) entity_collider.enabled = true;
@@ -239,12 +326,24 @@ public class Entity : MonoBehaviour
 
     public virtual void ResetingGame()
     {
+        gameManager.playercontroller.SetActive(true);
         //Restart the game
+        foreach (var item in allCollectedWepon)
+        {
+            item.gameObject.SetActive(false);
+        }
+        allCollectedWepon.Clear();
+
+        
+        allCollectedWepon.Add(startingwepon);
+        Debug.Log("Loading");
+        allCollectedWepon[0].gameObject.SetActive(true);
+        
         isDead = false;
         currentHealth = maxHealth;
         Healthbarmain.SetActive(true);
         HealthShow();
-
+        
         entity_rb.linearVelocity = Vector3.zero;
         shildeffect.SetActive(false);
         shild = false;
@@ -267,7 +366,7 @@ public class Entity : MonoBehaviour
         StopAllCoroutines();
         CancelInvoke();
         BodyVisibility(true);
-        my_wepon.gameObject.SetActive(true);
+        allCollectedWepon[0].gameObject.SetActive(true);
         this.gameObject.SetActive(true);
         if (entity_rb) entity_rb.isKinematic = false;
         if (entity_collider) entity_collider.enabled = true;
@@ -308,16 +407,16 @@ public class Entity : MonoBehaviour
     {
        
     
-        for (int i = 0; i < my_wepon.FirePoints.Count; i++)
+        for (int i = 0; i < allCollectedWepon[0].FirePoints.Count; i++)
         {
 
             //.LookAt(Enemy.transform.position);
            
            
-            Debug.Log("fireing" + gameObject.name);
-            Bullet spawnedBullets = gameManager.Objectpool.GetFromPool(my_wepon.bullets.name, 
-                my_wepon.FirePoints[i].transform.position,
-                Quaternion.Euler(0, my_wepon.FirePoints[i].transform.eulerAngles.y, 0)).GetComponent<Bullet>();
+          
+            Bullet spawnedBullets = gameManager.Objectpool.GetFromPool(allCollectedWepon[0].bullets.name,
+                allCollectedWepon[0].FirePoints[i].transform.position,
+                Quaternion.Euler(0, allCollectedWepon[0].FirePoints[i].transform.eulerAngles.y, 0)).GetComponent<Bullet>();
             Debug.Log(spawnedBullets.name);
             spawnedBullets.entity_holder = this.gameObject.GetComponent<Entity>();
             Debug.Log(spawnedBullets.entity_holder.name);
@@ -430,11 +529,12 @@ public class Entity : MonoBehaviour
         indicator.GetComponent<TextMeshPro>().text = "Mutant";
         StartCoroutine(DeactivatingObject(indicator));
         GetComponent<Rigidbody>().useGravity = false;
-        GetComponent<Collider>().isTrigger=true ;
+        GetComponent<Collider>().isTrigger=true;
         passthroughEffect.SetActive(true);
         if (powerupsConter)
             StartCoroutine(FillEffect(6));
         yield return new WaitForSeconds(6);
+        yield return new WaitUntil(() => !insidecollider);
         passthroughEffect.SetActive(false);
         GetComponent<Collider>().isTrigger = false;
         GetComponent<Rigidbody>().useGravity = true;
