@@ -115,8 +115,11 @@ public class Entity : MonoBehaviour
                     Weponcolleing.filler.fillAmount += Time.deltaTime /5;
                     if (Weponcolleing.filler.fillAmount == 1 )
                     {
+
                         Weponcolleing.filler.fillAmount = 2;
-                        allCollectedWepon.Add(allCollectedWepon[0].gameObject.transform.parent.GetChild(id).GetComponent<Weapon>());
+                        Weapon selectedwepon = allCollectedWepon[0].gameObject.transform.parent.
+                            GetChild(id).GetComponent<Weapon>();
+                        allCollectedWepon.Add(selectedwepon);
                         gameManager.weponSwitchButton1[allCollectedWepon.Count - 2].transform.GetChild(0).GetComponent<Image>().sprite = Weponcolleing.icon;
                         gameManager.weponSwitchButton1[allCollectedWepon.Count - 2].onClick.AddListener(()=>WeponSwitch(id, allCollectedWepon.Count - 2));
                         StartCoroutine(Weponcolleing.GetComponent<Reactivate>().reacrivate());
@@ -171,12 +174,13 @@ public class Entity : MonoBehaviour
         {
             return;
         }
-    
 
-        if (other.GetComponent<Weapon>() && FourthWepon == null)
+        Weapon otherwepon = other.GetComponent<Weapon>();
+        
+        if ( otherwepon&& FourthWepon == null)
         {
             collectingwepon = true;
-            Weponcolleing = other.GetComponent<Weapon>();
+            Weponcolleing = otherwepon;
 
           
         }

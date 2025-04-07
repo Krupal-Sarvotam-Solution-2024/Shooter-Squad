@@ -249,12 +249,7 @@ public class Bot_Manager : Entity
             return;
         }
 
-        if (other.GetComponent<Grass>())
-        {
-           // BodyVisibility(false);
-       //     insideGrass = true;
-            
-        }
+       
     }
 
     private void OnTriggerExit(Collider other)
@@ -264,12 +259,6 @@ public class Bot_Manager : Entity
             return;
         }
 
-        if (other.GetComponent<Grass>())
-        {
-          //  insideGrass = false;
-           // BodyVisibility(true);
-           // BodyVisibility(insideGrass);
-        }
 
     }
     public IEnumerator shildAcitavte()

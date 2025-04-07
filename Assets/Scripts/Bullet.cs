@@ -84,36 +84,33 @@ public class Bullet : MonoBehaviour
             collision.gameObject == entity_holder.gameObject ||
             collision.transform.GetComponent<Bullet>() ||
             collision.gameObject.name == "Magic circle" || 
-            collision.GetComponent<Grass>() || collision.gameObject.name.Contains("water")
+            collision.gameObject.name.Contains("water")
             || collision.GetComponent<Reactivate>())
             return;
 
-        this.transform.GetComponent<Rigidbody>().linearVelocity = Vector3.zero;
+        rb.linearVelocity = Vector3.zero;
         Vector3 pos = this.transform.position;
         ended = true;
-        if (collision.GetComponent<Entity>() && collision.gameObject != entity_holder)
+        Entity otherPlayer = collision.GetComponent<Entity>();
+        if (otherPlayer && collision.gameObject != entity_holder)
         {
             playerHitParicle.transform.position = pos;
-
-           // hitaudio.PlayOneShot(playerhit);
             StartCoroutine(GoParentAfterParticle(playerHitParicle));
-            collision.GetComponent<Entity>().ReduceHeath(damageAmount,entity_holder);
+            otherPlayer.ReduceHeath(damageAmount,entity_holder);
             //player hit
         }
         else if (collision.gameObject != entity_holder)
         {
-            //wall hit
-            Debug.Log("object hitting");
+
             wallHitParticle.transform.position = pos;
-           // hitaudio.PlayOneShot(obsticlehit);
+
             StartCoroutine(GoParentAfterParticle(wallHitParticle));
         }
 
 
 
 
-        Debug.Log("Deactivating bullets" + transform.name + entity_holder.name + collision.gameObject.name);
-
+       
 
     }
 
@@ -122,20 +119,20 @@ public class Bullet : MonoBehaviour
         if (entity_holder == null ||
             collision.gameObject == entity_holder.gameObject ||
             collision.transform.GetComponent<Bullet>() ||
-            collision.gameObject.name == "Magic circle" || collision.GetComponent<Grass>() ||
+            collision.gameObject.name == "Magic circle" ||
             collision.gameObject.name.Contains("water"))
             return;
 
-        this.transform.GetComponent<Rigidbody>().linearVelocity = Vector3.zero;
+        rb.linearVelocity = Vector3.zero;
         Vector3 pos = this.transform.position;
-
-        if (collision.GetComponent<Entity>() && collision.gameObject != entity_holder)
+        Entity otherPlayer = collision.GetComponent<Entity>();
+        if (otherPlayer && collision.gameObject != entity_holder)
         {
             playerHitParicle.transform.position = pos;
 
             hitaudio.PlayOneShot(playerhit);
             StartCoroutine(GoParentAfterParticle(playerHitParicle));
-            collision.GetComponent<Entity>().ReduceHeath(damageAmount,entity_holder);
+            otherPlayer.ReduceHeath(damageAmount,entity_holder);
             //player hit
         }
         else if (collision.gameObject != entity_holder)
