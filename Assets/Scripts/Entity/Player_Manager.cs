@@ -24,7 +24,6 @@ public class Player_Manager : Entity
 
     [Space(10)]
     [Header("Auto aim & enemy managing variables")]
-    public int killcount;
     public float enemyDistance; // Enemy distance for fight
     public int enemyInRadius; // Enemy count in our radius
   

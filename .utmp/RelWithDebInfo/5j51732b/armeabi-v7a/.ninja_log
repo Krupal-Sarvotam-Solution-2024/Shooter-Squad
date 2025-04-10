@@ -1,10 +1,10 @@
 # ninja log v5
+140	2651	7658124134820961	GameActivity/CMakeFiles/game.dir/UGASoftKeyboard.cpp.o	4e6bc61172c52ee9
 32	2325	7658124131321397	GameActivity/CMakeFiles/game.dir/UGAConfiguration.cpp.o	29202717fca8c83f
 50	2336	7658124131204970	GameActivity/CMakeFiles/game.dir/UGAEntry.cpp.o	7d3e368d69797c40
 71	2354	7658124131589124	GameActivity/CMakeFiles/game.dir/UGAInputKeyEvent.cpp.o	9ce5856c95128202
-113	2561	7658124133728844	GameActivity/CMakeFiles/game.dir/UGAInputMotionEvent.cpp.o	3790815e7ead1edc
-140	2651	7658124134820961	GameActivity/CMakeFiles/game.dir/UGASoftKeyboard.cpp.o	4e6bc61172c52ee9
 1	2691	7658124135206614	GameActivity/CMakeFiles/game.dir/UGADebug.cpp.o	c37f93b915e7b356
+113	2561	7658124133728844	GameActivity/CMakeFiles/game.dir/UGAInputMotionEvent.cpp.o	3790815e7ead1edc
 92	3010	7658124138480877	GameActivity/CMakeFiles/game.dir/UGAInput.cpp.o	759bd944d140f892
 16	3161	7658124139868097	GameActivity/CMakeFiles/game.dir/UGAApplication.cpp.o	85c46bddf5e17a64
 3161	3366	7658124142060224	C:/Users/koush/OneDrive/Desktop/New folder (3)/Sarvatha soltion/New folder/Shooter-Squad/Library/Bee/Android/Prj/IL2CPP/Gradle/unityLibrary/build/intermediates/cxx/RelWithDebInfo/5j51732b/obj/armeabi-v7a/libgame.so	16627f5744a8232d

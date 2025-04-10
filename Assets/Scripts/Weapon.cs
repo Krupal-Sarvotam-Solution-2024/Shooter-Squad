@@ -51,7 +51,7 @@ public class Weapon : MonoBehaviour
             }
         }
 
-        Debug.Log($"{gameObject.name} initialized");
+       
     }
 
     private void Update()

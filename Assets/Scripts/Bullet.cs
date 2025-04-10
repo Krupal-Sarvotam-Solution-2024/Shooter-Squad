@@ -33,7 +33,6 @@ public class Bullet : MonoBehaviour
     void OnEnable()
     {
         ended = false;
-        Debug.Log("activating"+gameObject.name);
         projectile.gameObject.SetActive(true);
         colider.enabled = true;
         for (int i = 0; i < transform.childCount - 2; i++)
@@ -103,7 +102,7 @@ public class Bullet : MonoBehaviour
         else if (collision.gameObject != entity_holder)
         {
             //wall hit
-            Debug.Log("object hitting");
+        
             wallHitParticle.transform.position = pos;
            // hitaudio.PlayOneShot(obsticlehit);
             StartCoroutine(GoParentAfterParticle(wallHitParticle));
@@ -112,7 +111,7 @@ public class Bullet : MonoBehaviour
 
 
 
-        Debug.Log("Deactivating bullets" + transform.name + entity_holder.name + collision.gameObject.name);
+   
 
 
     }

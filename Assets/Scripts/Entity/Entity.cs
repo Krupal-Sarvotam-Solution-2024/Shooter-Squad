@@ -220,9 +220,11 @@ public class Entity : MonoBehaviour
 
     public virtual void ResetingGame()
     {
-        //Restart the game
-        is_death = false;
         currentHealth = maxHealth;
+        //Restart the game
+        killCount = 0;
+        Debug.Log("gameobject name" + this.gameObject.name + "  " + killCount);
+        is_death = false;
         Healthbarmain.SetActive(true);
         HealthShow();
 
@@ -256,6 +258,7 @@ public class Entity : MonoBehaviour
         this.transform.position = starting_pos;
         transform.rotation = Quaternion.identity;//making 000
         StartCoroutine(IncreaseHeath(1));
+        gameManager.BotCount();
     }
 
     // Change a visibility of the body

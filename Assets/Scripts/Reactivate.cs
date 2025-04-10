@@ -16,18 +16,27 @@ public class Reactivate : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
 
-        Debug.Log("triger entered");
+        if (other.GetComponent<SafeZone>())
+        {
+            return;
+        }
+
+        if (other.GetComponent<Bullet>())
+        return;
+
+        if(insidesafezone)
+            this.transform.position = new Vector3(Random.Range(minimum.x, maximum.x), transform.position.y, Random.Range(minimum.z, maximum.z));
+        
+    }
+
+    private void OnTriggerStay(Collider other)
+    {
         if (other.GetComponent<SafeZone>())
         {
             insidesafezone = true;
         }
-
-        if(!insidesafezone)
-            this.transform.position = new Vector3(Random.Range(minimum.x, maximum.x), transform.position.y, Random.Range(minimum.z, maximum.z));
-        if (other.GetComponent<Bullet>())
-            return;
-        
     }
+
     private void OnTriggerExit(Collider other)
     {
         if(other.GetComponent<SafeZone>())

@@ -84,24 +84,30 @@ public class GameManager : MonoBehaviour
 
         int minutes = Mathf.FloorToInt(remainingTime / 60);
         int seconds = Mathf.FloorToInt(remainingTime % 60);
+        remainingTime -= Time.deltaTime;
+       
+        killcounttext.text = player.killCount.ToString();
+        killcounttext2.text = player.killCount.ToString();
         timeText.text = string.Format("{0:00} : {1:00}", minutes, seconds);
         timeText2.text = string.Format("{0:00} : {1:00}", minutes, seconds);
-        timeText2.text = string.Format("{0:00} : {1:00}", minutes, seconds);
-        remainingTime -= Time.deltaTime;
+
     }
+
+    public TextMeshProUGUI killcounttext;
+    public TextMeshProUGUI killcounttext2;
     IEnumerator GameCompleted()
     {
-        remainingTime = 120;
+        remainingTime = 125;
 
         yield return new WaitForSeconds(remainingTime);
-
+     
         //Entity higestscroe = it;
         //foreach (var item in allcharacter)
         //{ 
 
         //}
         //      if (allcharacter[0].)
-
+        
         if (allcharacter[0].gameObject.name.Contains("You"))
         {
             gameWinpanel.SetActive(true);
@@ -114,7 +120,7 @@ public class GameManager : MonoBehaviour
         }
         for (int i = 0; i < allcharacter.Length; i++)
         {
-            allcharacter[i].GetComponent<Entity>().killCount = 0;
+           
            
             if (allcharacter[i].name.Contains("You"))
             {
@@ -124,13 +130,15 @@ public class GameManager : MonoBehaviour
         BotCount();
         for (int i = 0; i < allcharacter.Length; i++)
         {
-            allcharacter[i].GetComponent<Entity>().killCount = 0;
+       
 
             if (allcharacter[i].name.Contains("You"))
             {
                 allcharacter[i].GetComponent<Entity>().powerupsConter.fillAmount = 0;
             }
         }
+        timeText.text = "00 : 00";
+        timeText2.text = "00 : 00";
         Time.timeScale = 0;
     }
     public void SoundLoad()
@@ -159,12 +167,10 @@ public class GameManager : MonoBehaviour
     private void Update()
     {
 
-        deltaTime += (Time.unscaledDeltaTime - deltaTime) * 0.1f;
-        float fps = 1.0f / deltaTime;
-        fpsTest.text = "FPS: " + Mathf.Ceil(fps).ToString();
+   
+        UpdateTimeDisplay();
         if (GamePlay == false || player.is_death)
             return;
-        UpdateTimeDisplay();
 
         if (redyforBrustShooting)
         {
@@ -251,9 +257,12 @@ public class GameManager : MonoBehaviour
     {
         Time.timeScale = 1f;
 
+
         Objectpool.Retrunalltopool("DamageIndicator", damageIndicaterHolder);
         Objectpool.Retrunalltopool("ShootingPartical",  shootingparticalHolder);
-       
+
+        gameWinpanel.SetActive(false);
+        gameLosspanel.SetActive(false);
         StopAllCoroutines();
         StartGame();
     }
@@ -413,6 +422,8 @@ public class GameManager : MonoBehaviour
         player.gameObject.transform.position =new Vector3(groundSctipt.playerSpawnPos.transform.position.x, groundSctipt.playerSpawnPos.transform.position.y+.6f, groundSctipt.playerSpawnPos.transform.position.z);
         player.ReassignValue();
 
+
+
         // Set the bot
         for (int i = 0; i < groundSctipt.botCount; i++)
         {
@@ -428,6 +439,12 @@ public class GameManager : MonoBehaviour
             botAll[i].gameObject.SetActive(true);
         }
 
+        foreach (var item in botAll)
+        {
+            if(item.gameObject.activeInHierarchy)
+                item.ResetingGame();
+
+        }
         player.gameObject.SetActive(true);
     }
 

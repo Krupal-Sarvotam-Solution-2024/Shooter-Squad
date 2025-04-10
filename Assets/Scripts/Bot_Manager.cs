@@ -45,6 +45,7 @@ public class Bot_Manager : Entity
        
        
     }
+    public Transform BOTMOVELOCATION;
     void Update()
     {
       //  HealthBar.transform.LookAt(Camera.main.transform.position); // Healthbar saw camera continusoly
@@ -61,7 +62,7 @@ public class Bot_Manager : Entity
         maximum.z -= Time.deltaTime;
         maximum.x -= Time.deltaTime;
         movementDirection = Vector3.Lerp(movementDirection, targetDirection, Time.deltaTime * acceleration);
-
+        entity_navAi.SetDestination(BOTMOVELOCATION.position);
         if (movementDirection.magnitude < 0.1f)
         {
             movementDirection = Vector3.zero;
@@ -79,8 +80,8 @@ public class Bot_Manager : Entity
             return;
         }
 
-     
-        MoveWithRigidbody();
+        
+       // MoveWithRigidbody();
          
     }
     bool interval;
@@ -94,7 +95,8 @@ public class Bot_Manager : Entity
         if(Physics.SphereCast(transform.position,1f,transform.forward,out hit))
         {
           
-            if (hit.transform.name.Contains("Wall")|| hit.transform.name.Contains("water"))
+            if (hit.transform.name.Contains("Wall")|| hit.transform.name.Contains("water") || hit.transform.name.Contains("Box") || hit.transform.name.Contains("Bamboo")
+                || hit.transform.name.Contains("Barrel"))
             {
 
                 // Generate random movement input values between -1 and 1
