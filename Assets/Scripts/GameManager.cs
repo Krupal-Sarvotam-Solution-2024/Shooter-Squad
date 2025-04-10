@@ -54,7 +54,6 @@ public class GameManager : MonoBehaviour
     [Header("Blood Particle Effrcts")]
     public List<ParticleSystem> AllBloodParticles;
     public int BloodParticleCount = 0;
-    public Transform BulletsHolder;
     [Space(10)]
     [Header("powerups")]
     public GameObject[] allPowerups;
@@ -63,15 +62,15 @@ public class GameManager : MonoBehaviour
     [Header("pooling")]
     public GameObject damage_indicator;
     public GameObject ShootPartical;
-    public Transform Holder;
+    public Transform damageIndicaterHolder,shootingparticalHolder,BulletHolder;
 
 
     public Vector3 safeZoneminmum, safeZonemaximum;
     // Start
     private void Start()
     {
-        Objectpool.CreatePool("DamageIndicator", damage_indicator, 10,Holder);
-        Objectpool.CreatePool("ShootingPartical", ShootPartical, 40,Holder);
+        Objectpool.CreatePool("DamageIndicator", damage_indicator, 10,damageIndicaterHolder);
+        Objectpool.CreatePool("ShootingPartical", ShootPartical, 40,shootingparticalHolder);
         Time.timeScale = 1f; // Make game continue
         SoundLoad();
      
@@ -85,8 +84,9 @@ public class GameManager : MonoBehaviour
 
         int minutes = Mathf.FloorToInt(remainingTime / 60);
         int seconds = Mathf.FloorToInt(remainingTime % 60);
-        timeText.text = string.Format("{0:00}:{1:00}", minutes, seconds);
-        timeText2.text = string.Format("{0:00}:{1:00}", minutes, seconds);
+        timeText.text = string.Format("{0:00} : {1:00}", minutes, seconds);
+        timeText2.text = string.Format("{0:00} : {1:00}", minutes, seconds);
+        timeText2.text = string.Format("{0:00} : {1:00}", minutes, seconds);
         remainingTime -= Time.deltaTime;
     }
     IEnumerator GameCompleted()
@@ -101,7 +101,7 @@ public class GameManager : MonoBehaviour
 
         //}
         //      if (allcharacter[0].)
-        gamecompletePnale.SetActive(true);
+
         if (allcharacter[0].gameObject.name.Contains("You"))
         {
             gameWinpanel.SetActive(true);
@@ -250,8 +250,10 @@ public class GameManager : MonoBehaviour
     public void RestartGame()
     {
         Time.timeScale = 1f;
-      
 
+        Objectpool.Retrunalltopool("DamageIndicator", damageIndicaterHolder);
+        Objectpool.Retrunalltopool("ShootingPartical",  shootingparticalHolder);
+       
         StopAllCoroutines();
         StartGame();
     }
@@ -383,10 +385,10 @@ public class GameManager : MonoBehaviour
         // Select ground
         remainingTime = 120;
         currentGround = null;
-        for (int i = 0; i < Holder.childCount; i++)
-        {
-            Holder.GetChild(i).gameObject.SetActive(false);
-        }
+        //for (int i = 0; i < Holder.childCount; i++)
+        //{
+        //    Holder.GetChild(i).gameObject.SetActive(false);
+        //}
         for (int i = 0; i < grounds.Count; i++)
         {
             grounds[i].gameObject.SetActive(false);

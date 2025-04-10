@@ -62,6 +62,7 @@ public class Entity : MonoBehaviour
     public GameObject shildeffect,speedeffect,passthroughEffect;
     public bool shild;
 
+    public GameObject setdestination;
     #region MonoMethods
     public virtual void Awake()
     {
@@ -122,7 +123,7 @@ public class Entity : MonoBehaviour
     #endregion
     public void ReduceHeath(float damage,Entity gethitfrom)
     {
-        if (shild)
+        if (shild && damage <100)
             return;
         currentHealth -= damage;
         GameObject indicator = gameManager.Objectpool.GetFromPool("DamageIndicator", this.transform.position, Quaternion.identity);
@@ -212,7 +213,10 @@ public class Entity : MonoBehaviour
         HealthShow();
 
     }
+    public void setrandompostion()
+    {
 
+    }
 
     public virtual void ResetingGame()
     {
@@ -338,21 +342,24 @@ public class Entity : MonoBehaviour
 
     }
     #region Powerups
+
     // Coroutine to gradually decrease fill amount
     private IEnumerator FillEffect(float duration)
     {
         float timeElapsed = 0;
         powerupsConter.fillAmount = 1; // Start full
-
+      
         while (timeElapsed < duration)
         {
             powerupsConter.fillAmount = 1 - (timeElapsed / duration);
+
             timeElapsed += Time.deltaTime;
             yield return null;
         }
-
+       
         powerupsConter.fillAmount = 0; // Ensure it's empty at the end
     }
+    IEnumerator effectloading;
     public IEnumerator ShieldActivate()
     {
         //acriavter shild
@@ -365,9 +372,15 @@ public class Entity : MonoBehaviour
         shildeffect.SetActive(true);
 
         //showing effect
-        if(powerupsConter)
-            StartCoroutine(FillEffect(10));
-        yield return new WaitForSeconds(10);
+        if (powerupsConter)
+        {
+            if (effectloading != null)
+                StopCoroutine(effectloading);
+
+            effectloading = FillEffect(7);
+            StartCoroutine(effectloading);
+        }
+        yield return new WaitForSeconds(7);
         shildeffect.SetActive(false);
         shild = false;
         //deaactivate shild
@@ -386,8 +399,14 @@ public class Entity : MonoBehaviour
             speedeffect.SetActive(true);
             moveSpeed *= 1.5f;
             if (powerupsConter)
-                StartCoroutine(FillEffect(5));
-            yield return new WaitForSeconds(5);
+            {
+                if (effectloading != null)
+                    StopCoroutine(effectloading);
+
+                effectloading = FillEffect(7);
+                StartCoroutine(effectloading);
+            }
+            yield return new WaitForSeconds(7);
             speedeffect.SetActive(false);
             moveSpeed = tempspeed;
             speedbosting = false;
@@ -410,8 +429,14 @@ public class Entity : MonoBehaviour
         GetComponent<Collider>().isTrigger=true ;
         passthroughEffect.SetActive(true);
         if (powerupsConter)
-            StartCoroutine(FillEffect(6));
-        yield return new WaitForSeconds(6);
+        {
+            if (effectloading != null)
+                StopCoroutine(effectloading);
+
+            effectloading = FillEffect(7);
+            StartCoroutine(effectloading);
+        }
+        yield return new WaitForSeconds(7);
         passthroughEffect.SetActive(false);
         GetComponent<Collider>().isTrigger = false;
         GetComponent<Rigidbody>().useGravity = true;
@@ -433,8 +458,14 @@ public class Entity : MonoBehaviour
 
         }
         if (powerupsConter)
-            StartCoroutine(FillEffect(10));
-        yield return new WaitForSeconds(10);
+        {
+            if (effectloading != null)
+                StopCoroutine(effectloading);
+
+            effectloading = FillEffect(7);
+            StartCoroutine(effectloading);
+        }
+        yield return new WaitForSeconds(7);
 
         insideGrass = false;
         for (int i = 0; i < allmaterial.Length; i++)

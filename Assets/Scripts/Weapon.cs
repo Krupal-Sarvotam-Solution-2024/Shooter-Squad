@@ -39,7 +39,7 @@ public class Weapon : MonoBehaviour
         }
 
         // Initialize object pool
-        gameManager.Objectpool.CreatePool(bullets.name, bullets, 50, gameManager.BulletsHolder);
+        gameManager.Objectpool.CreatePool(bullets.name, bullets, 50, gameManager.BulletHolder);
 
         // Validate audio source
         if (weaponAudio == null)
@@ -63,10 +63,10 @@ public class Weapon : MonoBehaviour
                 transform.position.y,
                 entity.Enemy.transform.position.z
             ) + Vector3.forward;
-            foreach (Transform firePoint in FirePoints)  // Changed to foreach for better readability
-            {
-                firePoint.LookAt(targetPosition);
-            }
+            //foreach (Transform firePoint in FirePoints)  // Changed to foreach for better readability
+            //{
+            //    firePoint.LookAt(targetPosition);
+            //}
         }
     }
 
@@ -76,7 +76,7 @@ public class Weapon : MonoBehaviour
         foreach (Transform firePoint in FirePoints)
         {
             
-            GameObject bullet = gameManager.Objectpool.GetFromPool(bullets.name, firePoint.position, firePoint.rotation,gameManager.BulletsHolder);
+            GameObject bullet = gameManager.Objectpool.GetFromPool(bullets.name, firePoint.position, firePoint.rotation,gameManager.BulletHolder);
             if (bullet != null)
             {
                 bullet.transform.SetPositionAndRotation(firePoint.position, firePoint.rotation);

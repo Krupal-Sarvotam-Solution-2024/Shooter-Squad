@@ -1,19 +1,19 @@
 # ninja log v5
-131	2583	7645879692357407	GameActivity/CMakeFiles/game.dir/UGAInputKeyEvent.cpp.o	10d5a197dba50a5f
-105	2649	7645879693069938	GameActivity/CMakeFiles/game.dir/UGAConfiguration.cpp.o	b4db5fbef25464e0
-236	2957	7645879696291096	GameActivity/CMakeFiles/game.dir/UGASoftKeyboard.cpp.o	5de78ef8e62f6d7b
-3516	3936	7645879706011390	C:/Users/koush/OneDrive/Desktop/New folder (3)/Sarvatha soltion/New folder/Shooter-Squad/Library/Bee/Android/Prj/IL2CPP/Gradle/unityLibrary/build/intermediates/cxx/RelWithDebInfo/5j51732b/obj/arm64-v8a/libgame.so	17a5352196ad2f94
-200	2799	7645879694707060	GameActivity/CMakeFiles/game.dir/UGAInputMotionEvent.cpp.o	1278bba2191d35a8
-50	2922	7645879695913286	GameActivity/CMakeFiles/game.dir/UGADebug.cpp.o	4fd0d14541ae6dc2
-80	2563	7645879692104464	GameActivity/CMakeFiles/game.dir/UGAEntry.cpp.o	f8cd5b6b726a8a89
-163	3331	7645879700028550	GameActivity/CMakeFiles/game.dir/UGAInput.cpp.o	e763dd1aa45e7b3f
-14	3515	7645879701863130	GameActivity/CMakeFiles/game.dir/UGAApplication.cpp.o	972c465720986ff
 340	8640	7652084945600643	GameActivity/CMakeFiles/game.dir/UGAInputKeyEvent.cpp.o	10d5a197dba50a5f
+10482	11263	7652084972015391	C:/Users/koush/OneDrive/Desktop/New folder (3)/Sarvatha soltion/New folder/Shooter-Squad/Library/Bee/Android/Prj/IL2CPP/Gradle/unityLibrary/build/intermediates/cxx/RelWithDebInfo/5j51732b/obj/arm64-v8a/libgame.so	17a5352196ad2f94
+448	9127	7652084950759719	GameActivity/CMakeFiles/game.dir/UGASoftKeyboard.cpp.o	5de78ef8e62f6d7b
 204	8699	7652084946406339	GameActivity/CMakeFiles/game.dir/UGAConfiguration.cpp.o	b4db5fbef25464e0
+253	9387	7652084953466866	GameActivity/CMakeFiles/game.dir/UGADebug.cpp.o	4fd0d14541ae6dc2
 298	8760	7652084946763346	GameActivity/CMakeFiles/game.dir/UGAInputMotionEvent.cpp.o	1278bba2191d35a8
 154	8992	7652084949396655	GameActivity/CMakeFiles/game.dir/UGAEntry.cpp.o	f8cd5b6b726a8a89
-448	9127	7652084950759719	GameActivity/CMakeFiles/game.dir/UGASoftKeyboard.cpp.o	5de78ef8e62f6d7b
-253	9387	7652084953466866	GameActivity/CMakeFiles/game.dir/UGADebug.cpp.o	4fd0d14541ae6dc2
 384	10098	7652084960512424	GameActivity/CMakeFiles/game.dir/UGAInput.cpp.o	e763dd1aa45e7b3f
 65	10481	7652084964328831	GameActivity/CMakeFiles/game.dir/UGAApplication.cpp.o	972c465720986ff
-10482	11263	7652084972015391	C:/Users/koush/OneDrive/Desktop/New folder (3)/Sarvatha soltion/New folder/Shooter-Squad/Library/Bee/Android/Prj/IL2CPP/Gradle/unityLibrary/build/intermediates/cxx/RelWithDebInfo/5j51732b/obj/arm64-v8a/libgame.so	17a5352196ad2f94
+139	3141	7658124029350437	GameActivity/CMakeFiles/game.dir/UGAInputKeyEvent.cpp.o	10d5a197dba50a5f
+58	3180	7658124030003507	GameActivity/CMakeFiles/game.dir/UGAConfiguration.cpp.o	b4db5fbef25464e0
+81	3197	7658124030059943	GameActivity/CMakeFiles/game.dir/UGAInputMotionEvent.cpp.o	1278bba2191d35a8
+38	3237	7658124030573143	GameActivity/CMakeFiles/game.dir/UGAEntry.cpp.o	f8cd5b6b726a8a89
+171	3342	7658124031636158	GameActivity/CMakeFiles/game.dir/UGASoftKeyboard.cpp.o	5de78ef8e62f6d7b
+20	3511	7658124033364879	GameActivity/CMakeFiles/game.dir/UGADebug.cpp.o	4fd0d14541ae6dc2
+105	3755	7658124035928413	GameActivity/CMakeFiles/game.dir/UGAInput.cpp.o	e763dd1aa45e7b3f
+1	3944	7658124037761165	GameActivity/CMakeFiles/game.dir/UGAApplication.cpp.o	972c465720986ff
+3944	4297	7658124041227174	C:/Users/koush/OneDrive/Desktop/New folder (3)/Sarvatha soltion/New folder/Shooter-Squad/Library/Bee/Android/Prj/IL2CPP/Gradle/unityLibrary/build/intermediates/cxx/RelWithDebInfo/5j51732b/obj/arm64-v8a/libgame.so	17a5352196ad2f94

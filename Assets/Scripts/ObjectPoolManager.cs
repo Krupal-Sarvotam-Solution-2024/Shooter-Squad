@@ -80,8 +80,6 @@ public class ObjectPoolManager : MonoBehaviour
         }
     }
 
-
-    
     public void ReturnToPool(string key, GameObject obj)
     {
         if (!poolDictionary.ContainsKey(key))
@@ -93,4 +91,19 @@ public class ObjectPoolManager : MonoBehaviour
         obj.SetActive(false);
         poolDictionary[key].Enqueue(obj);
     }
+
+
+    public void Retrunalltopool(string key,Transform parent)
+    {
+        for (int i = 0; i < parent.childCount; i++)
+        {
+            if (parent.GetChild(i).gameObject.activeInHierarchy)
+            {
+                ReturnToPool(key, parent.GetChild(i).gameObject);
+            }
+
+        }
+
+    }
+
 }

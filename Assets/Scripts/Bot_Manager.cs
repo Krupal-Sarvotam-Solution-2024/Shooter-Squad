@@ -94,7 +94,7 @@ public class Bot_Manager : Entity
         if(Physics.SphereCast(transform.position,1f,transform.forward,out hit))
         {
           
-            if (hit.transform.name.Contains("Wall"))
+            if (hit.transform.name.Contains("Wall")|| hit.transform.name.Contains("water"))
             {
 
                 // Generate random movement input values between -1 and 1
@@ -375,7 +375,7 @@ public class Bot_Manager : Entity
             movementDirection = targetDirection;
             
             // Wait for a few seconds before changing direction
-            yield return new WaitForSeconds(Random.Range(1.5f, 3f));
+            yield return new WaitForSeconds(Random.Range(5f, 10f));
         }
     }
 
