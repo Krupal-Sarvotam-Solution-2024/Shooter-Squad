@@ -61,7 +61,7 @@ public class Entity : MonoBehaviour
     [Header("powerups")]
     public GameObject shildeffect,speedeffect,passthroughEffect;
     public bool shild;
-
+    Weapon Weponcolleing;
     public GameObject setdestination;
     #region MonoMethods
     public virtual void Awake()
@@ -87,8 +87,27 @@ public class Entity : MonoBehaviour
     }
     public  virtual void Update()
     {
+        if (Weponcolleing)
+        {
+            Weponcolleing.filler.fillAmount += Time.deltaTime / 5;
+            
+            if (Weponcolleing.filler.fillAmount == 1)
+            {
 
-      
+                my_wepon.gameObject.SetActive(false);
+                Weponcolleing.filler.fillAmount = 2;
+
+                // allCollectedWepon.Add(selectedwepon);
+                my_wepon = my_wepon.gameObject.transform.parent.GetChild(Weponcolleing.id).GetComponent<Weapon>();
+
+                my_wepon.entity = this;
+                Weponcolleing.GetComponent<Reactivate>().Relocating();
+                my_wepon.gameObject.SetActive(true);
+                Weponcolleing.filler.fillAmount = 0;
+                Weponcolleing = null;
+            }
+        }
+
 
     }
 
@@ -107,18 +126,27 @@ public class Entity : MonoBehaviour
 
         if (other.GetComponent<Weapon>())
         {
-            my_wepon.gameObject.SetActive(false);
-            my_wepon = my_wepon.gameObject.transform.parent.GetChild(other.GetComponent<Weapon>().id).GetComponent<Weapon>();
-            my_wepon.entity = this;
-            my_wepon.gameObject.SetActive(true);
+            Weponcolleing = other.GetComponent<Weapon>();
+            return;
+            
         }
 
-        if (other.GetComponent<Powerups>() && other.GetComponent<Reactivate>()|| other.GetComponent<Weapon>() && other.GetComponent<Reactivate>())
+        if (other.GetComponent<Powerups>() && other.GetComponent<Reactivate>())
         {
             StartCoroutine(other.GetComponent<Reactivate>().reacrivate());
         }
         //trigering powerups
 
+    }
+
+    public virtual void OnTriggerExit(Collider other)
+    {
+        if (other.GetComponent<Weapon>())
+        {
+            Weponcolleing.filler.fillAmount = 0;
+            Weponcolleing = null;
+            
+        }
     }
     #endregion
     public void ReduceHeath(float damage,Entity gethitfrom)
@@ -220,7 +248,8 @@ public class Entity : MonoBehaviour
 
     public virtual void ResetingGame()
     {
-        powerupsConter.fillAmount = 0;
+        if(powerupsConter)
+            powerupsConter.fillAmount = 0;
         entity_animator.SetBool("Shoot", false);
         currentHealth = maxHealth;
         //Restart the game

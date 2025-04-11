@@ -5,14 +5,20 @@ public class Reactivate : MonoBehaviour
     public GameManager manager;
     public Vector3 minimum, maximum;
     bool insidesafezone;
+    public bool wepon;
     public IEnumerator reacrivate()
     {
+        
         yield return new WaitForSeconds(Random.Range(0,5));
 
         this.transform.position = new Vector3(Random.Range(minimum.x, maximum.x), transform.position.y, Random.Range(minimum.z, maximum.z));
         this.gameObject.SetActive(true);
     }
 
+    public void Relocating()
+    {
+        this.transform.position = new Vector3(Random.Range(minimum.x, maximum.x), transform.position.y, Random.Range(minimum.z, maximum.z));
+    }
     private void OnTriggerEnter(Collider other)
     {
 
@@ -24,9 +30,13 @@ public class Reactivate : MonoBehaviour
         if (other.GetComponent<Bullet>())
         return;
 
-        if(insidesafezone)
-            this.transform.position = new Vector3(Random.Range(minimum.x, maximum.x), transform.position.y, Random.Range(minimum.z, maximum.z));
-        
+        if (insidesafezone)
+        {
+            if (this.wepon && other.GetComponent<Entity>())
+                return;
+
+           this.transform.position = new Vector3(Random.Range(minimum.x, maximum.x), transform.position.y, Random.Range(minimum.z, maximum.z));
+        }
     }
 
     private void OnTriggerStay(Collider other)

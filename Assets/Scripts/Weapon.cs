@@ -1,8 +1,11 @@
 using UnityEngine;
 using System.Collections.Generic;
+using UnityEngine.UI;
+
 
 public class Weapon : MonoBehaviour
 {
+    public Image filler;
     /// <summary>
     /// Unique identifier for this weapon
     /// </summary>

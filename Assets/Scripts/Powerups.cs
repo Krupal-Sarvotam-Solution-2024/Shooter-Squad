@@ -31,9 +31,8 @@ public class Powerups : MonoBehaviour
         {
             return;
         }
-        if(textshower)
-        textshower.SetActive(true);
 
+      
         // 5. Consider using switch statement for better readability
         switch (powerups)
         {
@@ -78,6 +77,11 @@ public class Powerups : MonoBehaviour
             case AllPowerups.BigBomb:
                 // TODO: Add implementation
                 break;
+        }
+        if (textshower)
+        {
+            Debug.Log("powerups collected " + entity.gameObject.name);
+            textshower.SetActive(true);
         }
     }
 
