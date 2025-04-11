@@ -126,7 +126,7 @@ public class Entity : MonoBehaviour
         if (shild && damage <100)
             return;
         currentHealth -= damage;
-        GameObject indicator = gameManager.Objectpool.GetFromPool("DamageIndicator", this.transform.position, Quaternion.identity);
+        GameObject indicator = gameManager.Objectpool.GetFromPool("DamageIndicator", this.transform.position, Quaternion.identity,gameManager.damageIndicaterHolder);
         indicator.GetComponent<TextMeshPro>().text = "-" + damage.ToString();
         StartCoroutine(DeactivatingObject(indicator));
 
@@ -220,6 +220,8 @@ public class Entity : MonoBehaviour
 
     public virtual void ResetingGame()
     {
+        powerupsConter.fillAmount = 0;
+        entity_animator.SetBool("Shoot", false);
         currentHealth = maxHealth;
         //Restart the game
         killCount = 0;
@@ -367,7 +369,7 @@ public class Entity : MonoBehaviour
     {
         //acriavter shild
         shild = true;
-        GameObject indicator = gameManager.Objectpool.GetFromPool("DamageIndicator", this.transform.position, Quaternion.identity);
+        GameObject indicator = gameManager.Objectpool.GetFromPool("DamageIndicator", this.transform.position, Quaternion.identity, gameManager.damageIndicaterHolder);
         indicator.GetComponent<TextMeshPro>().text = "Shield";
         StartCoroutine(DeactivatingObject(indicator));
 
@@ -394,7 +396,7 @@ public class Entity : MonoBehaviour
         if (!speedbosting)
         {
             speedbosting = true;
-            GameObject indicator = gameManager.Objectpool.GetFromPool("DamageIndicator", this.transform.position, Quaternion.identity);
+            GameObject indicator = gameManager.Objectpool.GetFromPool("DamageIndicator", this.transform.position, Quaternion.identity, gameManager.damageIndicaterHolder);
             indicator.GetComponent<TextMeshPro>().text = "X2";
             StartCoroutine(DeactivatingObject(indicator));
             float tempspeed = 0;
@@ -425,7 +427,7 @@ public class Entity : MonoBehaviour
 
     public IEnumerator Invisible()
     {
-        GameObject indicator = gameManager.Objectpool.GetFromPool("DamageIndicator", this.transform.position, Quaternion.identity);
+        GameObject indicator = gameManager.Objectpool.GetFromPool("DamageIndicator", this.transform.position, Quaternion.identity, gameManager.damageIndicaterHolder);
         indicator.GetComponent<TextMeshPro>().text = "Mutant";
         StartCoroutine(DeactivatingObject(indicator));
         GetComponent<Rigidbody>().useGravity = false;
@@ -452,7 +454,7 @@ public class Entity : MonoBehaviour
         for (int i = 0; i < allmaterial.Length; i++)
         {
             SetTransparent(allmaterial[i].material);
-            GameObject indicator = gameManager.Objectpool.GetFromPool("DamageIndicator", this.transform.position, Quaternion.identity);
+            GameObject indicator = gameManager.Objectpool.GetFromPool("DamageIndicator", this.transform.position, Quaternion.identity, gameManager.damageIndicaterHolder);
             indicator.GetComponent<TextMeshPro>().text = "Cameo";
             StartCoroutine(DeactivatingObject(indicator));
             // SetMaterialTransparent(allmaterial[i].material);

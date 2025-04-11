@@ -62,6 +62,7 @@ public class Bot_Manager : Entity
         maximum.z -= Time.deltaTime;
         maximum.x -= Time.deltaTime;
         movementDirection = Vector3.Lerp(movementDirection, targetDirection, Time.deltaTime * acceleration);
+        AnimationController(AnimState.RunningForward);
         entity_navAi.SetDestination(BOTMOVELOCATION.position);
         if (movementDirection.magnitude < 0.1f)
         {
@@ -69,7 +70,7 @@ public class Bot_Manager : Entity
 
         }
        
-        UpdateAnimation();
+     //  UpdateAnimation();
         GetNeartestEnemy();
     }
     void FixedUpdate()
@@ -385,7 +386,7 @@ public class Bot_Manager : Entity
     public override void ResetingGame()
     {
         base.ResetingGame();
-        
+        isInInterval = false;
         AnimationController(AnimState.Idle);
         StopFollowing();
         AnimatorObject.gameObject.transform.localRotation = Quaternion.identity;

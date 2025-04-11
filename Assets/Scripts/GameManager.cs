@@ -84,12 +84,13 @@ public class GameManager : MonoBehaviour
 
         int minutes = Mathf.FloorToInt(remainingTime / 60);
         int seconds = Mathf.FloorToInt(remainingTime % 60);
-        remainingTime -= Time.deltaTime;
        
         killcounttext.text = player.killCount.ToString();
         killcounttext2.text = player.killCount.ToString();
+
         timeText.text = string.Format("{0:00} : {1:00}", minutes, seconds);
         timeText2.text = string.Format("{0:00} : {1:00}", minutes, seconds);
+        remainingTime -= Time.deltaTime;
 
     }
 
@@ -97,7 +98,7 @@ public class GameManager : MonoBehaviour
     public TextMeshProUGUI killcounttext2;
     IEnumerator GameCompleted()
     {
-        remainingTime = 125;
+        remainingTime = 120;
 
         yield return new WaitForSeconds(remainingTime);
      
@@ -166,12 +167,13 @@ public class GameManager : MonoBehaviour
     // Update
     private void Update()
     {
-
-   
-        UpdateTimeDisplay();
-        if (GamePlay == false || player.is_death)
+        if (GamePlay == false)
             return;
+        UpdateTimeDisplay();
 
+        if( player.is_death)
+            return;
+        
         if (redyforBrustShooting)
         {
             holdtime += Time.deltaTime;
@@ -233,7 +235,8 @@ public class GameManager : MonoBehaviour
     public void StartGame()
     {
 
-
+        timeText.text = "02 : 00";
+        timeText2.text = "02 : 00";
         Application.targetFrameRate = -60;
         panelPause.SetActive(false);
         panelStart.SetActive(false);
