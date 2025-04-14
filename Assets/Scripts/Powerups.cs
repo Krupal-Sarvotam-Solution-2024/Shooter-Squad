@@ -99,7 +99,7 @@ public class Powerups : MonoBehaviour
 
                 if (Vector3.Distance(manager.botAll[i].transform.position, transform.position) < dangerRadius)
                 {
-                    manager.botAll[i].ReduceHeath(100, null);  // Fixed typo "ReduceHeath" -> "ReduceHealth"?
+                    manager.botAll[i].ReduceHeath(25, null);  // Fixed typo "ReduceHeath" -> "ReduceHealth"?
                 }
             }
         }
@@ -129,7 +129,7 @@ public class Powerups : MonoBehaviour
 
                 if (Vector3.Distance(manager.botAll[i].transform.position, transform.position) < dangerRadius)
                 {
-                    manager.botAll[i].ReduceHeath(100, null);  // Fixed typo "ReduceHeath" -> "ReduceHealth"?
+                    manager.botAll[i].ReduceHeath(25, null);  // Fixed typo "ReduceHeath" -> "ReduceHealth"?
                 }
             }
         }
